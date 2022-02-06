@@ -4,7 +4,7 @@ import {
 } from 'typeorm';
 import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseEnttiy } from '../shared/entity/base.entity';
+import { BaseEnttiy } from '../shared/entities/base.entity';
 
 @Entity()
 export class User extends BaseEnttiy {
