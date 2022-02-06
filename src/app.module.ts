@@ -5,11 +5,6 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ormConfig } from './config/orm';
 import { UsersModule } from './users/users.module';
-@Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
-})
 
 @Module({
   imports: [
