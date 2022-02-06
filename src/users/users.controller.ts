@@ -13,10 +13,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Request } from 'express';
-import { AuthService } from 'src/auth/auth.service';
-import { LoginRequestDTO, LoginResponseDTO } from 'src/auth/dto/auth.dto';
-import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { AuthService } from '../auth/auth.service';
+import { LoginRequestDTO, LoginResponseDTO } from '../auth/dto/auth.dto';
+import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import {
   CreateUserRequestDTO,
   GetUserRequestDTO,
