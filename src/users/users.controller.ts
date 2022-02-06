@@ -4,7 +4,6 @@ import {
   Get,
   Param,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -31,7 +30,7 @@ export class UsersController {
     private readonly authService: AuthService,
   ) {}
 
-  @Post()
+  @Post('/')
   @ApiOperation({ summary: '회원가입' })
   @ApiResponse({
     status: 201,
@@ -41,7 +40,7 @@ export class UsersController {
     await this.userService.create(body);
   }
 
-  @Post('login')
+  @Post('/login')
   @ApiOperation({ summary: '로그인' })
   @ApiResponse({
     status: 200,
@@ -56,14 +55,14 @@ export class UsersController {
     return await this.authService.jwtLogin(data);
   }
 
-  @Get(':id')
+  @Get('/:id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: '유저정보 조회' })
   @ApiResponse({
     status: 200,
     description: '성공',
     type: GetUserResponseDTO,
   })
-  @UseGuards(JwtAuthGuard)
   getUser(@Param() param: GetUserRequestDTO): Promise<GetUserResponseDTO> {
     return this.userService.getUser(param);
   }
