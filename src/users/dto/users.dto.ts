@@ -1,10 +1,11 @@
 import { PickType } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 import { User } from '../users.entity';
 
 export class CreateUserRequestDTO extends PickType(User, [
   'email',
   'password',
-  'nickname',
+  'nickName',
 ] as const) {}
 
 export class GetUserRequestDTO extends PickType(User, ['id'] as const) {}
@@ -12,6 +13,6 @@ export class GetUserRequestDTO extends PickType(User, ['id'] as const) {}
 export class GetUserResponseDTO extends PickType(User, [
   'id',
   'email',
-  'nickname',
+  'nickName',
   'createdAt',
 ] as const) {}

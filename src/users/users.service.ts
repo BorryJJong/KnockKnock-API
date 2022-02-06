@@ -15,22 +15,22 @@ export class UsersService {
     private readonly userRepository: UserRepository,
   ) {}
 
-  async create({ email, nickname, password }: CreateUserRequestDTO) {
+  async create({ email, nickName, password }: CreateUserRequestDTO) {
     await this.userRepository.checkExistEmail({ email });
     await this.userRepository.createUser({
       email,
-      nickname,
+      nickName,
       password: await hashPassword(password),
     });
   }
 
   async getUser({ id }: GetUserRequestDTO): Promise<GetUserResponseDTO> {
     const user = await this.userRepository.findUserById(id);
-    const { email, nickname, createdAt } = user;
+    const { email, nickName, createdAt } = user;
     return {
       id,
       email,
-      nickname,
+      nickName,
       createdAt,
     };
   }
