@@ -13,5 +13,5 @@ export function swaggerBuilder(app) {
     .build();
 
   const document: OpenAPIObject = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup('api-docs', app, document);
 }
