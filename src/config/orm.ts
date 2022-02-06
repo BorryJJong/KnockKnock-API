@@ -1,4 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import dotenv from 'dotenv';
+dotenv.config({ path: __dirname + '/../../.env' });
 
 export const ormConfig: TypeOrmModuleOptions = {
   type: 'mysql',
@@ -8,5 +10,6 @@ export const ormConfig: TypeOrmModuleOptions = {
   password: process.env.DB_PASSWORD,
   database: 'knockkonck',
   entities: ['./dist/**/*.entity{.ts,.js}', 'src/**/*.entity{.ts}'],
-  // synchronize: true,
+  // DDL 관리 전략이 없기 때문에 우선은 켜놨습니다!
+  synchronize: process.env.SERVER_ENV === 'local' ? true :false,
 };
