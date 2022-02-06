@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginRequestDTO } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
-import { UserRepository } from '../users/user.repository';
+import { UserRepository } from '../users/users.repository';
 import { User } from '../users/users.entity';
 import { isComparePassword } from '../shared/utils';
 import { IPayload } from './jwt/jwt.payload';

@@ -6,7 +6,7 @@ import {
   GetUserRequestDTO,
   GetUserResponseDTO,
 } from './dto/users.dto';
-import { UserRepository } from './user.repository';
+import { UserRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
