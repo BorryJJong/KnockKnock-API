@@ -1,22 +1,13 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseEnttiy } from '../shared/entity/base.entity';
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn()
-  @ApiProperty({
-    description: '유저 아이디',
-    example: 1,
-  })
-  id: number;
-
+export class User extends BaseEnttiy {
   @Column({ nullable: false })
   @ApiProperty({
     description: '유저 이메일',
@@ -47,18 +38,4 @@ export class User {
   @IsNotEmpty()
   @Length(3, 20)
   nickname: string;
-
-  @CreateDateColumn()
-  @ApiProperty({
-    description: '생성일',
-    example: '요건 아직 미정',
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  @ApiProperty({
-    description: '수정일',
-    example: '요건 아직 미정',
-  })
-  updatedAt: Date;
 }
