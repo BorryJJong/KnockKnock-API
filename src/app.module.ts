@@ -5,12 +5,16 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ormConfig } from './config/orm';
 import { UsersModule } from './users/users.module';
+//import { FeedModule } from './feed/feed.module';
+import { PromotionsModule } from './promotions/promotions.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(ormConfig),
     UsersModule,
     AuthModule,
+    //FeedModule,
+    PromotionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
