@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity('promotions', { schema: 'knockknock' })
 export class Promotions {
   @ApiProperty({
-    description: 'id',
+    description: '프로모션 id',
     example: '1',
   })
   @PrimaryGeneratedColumn({ type: 'int', name: 'id', comment: '아이디' })

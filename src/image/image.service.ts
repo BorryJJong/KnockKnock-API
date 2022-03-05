@@ -41,10 +41,10 @@ export class ImageService {
     return `https://${this.buketName}.s3.${this.region}.amazonaws.com/${dest}`;
   }
 
-  // (1) () 폴더 업로드
+  // (1) 폴더 업로드 - 폴더 미지정시 common
   async uploadS3(file: Express.Multer.File, folder?: string) {
     const Key = this.rename(file.originalname, file.mimetype);
-    folder = folder ? folder : '';
+    folder = folder ? folder : 'common';
     try {
       console.log(`${this.buketName}/${folder}`);
       const result = await this.S3.putObject({

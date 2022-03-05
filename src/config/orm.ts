@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import dotenv from 'dotenv';
+import { BlogChallenges } from 'src/entities/BlogChallenges';
 import { BlogComment } from 'src/entities/BlogComment';
 import { BlogImage } from 'src/entities/BlogImage';
 import { BlogLike } from 'src/entities/BlogLike';
@@ -22,9 +23,10 @@ export const ormConfig: TypeOrmModuleOptions = {
     'src/**/*.entity{.ts}',
     BlogComment,
     BlogImage,
-    // BlogLike,
+    BlogLike,
     BlogPost,
-    // BlogPromotion,
+    BlogPromotion,
+    BlogChallenges,
     Challenges,
     Promotions,
     User,
