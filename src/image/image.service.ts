@@ -102,6 +102,6 @@ export class ImageService {
         break;
     }
 
-    return `${newFileName}.${mimeType}`;
+    return `${newFileName}.${extension}`;
   }
 }
