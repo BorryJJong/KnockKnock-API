@@ -10,8 +10,8 @@ export class CreateFeedDto extends OmitType(BlogPost, [
   'isDeleted',
 ] as const) {
   @ApiProperty({ description: '프로모션 id', example: '1 or 1,2' })
-  promotionId: string;
+  promotions: string;
 
   @ApiProperty({ description: '챌린지 id', example: '1 or 1,2,3' })
-  challengesId: string;
+  challenges: string;
 }

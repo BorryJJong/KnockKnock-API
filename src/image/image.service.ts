@@ -46,7 +46,7 @@ export class ImageService {
     const Key = this.rename(file.originalname, file.mimetype);
     folder = folder ? folder : 'common';
     try {
-      console.log(`${this.buketName}/${folder}`);
+      // console.log(`${this.buketName}/${folder}`);
       const result = await this.S3.putObject({
         Bucket: `${this.buketName}/${folder}`,
         ACL: this.ACL,

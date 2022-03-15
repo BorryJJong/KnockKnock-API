@@ -67,7 +67,7 @@ export class BlogPost {
     description: '조회수',
     example: '73',
   })
-  @Column('int', { name: 'hits', comment: '조회수' })
+  @Column('int', { name: 'hits', comment: '조회수', default: 0 })
   hits: number;
 
   @Column('timestamp', {
@@ -77,7 +77,11 @@ export class BlogPost {
   })
   modDate: Date | null;
 
-  @Column('datetime', { name: 'reg_date', comment: '등록 날짜' })
+  @Column('datetime', {
+    name: 'reg_date',
+    comment: '등록 날짜',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   regDate: Date;
 
   @Column('datetime', {
