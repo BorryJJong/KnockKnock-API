@@ -25,7 +25,7 @@ export class FeedService {
     private connection: Connection,
   ) {}
 
-  async create(file: Express.Multer.File, data: CreateFeedDto) {
+  async create(files: Express.Multer.File[], data: CreateFeedDto) {
     // TODO: queryRunner 더 잘쓸 수 있는 방안?
     const queryRunner = this.connection.createQueryRunner();
     let result = false;
@@ -51,11 +51,17 @@ export class FeedService {
       await this.savePromotion(queryRunner, postId, data.promotions);
 
       // 4. 이미지 저장
-      if (file !== undefined) {
-        await this.saveImage(queryRunner, postId, file);
+      if (files !== undefined) {
+        await Promise.all(
+          files.map(
+            async (file) => await this.saveImage(queryRunner, postId, file),
+          ),
+        );
+        // await this.saveImage(queryRunner, postId, file);
       }
 
       // throw new InternalServerErrorException(); // 일부러 에러를 발생시켜 본다
+      // await queryRunner.commitTransaction();
       await queryRunner.commitTransaction();
       result = true;
     } catch (e) {
@@ -125,7 +131,6 @@ export class FeedService {
     postId: number,
     file: Express.Multer.File,
   ) {
-    // TODO: 파일 1개 업로드임 n개 업로드 가능하도록 수정 필요.
     /*{
       ok: true,
       ETag: '"78c77202283e50fecd8eab89304a617b"',

@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Logger,
+  UploadedFiles,
 } from '@nestjs/common';
 import { FeedService } from './feed.service';
 import { CreateFeedDto } from './dto/create-feed.dto';
@@ -36,12 +37,12 @@ export class FeedController {
     status: 500,
     description: '서버 에러',
   })
-  @UseInterceptors(FileInterceptor('images'))
+  @UseInterceptors(FilesInterceptor('images'))
   async create(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles() files: Express.Multer.File[],
     @Body() body: CreateFeedDto,
   ) {
-    let result = this.feedService.create(file, body);
+    let result = this.feedService.create(files, body);
     return result;
   }
 
