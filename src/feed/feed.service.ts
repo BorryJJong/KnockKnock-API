@@ -5,8 +5,8 @@ import { BlogImage } from 'src/entities/BlogImage';
 import { BlogPost } from 'src/entities/BlogPost';
 import { BlogPromotion } from 'src/entities/BlogPromotion';
 import { Repository, Connection, QueryRunner } from 'typeorm';
-import { CreateFeedDto } from './dto/create-feed.dto';
-import { UpdateFeedDto } from './dto/update-feed.dto';
+import { CreateFeedDto } from './dto/feed.dto';
+import { UpdateFeedDto } from './dto/feed.dto';
 import { ImageService } from 'src/image/image.service';
 @Injectable()
 export class FeedService {

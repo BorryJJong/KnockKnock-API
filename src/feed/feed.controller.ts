@@ -12,8 +12,8 @@ import {
   UploadedFiles,
 } from '@nestjs/common';
 import { FeedService } from './feed.service';
-import { CreateFeedDto } from './dto/create-feed.dto';
-import { UpdateFeedDto } from './dto/update-feed.dto';
+import { CreateFeedDto } from './dto/feed.dto';
+import { UpdateFeedDto } from './dto/feed.dto';
 import {
   ApiOkResponse,
   ApiOperation,
