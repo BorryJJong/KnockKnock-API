@@ -56,7 +56,7 @@ export class ImageService {
       return {
         ok: true,
         ETag: result.ETag,
-        Key,
+        Key: `${folder}/${Key}`,
         url: this.__makePublicUrl(`${folder}/${Key}`),
       };
     } catch (error) {

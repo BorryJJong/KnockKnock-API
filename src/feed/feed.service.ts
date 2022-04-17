@@ -131,16 +131,10 @@ export class FeedService {
     postId: number,
     file: Express.Multer.File,
   ) {
-    /*{
-      ok: true,
-      ETag: '"78c77202283e50fecd8eab89304a617b"',
-      Key: '1646446656103sv90vbzqved.png', // 파일명
-      url: 'https://kej-test.s3.ap-northeast-2.amazonaws.com/feed/1646446656103sv90vbzqved.png' // url
-    }*/
-
+    let resultS3 = null;
     try {
       // 1. image s3 upload
-      let resultS3 = await this.imageService.uploadS3(file, 'feed');
+      resultS3 = await this.imageService.uploadS3(file, 'feed');
 
       if (!resultS3.ok) {
         throw new Error('S3 image upload failed');
@@ -153,8 +147,9 @@ export class FeedService {
       });
       await queryRunner.manager.save(image);
     } catch (e) {
-      // TODO: 1번성공 2번에러시 이미지 지워야함 함수는 만들어뒀으나 테스트필요
-      // this.imageService.deleteS3
+      if (resultS3.ok) {
+        this.imageService.deleteS3(resultS3.Key);
+      }
       throw new Error(e);
     }
   }
