@@ -9,6 +9,7 @@ import { BlogPromotion } from 'src/entities/BlogPromotion';
 import { Challenges } from 'src/entities/Challenges';
 import { Promotions } from 'src/entities/Promotions';
 import { User } from 'src/entities/User';
+import { BlogChallenge } from 'src/entities/BlogChallenge';
 dotenv.config({ path: __dirname + '/../../.env' });
 
 export const ormConfig: TypeOrmModuleOptions = {
@@ -32,5 +33,5 @@ export const ormConfig: TypeOrmModuleOptions = {
     User,
   ],
   // DDL 관리 전략이 없기 때문에 우선은 켜놨습니다!
-  synchronize: process.env.SERVER_ENV === 'local' ? true : false,
+  synchronize: false
 };
