@@ -1,6 +1,7 @@
 # compiled output
-/dist
 /node_modules
+# nest.js build error
+# /dist
 
 # Logs
 logs
