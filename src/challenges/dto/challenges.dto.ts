@@ -1,6 +1,7 @@
 import { PickType } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 import { Challenges } from 'src/entities/Challenges';
+import { User } from 'src/entities/User';
 import { Column } from 'typeorm';
 
 export class CreateChallengeRequestDTO extends PickType(Challenges, [
@@ -43,5 +44,13 @@ export class GetChallengeListResponseDTO extends PickType(Challenges, [
     nullable: true,
   })
   rnk: number;
+
+  participants : ParticipantUserDTO[];
+}
+
+export class ParticipantUserDTO {
+  id:number;
+  nickname:string;
+  image:string;
 }
 

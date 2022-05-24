@@ -2,8 +2,9 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityRepository, getManager, Repository } from 'typeorm';
 import { Challenges } from 'src/entities/Challenges';
 import { BlogPost } from 'src/entities/BlogPost';
-import { GetChallengeListResponseDTO } from './dto/challenges.dto';
+import { GetChallengeListResponseDTO, ParticipantUserDTO } from './dto/challenges.dto';
 import { BlogChallenge } from 'src/entities/BlogChallenge';
+import { User } from 'src/entities/User';
 
 @Injectable()
 @EntityRepository(Challenges)
@@ -70,10 +71,54 @@ export class ChallengesRepository extends Repository<Challenges> {
             newYn: s.newYn,
             postCnt: s.postCnt,
             rnk: s.rnk,
+            participants: null
         };
         return item;
     });
 
     return challenges;
+  }
+
+  public async getParticipantList(challengeId:number): Promise<ParticipantUserDTO[]> {
+    console.log("ChallengeId : " + challengeId);
+
+    const userPostChallenge: any = getManager().createQueryBuilder()
+        .select("bp.user_id", "user_id")
+        .addSelect("bc.challenge_id", "challenge_id")
+        .from(BlogPost, "bp")
+        .innerJoin(BlogChallenge, "bc", "bp.id = bc.post_id")
+        .where("bc.challenge_id = ':id'", {id :challengeId})
+        .groupBy("bp.user_id, bc.challenge_id");
+        
+    const challengePostCnt: any = getManager().createQueryBuilder()
+        .select("a.id", "id")
+        .addSelect("min(reg_date)", "reg_date")
+        .from(Challenges, "a")
+        .innerJoin("(" + userPostChallenge.getQuery() + ")", "b", "a.id = b.challenge_id")
+        .groupBy("a.id");
+
+    const participantList : any = getManager().createQueryBuilder()
+        .select("ma.id", "id")
+        .addSelect("ma.nickname", "nickname")
+        .addSelect("ma.image", "image")
+        .from(User, "ma")
+        .leftJoin("(" + challengePostCnt.getQuery() + ")", "mb", "ma.id = mb.id")
+        .orderBy("mb.reg_date", "ASC");
+
+    const participantListRaws = await participantList.getRawMany();
+
+    //Convert raws to our appropriate objects 
+    const participants = participantListRaws.map((s: any) => {
+      console.log(s);
+      const item: ParticipantUserDTO = {
+        id: s.id,
+        nickname: s.nickname,
+        image: s.image,
+        
+      };
+      return item;
+    });
+
+    return participants;
   }
 }
