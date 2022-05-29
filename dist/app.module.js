@@ -12,6 +12,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const auth_module_1 = require("./auth/auth.module");
+const challenges_module_1 = require("./challenges/challenges.module");
 const orm_1 = require("./config/orm");
 const users_module_1 = require("./users/users.module");
 const feed_module_1 = require("./feed/feed.module");
@@ -26,6 +27,7 @@ AppModule = __decorate([
             auth_module_1.AuthModule,
             feed_module_1.FeedModule,
             promotions_module_1.PromotionsModule,
+            challenges_module_1.ChallengesModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

@@ -35,6 +35,6 @@ exports.ormConfig = {
         Promotions_1.Promotions,
         User_1.User,
     ],
-    synchronize: process.env.SERVER_ENV === 'local' ? true : false,
+    synchronize: false
 };
 //# sourceMappingURL=orm.js.map
