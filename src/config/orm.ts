@@ -28,6 +28,7 @@ export const ormConfig: TypeOrmModuleOptions = {
     BlogPost,
     BlogPromotion,
     BlogChallenges,
+    BlogChallenge,
     Challenges,
     Promotions,
     User,
