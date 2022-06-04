@@ -11,8 +11,8 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const Challenges_1 = require("../entities/Challenges");
 const BlogPost_1 = require("../entities/BlogPost");
-const BlogChallenge_1 = require("../entities/BlogChallenge");
 const User_1 = require("../entities/User");
+const BlogChallenges_1 = require("../entities/BlogChallenges");
 let ChallengesRepository = class ChallengesRepository extends typeorm_1.Repository {
     async checkExistChallenge({ id }) {
         const challenge = await this.findOne({ select: ['id'], where: { id } });
@@ -36,7 +36,7 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
             .select("bp.user_id", "user_id")
             .addSelect("bc.challenge_id", "challenge_id")
             .from(BlogPost_1.BlogPost, "bp")
-            .innerJoin(BlogChallenge_1.BlogChallenge, "bc", "bp.id = bc.post_id")
+            .innerJoin(BlogChallenges_1.BlogChallenges, "bc", "bp.id = bc.post_id")
             .groupBy("bp.user_id, bc.challenge_id");
         const challengePostCnt = (0, typeorm_1.getManager)().createQueryBuilder()
             .select("a.id", "id")
@@ -79,7 +79,7 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
             .select("bp.user_id", "user_id")
             .addSelect("bc.challenge_id", "challenge_id")
             .from(BlogPost_1.BlogPost, "bp")
-            .innerJoin(BlogChallenge_1.BlogChallenge, "bc", "bp.id = bc.post_id")
+            .innerJoin(BlogChallenges_1.BlogChallenges, "bc", "bp.id = bc.post_id")
             .where("bc.challenge_id = ':id'", { id: challengeId })
             .groupBy("bp.user_id, bc.challenge_id");
         const challengePostCnt = (0, typeorm_1.getManager)().createQueryBuilder()

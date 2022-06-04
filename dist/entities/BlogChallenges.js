@@ -14,7 +14,7 @@ const typeorm_1 = require("typeorm");
 let BlogChallenges = class BlogChallenges {
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)({ type: 'int', name: 'id', comment: 'pk필수?' }),
+    (0, typeorm_1.PrimaryGeneratedColumn)({ type: 'int', name: 'id' }),
     __metadata("design:type", Number)
 ], BlogChallenges.prototype, "id", void 0);
 __decorate([
