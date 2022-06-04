@@ -1,14 +1,12 @@
 import {
   Body,
   Controller,
-  Get,
   Post,
   UploadedFile,
-  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ImageService } from './image.service';
+import {FileInterceptor} from '@nestjs/platform-express';
+import {ImageService} from './image.service';
 import multerS3 from 'multer-s3';
 import * as AWS from 'aws-sdk';
 import 'dotenv/config';

@@ -1,13 +1,10 @@
-import {
-  Entity,
-  Column,
-} from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
-import { BaseEnttiy } from '../shared/entities/base.entity';
+import {Entity, Column} from 'typeorm';
+import {ApiProperty} from '@nestjs/swagger';
+import {BaseEnttiy} from '../shared/entities/base.entity';
 
 @Entity('users')
 export class User extends BaseEnttiy {
-  @Column({ 
+  @Column({
     name: 'email',
     nullable: false,
   })
@@ -18,8 +15,8 @@ export class User extends BaseEnttiy {
   })
   email: string;
 
-  @Column({ 
-    name:'password',
+  @Column({
+    name: 'password',
     nullable: false,
   })
   @ApiProperty({
@@ -29,8 +26,8 @@ export class User extends BaseEnttiy {
   })
   password: string;
 
-  @Column({ 
-    name:'nickName',
+  @Column({
+    name: 'nickName',
     nullable: false,
   })
   @ApiProperty({

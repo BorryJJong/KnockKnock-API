@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { hashPassword } from '../shared/utils';
+import {Injectable} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {hashPassword} from '../shared/utils';
 import {
   CreateUserRequestDTO,
   GetUserRequestDTO,
   GetUserResponseDTO,
 } from './dto/users.dto';
-import { UserRepository } from './users.repository';
+import {UserRepository} from './users.repository';
 
 @Injectable()
 export class UsersService {
@@ -15,8 +15,8 @@ export class UsersService {
     private readonly userRepository: UserRepository,
   ) {}
 
-  async create({ email, nickName, password }: CreateUserRequestDTO) {
-    await this.userRepository.checkExistEmail({ email });
+  async create({email, nickName, password}: CreateUserRequestDTO) {
+    await this.userRepository.checkExistEmail({email});
     await this.userRepository.createUser({
       email,
       nickName,
@@ -24,9 +24,9 @@ export class UsersService {
     });
   }
 
-  async getUser({ id }: GetUserRequestDTO): Promise<GetUserResponseDTO> {
+  async getUser({id}: GetUserRequestDTO): Promise<GetUserResponseDTO> {
     const user = await this.userRepository.findUserById(id);
-    const { email, nickName, createdAt } = user;
+    const {email, nickName, createdAt} = user;
     return {
       id,
       email,

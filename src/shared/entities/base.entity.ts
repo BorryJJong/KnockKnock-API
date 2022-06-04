@@ -5,7 +5,7 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
+import {ApiProperty} from '@nestjs/swagger';
 
 export abstract class BaseEnttiy {
   @PrimaryGeneratedColumn({
@@ -19,7 +19,7 @@ export abstract class BaseEnttiy {
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',
-    nullable: false
+    nullable: false,
   })
   @ApiProperty({
     description: '생성일',
@@ -29,7 +29,7 @@ export abstract class BaseEnttiy {
   @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamp',
-    nullable: false
+    nullable: false,
   })
   @ApiProperty({
     description: '수정일',

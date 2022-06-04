@@ -1,16 +1,16 @@
-import 'dotenv/config'
-import { BlogChallenges } from 'src/entities/BlogChallenges';
-import { BlogComment } from 'src/entities/BlogComment';
-import { BlogImage } from 'src/entities/BlogImage';
-import { BlogLike } from 'src/entities/BlogLike';
-import { BlogPost } from 'src/entities/BlogPost';
-import { BlogPromotion } from 'src/entities/BlogPromotion';
-import { Challenges } from 'src/entities/Challenges';
-import { Promotions } from 'src/entities/Promotions';
-import { User } from 'src/entities/User';
-import { ConnectionOptions } from 'typeorm';
+import 'dotenv/config';
+import {BlogChallenges} from 'src/entities/BlogChallenges';
+import {BlogComment} from 'src/entities/BlogComment';
+import {BlogImage} from 'src/entities/BlogImage';
+import {BlogLike} from 'src/entities/BlogLike';
+import {BlogPost} from 'src/entities/BlogPost';
+import {BlogPromotion} from 'src/entities/BlogPromotion';
+import {Challenges} from 'src/entities/Challenges';
+import {Promotions} from 'src/entities/Promotions';
+import {User} from 'src/entities/User';
+import {ConnectionOptions} from 'typeorm';
 
-export const ormConfig: ConnectionOptions= {
+export const ormConfig: ConnectionOptions = {
   type: 'mysql',
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
@@ -30,5 +30,5 @@ export const ormConfig: ConnectionOptions= {
     Promotions,
     User,
   ],
-  synchronize: false
+  synchronize: false,
 };

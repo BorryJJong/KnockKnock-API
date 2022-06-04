@@ -1,5 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import {Injectable, Logger} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
 import * as AWS from 'aws-sdk';
 import 'dotenv/config';
 
@@ -61,7 +61,7 @@ export class ImageService {
       };
     } catch (error) {
       this.logger.error(error);
-      return { ok: false };
+      return {ok: false};
     }
   }
 
@@ -72,7 +72,7 @@ export class ImageService {
         Bucket: this.buketName,
         Key,
       }).promise();
-      return { ok: true };
+      return {ok: true};
     } catch (error) {
       this.logger.error(error);
     }
@@ -81,7 +81,7 @@ export class ImageService {
   // 파일명
   rename(name: string, mimeType: string) {
     let extension;
-    let newFileName =
+    const newFileName =
       new Date().valueOf() + Math.random().toString(36).substr(2, 11);
 
     switch (mimeType) {

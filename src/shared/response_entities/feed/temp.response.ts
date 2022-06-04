@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { BaseResponse } from '../base.response';
+import {ApiProperty} from '@nestjs/swagger';
+import {BaseResponse} from '../base.response';
 
 export abstract class FeedCreateResponseData {
   @ApiProperty()

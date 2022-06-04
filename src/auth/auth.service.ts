@@ -1,10 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { LoginRequestDTO } from './dto/auth.dto';
-import { JwtService } from '@nestjs/jwt';
-import { UserRepository } from '../users/users.repository';
-import { User } from '../users/users.entity';
-import { isComparePassword } from '../shared/utils';
-import { IPayload } from './jwt/jwt.payload';
+import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {LoginRequestDTO} from './dto/auth.dto';
+import {JwtService} from '@nestjs/jwt';
+import {UserRepository} from '../users/users.repository';
+import {User} from '../users/users.entity';
+import {isComparePassword} from '../shared/utils';
+import {IPayload} from './jwt/jwt.payload';
 
 @Injectable()
 export class AuthService {
@@ -25,12 +25,12 @@ export class AuthService {
     }
   }
 
-  async jwtLogin({ email, password }: LoginRequestDTO) {
+  async jwtLogin({email, password}: LoginRequestDTO) {
     const user = await this.userRepository.findUserByEmail(email);
     await this.validateUser(user);
     await this.validatePassword(password, user.password);
 
-    const payload: IPayload = { email, sub: user.id.toString() };
+    const payload: IPayload = {email, sub: user.id.toString()};
     return {
       id: user.id,
       accessToken: this.jwtService.sign(payload),

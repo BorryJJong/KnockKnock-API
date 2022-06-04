@@ -9,17 +9,12 @@ import {
   UseInterceptors,
   UploadedFiles,
 } from '@nestjs/common';
-import { FeedService } from './feed.service';
-import { CreateFeedDto } from './dto/feed.dto';
-import { UpdateFeedDto } from './dto/feed.dto';
-import {
-  ApiCreatedResponse,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { FeedCreateResponse } from 'src/shared/response_entities/feed/temp.response';
+import {FeedService} from './feed.service';
+import {CreateFeedDto} from './dto/feed.dto';
+import {UpdateFeedDto} from './dto/feed.dto';
+import {ApiCreatedResponse, ApiOperation, ApiTags} from '@nestjs/swagger';
+import {FilesInterceptor} from '@nestjs/platform-express';
+import {FeedCreateResponse} from 'src/shared/response_entities/feed/temp.response';
 
 // TODO: 400,401,403,404등 공통 사용 응답코드는 컨트롤러에 붙이기
 // @ApiBadRequestResponse({
@@ -36,7 +31,7 @@ export class FeedController {
   constructor(private readonly feedService: FeedService) {}
 
   @Post()
-  @ApiOperation({ summary: '피드 등록' })
+  @ApiOperation({summary: '피드 등록'})
   @ApiCreatedResponse({
     description: '성공',
     type: FeedCreateResponse,
@@ -46,8 +41,8 @@ export class FeedController {
     @UploadedFiles() files: Express.Multer.File[],
     @Body() body: CreateFeedDto,
   ) {
-    let status = await this.feedService.create(files, body);
-    let result: FeedCreateResponse = {
+    const status = await this.feedService.create(files, body);
+    const result: FeedCreateResponse = {
       code: status ? 201 : 500,
       message: status ? '생성 성공' : '생성 실패',
       data: {

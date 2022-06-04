@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {ApiProperty} from '@nestjs/swagger';
+import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
 /* 참고용
 AddressFinder.Documents(
   placeName: "쉐보레 분당서비스센터 백현점",
@@ -8,16 +8,16 @@ AddressFinder.Documents(
      longtitude: "127.102269186127", 
      latitude: "37.3771012046504"),
 */
-@Entity('blog_post', { schema: 'knockknock' })
+@Entity('blog_post', {schema: 'knockknock'})
 export class BlogPost {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'id', comment: '아이디' })
+  @PrimaryGeneratedColumn({type: 'int', name: 'id', comment: '아이디'})
   id: number;
 
   @ApiProperty({
     description: '사용자 id',
     example: '1',
   })
-  @Column('int', { name: 'user_id', comment: '사용자 아이디' })
+  @Column('int', {name: 'user_id', comment: '사용자 아이디'})
   userId: number;
 
   @ApiProperty({
@@ -25,7 +25,7 @@ export class BlogPost {
     example:
       '패키지 상품을 받았을때의 기쁨 후엔 늘 골치아픈 쓰레기와 분리수거의 노동시간이 뒤따릅니다.',
   })
-  @Column('text', { name: 'content', comment: '내용' })
+  @Column('text', {name: 'content', comment: '내용'})
   content: string;
 
   @ApiProperty({
@@ -67,7 +67,7 @@ export class BlogPost {
     description: '조회수',
     example: '73',
   })
-  @Column('int', { name: 'hits', comment: '조회수', default: 0 })
+  @Column('int', {name: 'hits', comment: '조회수', default: 0})
   hits: number;
 
   @Column('timestamp', {

@@ -1,4 +1,4 @@
-import { DocumentBuilder, OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
+import {DocumentBuilder, OpenAPIObject, SwaggerModule} from '@nestjs/swagger';
 
 export function swaggerBuilder(app) {
   const config = new DocumentBuilder()

@@ -1,6 +1,6 @@
-import { ApiProperty, PickType } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
-import { User } from '../../users/users.entity';
+import {ApiProperty, PickType} from '@nestjs/swagger';
+import {IsString} from 'class-validator';
+import {User} from '../../users/users.entity';
 
 export class LoginRequestDTO extends PickType(User, [
   'email',
@@ -8,7 +8,7 @@ export class LoginRequestDTO extends PickType(User, [
 ] as const) {}
 
 export class LoginResponseDTO extends PickType(User, ['id'] as const) {
-  @ApiProperty({ example: 'access_token' })
+  @ApiProperty({example: 'access_token'})
   @IsString()
   accessToken: string;
 }
