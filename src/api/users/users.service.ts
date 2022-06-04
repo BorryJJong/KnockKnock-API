@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {hashPassword} from '../shared/utils';
+import {hashPassword} from '../../shared/utils';
 import {
   CreateUserRequestDTO,
   GetUserRequestDTO,

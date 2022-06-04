@@ -7,7 +7,7 @@ import {BlogPromotion} from 'src/entities/BlogPromotion';
 import {Repository, Connection, QueryRunner} from 'typeorm';
 import {CreateFeedDto} from './dto/feed.dto';
 import {UpdateFeedDto} from './dto/feed.dto';
-import {ImageService} from 'src/image/image.service';
+import {ImageService} from 'src/api/image/image.service';
 @Injectable()
 export class FeedService {
   private readonly logger = new Logger(FeedService.name);

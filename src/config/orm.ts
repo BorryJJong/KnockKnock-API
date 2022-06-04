@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import 'src/api/image/node_modules/dotenv/config';
 import {BlogChallenges} from 'src/entities/BlogChallenges';
 import {BlogComment} from 'src/entities/BlogComment';
 import {BlogImage} from 'src/entities/BlogImage';
