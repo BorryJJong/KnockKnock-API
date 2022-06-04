@@ -3,8 +3,8 @@ import { EntityRepository, getManager, Repository } from 'typeorm';
 import { Challenges } from 'src/entities/Challenges';
 import { BlogPost } from 'src/entities/BlogPost';
 import { GetChallengeListResponseDTO, ParticipantUserDTO } from './dto/challenges.dto';
-import { BlogChallenge } from 'src/entities/BlogChallenge';
 import { User } from 'src/entities/User';
+import { BlogChallenges } from '../entities/BlogChallenges';
 
 @Injectable()
 @EntityRepository(Challenges)
@@ -34,7 +34,7 @@ export class ChallengesRepository extends Repository<Challenges> {
         .select("bp.user_id", "user_id")
         .addSelect("bc.challenge_id", "challenge_id")
         .from(BlogPost, "bp")
-        .innerJoin(BlogChallenge, "bc", "bp.id = bc.post_id")
+        .innerJoin(BlogChallenges, "bc", "bp.id = bc.post_id")
         .groupBy("bp.user_id, bc.challenge_id");
         
     const challengePostCnt: any = getManager().createQueryBuilder()
@@ -86,7 +86,7 @@ export class ChallengesRepository extends Repository<Challenges> {
         .select("bp.user_id", "user_id")
         .addSelect("bc.challenge_id", "challenge_id")
         .from(BlogPost, "bp")
-        .innerJoin(BlogChallenge, "bc", "bp.id = bc.post_id")
+        .innerJoin(BlogChallenges, "bc", "bp.id = bc.post_id")
         .where("bc.challenge_id = ':id'", {id :challengeId})
         .groupBy("bp.user_id, bc.challenge_id");
         
