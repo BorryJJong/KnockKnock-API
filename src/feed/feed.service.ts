@@ -1,13 +1,13 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { BlogChallenges } from 'src/entities/BlogChallenges';
-import { BlogImage } from 'src/entities/BlogImage';
-import { BlogPost } from 'src/entities/BlogPost';
-import { BlogPromotion } from 'src/entities/BlogPromotion';
-import { Repository, Connection, QueryRunner } from 'typeorm';
-import { CreateFeedDto } from './dto/feed.dto';
-import { UpdateFeedDto } from './dto/feed.dto';
-import { ImageService } from 'src/image/image.service';
+import {Injectable, Logger} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {BlogChallenges} from 'src/entities/BlogChallenges';
+import {BlogImage} from 'src/entities/BlogImage';
+import {BlogPost} from 'src/entities/BlogPost';
+import {BlogPromotion} from 'src/entities/BlogPromotion';
+import {Repository, Connection, QueryRunner} from 'typeorm';
+import {CreateFeedDto} from './dto/feed.dto';
+import {UpdateFeedDto} from './dto/feed.dto';
+import {ImageService} from 'src/image/image.service';
 @Injectable()
 export class FeedService {
   private readonly logger = new Logger(FeedService.name);
@@ -35,7 +35,7 @@ export class FeedService {
 
     try {
       // 1. 포스트 저장
-      let postId: number = await this.savePost(
+      const postId: number = await this.savePost(
         queryRunner,
         data.userId,
         data.content,
@@ -54,7 +54,7 @@ export class FeedService {
       if (files !== undefined) {
         await Promise.all(
           files.map(
-            async (file) => await this.saveImage(queryRunner, postId, file),
+            async file => await this.saveImage(queryRunner, postId, file),
           ),
         );
         // await this.saveImage(queryRunner, postId, file);
@@ -100,8 +100,8 @@ export class FeedService {
     challenges: string,
   ) {
     await Promise.all(
-      challenges.split(',').map(async (id) => {
-        let challenge = await this.blogChallengesRepository.create({
+      challenges.split(',').map(async id => {
+        const challenge = await this.blogChallengesRepository.create({
           postId,
           challengeId: Number(id),
         });
@@ -116,8 +116,8 @@ export class FeedService {
     promotions: string,
   ) {
     await Promise.all(
-      promotions.split(',').map(async (id) => {
-        let promotion = await this.blogPromotionRepository.create({
+      promotions.split(',').map(async id => {
+        const promotion = await this.blogPromotionRepository.create({
           postId,
           promotionId: Number(id),
         });
@@ -141,7 +141,7 @@ export class FeedService {
       }
 
       // 2. save db
-      let image = await this.blogImageRepository.create({
+      const image = await this.blogImageRepository.create({
         postId,
         fileUrl: resultS3.url,
       });

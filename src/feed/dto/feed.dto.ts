@@ -1,5 +1,5 @@
-import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
-import { BlogPost } from 'src/entities/BlogPost';
+import {ApiProperty, OmitType, PartialType} from '@nestjs/swagger';
+import {BlogPost} from 'src/entities/BlogPost';
 
 export class CreateFeedDto extends OmitType(BlogPost, [
   'id',
@@ -9,13 +9,13 @@ export class CreateFeedDto extends OmitType(BlogPost, [
   'delDate',
   'isDeleted',
 ] as const) {
-  @ApiProperty({ description: '프로모션 id', example: '1 or 1,2' })
+  @ApiProperty({description: '프로모션 id', example: '1 or 1,2'})
   promotions: string;
 
-  @ApiProperty({ description: '챌린지 id', example: '1 or 1,2,3' })
+  @ApiProperty({description: '챌린지 id', example: '1 or 1,2,3'})
   challenges: string;
 
-  @ApiProperty({ description: '이미지 binary data(multipart/form-data)' })
+  @ApiProperty({description: '이미지 binary data(multipart/form-data)'})
   images: Express.Multer.File[];
 }
 

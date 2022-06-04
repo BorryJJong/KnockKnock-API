@@ -1,13 +1,10 @@
-import {
-  Entity,
-  Column,
-} from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
-import { BaseEnttiy } from '../shared/entities/base.entity';
+import {Entity, Column} from 'typeorm';
+import {ApiProperty} from '@nestjs/swagger';
+import {BaseEnttiy} from '../shared/entities/base.entity';
 
 @Entity('challenges')
 export class Challenges extends BaseEnttiy {
-  @Column({ 
+  @Column({
     name: 'title',
     nullable: false,
   })
@@ -18,8 +15,8 @@ export class Challenges extends BaseEnttiy {
   })
   title: string;
 
-  @Column({ 
-    name:'sub_title',
+  @Column({
+    name: 'sub_title',
     nullable: false,
   })
   @ApiProperty({
@@ -29,8 +26,8 @@ export class Challenges extends BaseEnttiy {
   })
   subTitle: string;
 
-  @Column({ 
-    name:'content',
+  @Column({
+    name: 'content',
     nullable: false,
   })
   @ApiProperty({
@@ -40,8 +37,8 @@ export class Challenges extends BaseEnttiy {
   })
   content: string;
 
-  @Column({ 
-    name:'reg_date',
+  @Column({
+    name: 'reg_date',
     nullable: false,
   })
   @ApiProperty({

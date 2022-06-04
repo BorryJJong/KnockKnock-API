@@ -1,6 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { FeedController } from './feed.controller';
-import { FeedService } from './feed.service';
+import {Test, TestingModule} from '@nestjs/testing';
+import {FeedController} from './feed.controller';
+import {FeedService} from './feed.service';
 
 describe('FeedController', () => {
   let controller: FeedController;

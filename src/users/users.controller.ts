@@ -1,25 +1,14 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { AuthService } from '../auth/auth.service';
-import { LoginRequestDTO, LoginResponseDTO } from '../auth/dto/auth.dto';
-import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
+import {Body, Controller, Get, Param, Post, UseGuards} from '@nestjs/common';
+import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
+import {AuthService} from '../auth/auth.service';
+import {LoginRequestDTO, LoginResponseDTO} from '../auth/dto/auth.dto';
+import {JwtAuthGuard} from '../auth/jwt/jwt.guard';
 import {
   CreateUserRequestDTO,
   GetUserRequestDTO,
   GetUserResponseDTO,
 } from './dto/users.dto';
-import { UsersService } from './users.service';
+import {UsersService} from './users.service';
 
 @ApiTags('users')
 @Controller('users')
@@ -30,7 +19,7 @@ export class UsersController {
   ) {}
 
   @Post('/')
-  @ApiOperation({ summary: '회원가입' })
+  @ApiOperation({summary: '회원가입'})
   @ApiResponse({
     status: 201,
     description: '성공',
@@ -40,7 +29,7 @@ export class UsersController {
   }
 
   @Post('/login')
-  @ApiOperation({ summary: '로그인' })
+  @ApiOperation({summary: '로그인'})
   @ApiResponse({
     status: 200,
     description: '성공',
@@ -56,7 +45,7 @@ export class UsersController {
 
   @Get('/:id')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '유저정보 조회' })
+  @ApiOperation({summary: '유저정보 조회'})
   @ApiResponse({
     status: 200,
     description: '성공',

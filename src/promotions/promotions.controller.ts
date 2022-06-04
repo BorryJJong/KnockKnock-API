@@ -1,15 +1,7 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { PromotionsService } from './promotions.service';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Promotions } from 'src/entities/Promotions';
+import {Controller, Get} from '@nestjs/common';
+import {PromotionsService} from './promotions.service';
+import {ApiOkResponse, ApiOperation, ApiTags} from '@nestjs/swagger';
+import {Promotions} from 'src/entities/Promotions';
 
 @ApiTags('promotions')
 @Controller('promotions')
@@ -22,7 +14,7 @@ export class PromotionsController {
   // }
 
   @Get()
-  @ApiOperation({ summary: '프로모션 리스트' })
+  @ApiOperation({summary: '프로모션 리스트'})
   @ApiOkResponse({
     description: '성공',
     type: Promotions,

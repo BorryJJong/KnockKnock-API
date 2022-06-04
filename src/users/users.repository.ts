@@ -1,13 +1,13 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityRepository, Repository } from 'typeorm';
-import { CreateUserRequestDTO } from './dto/users.dto';
-import { User } from './users.entity';
+import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {EntityRepository, Repository} from 'typeorm';
+import {CreateUserRequestDTO} from './dto/users.dto';
+import {User} from './users.entity';
 
 @Injectable()
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  public async checkExistEmail({ email }) {
-    const user = await this.findOne({ select: ['email'], where: { email } });
+  public async checkExistEmail({email}) {
+    const user = await this.findOne({select: ['email'], where: {email}});
     if (user) {
       throw new UnauthorizedException('이미 존재하는 이메일입니다.');
     }
@@ -16,12 +16,12 @@ export class UserRepository extends Repository<User> {
   public async createUser(
     createUserRequestDTO: CreateUserRequestDTO,
   ): Promise<User> {
-    const user = this.create({ ...createUserRequestDTO });
+    const user = this.create({...createUserRequestDTO});
     return await this.save(user);
   }
 
   public async findUserByEmail(email: string): Promise<User> {
-    return await this.findOne({ email });
+    return await this.findOne({email});
   }
 
   public async findUserById(id: number): Promise<User> {
