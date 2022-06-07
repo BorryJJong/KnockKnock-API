@@ -1,16 +1,36 @@
-import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
+import {BeforeInsert, Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
 
 @Entity('blog_like', {schema: 'knockknock'})
 export class BlogLike {
-  @PrimaryGeneratedColumn({type: 'int', name: 'id', comment: 'pk필수?'})
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('int', {name: 'post_id', comment: '게시글 아이디'})
+  @Column({
+    name: 'post_id',
+    type: 'int',
+    nullable: false,
+    comment: '게시글 아이디',
+  })
   postId: number;
 
-  @Column('int', {name: 'user_id', comment: '사용자 아이디'})
+  @Column({
+    name: 'user_id',
+    type: 'int',
+    nullable: false,
+    comment: '사용자 아이디',
+  })
   userId: number;
 
-  @Column('datetime', {name: 'reg_date', comment: '등록 날짜'})
+  @Column({
+    name: 'reg_date',
+    type: 'timestamp',
+    nullable: false,
+    comment: '좋아요 누른 날짜',
+  })
   regDate: Date;
+
+  @BeforeInsert()
+  beforeInsert() {
+    this.regDate = new Date();
+  }
 }
