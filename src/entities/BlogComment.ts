@@ -16,6 +16,7 @@ export class BlogComment {
     name: 'post_id',
     type: 'int',
     comment: '게시글 아이디',
+    nullable: false,
   })
   postId: number;
 
@@ -23,6 +24,7 @@ export class BlogComment {
     name: 'user_id',
     type: 'int',
     comment: '사용자 아이디',
+    nullable: false,
   })
   userId: number;
 
@@ -51,12 +53,13 @@ export class BlogComment {
   regDate: Date;
 
   @DeleteDateColumn({
-    name: 'deleted_at',
+    name: 'del_date',
     type: 'timestamp',
     precision: 0,
     comment: '삭제일',
+    nullable: true,
   })
-  deletedAt?: Date;
+  delDate?: Date;
 
   @Column({
     name: 'is_deleted',

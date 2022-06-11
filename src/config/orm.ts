@@ -1,14 +1,14 @@
 import 'dotenv/config';
-import {BlogChallenges} from 'src/entities/BlogChallenges';
-import {BlogComment} from 'src/entities/BlogComment';
-import {BlogImage} from 'src/entities/BlogImage';
-import {BlogLike} from 'src/entities/BlogLike';
-import {BlogPost} from 'src/entities/BlogPost';
-import {BlogPromotion} from 'src/entities/BlogPromotion';
-import {Challenges} from 'src/entities/Challenges';
-import {Promotions} from 'src/entities/Promotions';
-import {User} from 'src/entities/User';
 import {ConnectionOptions} from 'typeorm';
+import {User} from '../api/users/users.entity';
+import {BlogChallenges} from '../entities/BlogChallenges';
+import {BlogComment} from '../entities/BlogComment';
+import {BlogImage} from '../entities/BlogImage';
+import {BlogLike} from '../entities/BlogLike';
+import {BlogPost} from '../entities/BlogPost';
+import {BlogPromotion} from '../entities/BlogPromotion';
+import {Challenges} from '../entities/Challenges';
+import {Promotions} from '../entities/Promotions';
 
 export const ormConfig: ConnectionOptions = {
   type: 'mysql',

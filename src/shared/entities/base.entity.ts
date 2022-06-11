@@ -1,5 +1,4 @@
 import {
-  Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
@@ -37,7 +36,7 @@ export abstract class BaseEnttiy {
   updatedAt: Date;
 
   @DeleteDateColumn({
-    name: 'deleted_at',
+    name: 'del_date',
     type: 'timestamp',
     nullable: true,
     precision: 0,
@@ -45,5 +44,5 @@ export abstract class BaseEnttiy {
   @ApiProperty({
     description: '삭제일(soft)',
   })
-  deletedAt?: Date;
+  delDate?: Date;
 }

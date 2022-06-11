@@ -106,7 +106,7 @@ export class BlogPost {
     nullable: true,
     comment: '수정 날짜',
   })
-  modDate: Date | null;
+  modDate?: Date;
 
   @CreateDateColumn({
     name: 'reg_date',
@@ -117,7 +117,7 @@ export class BlogPost {
   regDate: Date;
 
   @DeleteDateColumn({
-    name: 'deleted_at',
+    name: 'del_date',
     type: 'timestamp',
     precision: 0,
     comment: '삭제일',

@@ -20,22 +20,22 @@ export class User {
   })
   nickname: string;
 
-  @Column({
-    name: 'provider_id',
-    type: 'int',
-    comment: '제공자',
-    nullable: false,
-  })
-  providerId: number;
+  // @Column({
+  //   name: 'provider_id',
+  //   type: 'int',
+  //   comment: '제공자',
+  //   nullable: false,
+  // })
+  // providerId: number;
 
   @Column({
-    name: 'access_token',
+    name: 'social_uuid',
     type: 'varchar',
-    nullable: true,
-    comment: '접근 토큰',
+    nullable: false,
+    comment: '소셜uuid',
     length: 255,
   })
-  accessToken: string | null;
+  social_uuid: string;
 
   @CreateDateColumn({
     name: 'reg_date',
