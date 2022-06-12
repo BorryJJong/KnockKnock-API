@@ -54,10 +54,10 @@ export class BlogPost {
     name: 'store_address',
     type: 'varchar',
     length: 200,
-    nullable: false,
+    nullable: true,
     comment: '매장 주소',
   })
-  storeAddress: string;
+  storeAddress?: string;
 
   @ApiProperty({
     description: '매장 주소 x좌표',
@@ -69,9 +69,9 @@ export class BlogPost {
     comment: 'x좌표',
     precision: 10,
     scale: 7,
-    nullable: false,
+    nullable: true,
   })
-  locationX: string;
+  locationX?: string;
 
   @ApiProperty({
     description: '매장 주소 y좌표',
@@ -83,9 +83,9 @@ export class BlogPost {
     comment: 'y좌표',
     precision: 10,
     scale: 7,
-    nullable: false,
+    nullable: true,
   })
-  locationY: string;
+  locationY?: string;
 
   @ApiProperty({
     description: '조회수',
