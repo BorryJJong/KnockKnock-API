@@ -7,7 +7,7 @@ import {
   ParticipantUserDTO,
 } from './dto/challenges.dto';
 import {User} from 'src/entities/User';
-import {BlogChallenges} from '../entities/BlogChallenges';
+import {BlogChallenges} from '../../entities/BlogChallenges';
 
 @Injectable()
 @EntityRepository(Challenges)

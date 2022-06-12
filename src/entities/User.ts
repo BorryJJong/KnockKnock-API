@@ -1,28 +1,52 @@
-import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('user', {schema: 'knockknock'})
 export class User {
-  @PrimaryGeneratedColumn({type: 'int', name: 'id', comment: 'pk'})
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', {name: 'nickname', comment: '닉네임', length: 45})
+  @Column({
+    name: 'nickname',
+    type: 'varchar',
+    comment: '닉네임',
+    length: 45,
+    nullable: false,
+  })
   nickname: string;
 
-  @Column('int', {name: 'provider_id', comment: '제공자'})
-  providerId: number;
+  // @Column({
+  //   name: 'provider_id',
+  //   type: 'int',
+  //   comment: '제공자',
+  //   nullable: false,
+  // })
+  // providerId: number;
 
-  @Column('varchar', {
-    name: 'access_token',
-    nullable: true,
-    comment: '접근 토큰',
+  @Column({
+    name: 'social_uuid',
+    type: 'varchar',
+    nullable: false,
+    comment: '소셜uuid',
     length: 255,
   })
-  accessToken: string | null;
+  social_uuid: string;
 
-  @Column('datetime', {
+  @CreateDateColumn({
     name: 'reg_date',
+    type: 'timestamp',
+    nullable: false,
     comment: '등록 날짜',
-    default: () => 'CURRENT_TIMESTAMP',
   })
   regDate: Date;
+
+  @BeforeInsert()
+  beforeInsert() {
+    this.regDate = new Date();
+  }
 }

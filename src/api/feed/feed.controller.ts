@@ -25,6 +25,7 @@ import {FeedCreateResponse} from 'src/shared/response_entities/feed/temp.respons
 // @ApiForbiddenResponse({ description: '권한(인가)부족', type: HttpError4xxDto })
 // @ApiNotFoundResponse({ description: '해당 리소스 없음', type: HttpError4xxDto })
 // @ApiBearerAuth('accesskey')
+
 @ApiTags('feed')
 @Controller('feed')
 export class FeedController {

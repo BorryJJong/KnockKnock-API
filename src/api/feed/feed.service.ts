@@ -1,13 +1,13 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {BlogChallenges} from 'src/entities/BlogChallenges';
-import {BlogImage} from 'src/entities/BlogImage';
-import {BlogPost} from 'src/entities/BlogPost';
-import {BlogPromotion} from 'src/entities/BlogPromotion';
 import {Repository, Connection, QueryRunner} from 'typeorm';
 import {CreateFeedDto} from './dto/feed.dto';
 import {UpdateFeedDto} from './dto/feed.dto';
-import {ImageService} from 'src/image/image.service';
+import {ImageService} from 'src/api/image/image.service';
+import {BlogPost} from '../../entities/BlogPost';
+import {BlogChallenges} from '../../entities/BlogChallenges';
+import {BlogPromotion} from '../../entities/BlogPromotion';
+import {BlogImage} from '../../entities/BlogImage';
 @Injectable()
 export class FeedService {
   private readonly logger = new Logger(FeedService.name);

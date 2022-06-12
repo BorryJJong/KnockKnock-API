@@ -2,12 +2,22 @@ import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
 
 @Entity('blog_challenges', {schema: 'knockknock'})
 export class BlogChallenges {
-  @PrimaryGeneratedColumn({type: 'int', name: 'id'})
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('int', {name: 'post_id', comment: '게시글 아이디'})
+  @Column({
+    name: 'post_id',
+    primary: true,
+    comment: '게시글 아이디',
+    nullable: false,
+  })
   postId: number;
 
-  @Column('int', {name: 'challenge_id', comment: '챌린지 아이디'})
+  @Column({
+    name: 'challenge_id',
+    primary: true,
+    comment: '챌린지 아이디',
+    nullable: false,
+  })
   challengeId: number;
 }

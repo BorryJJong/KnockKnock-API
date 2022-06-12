@@ -1,5 +1,5 @@
 import {ApiProperty, OmitType, PartialType} from '@nestjs/swagger';
-import {BlogPost} from 'src/entities/BlogPost';
+import {BlogPost} from '../../../entities/BlogPost';
 
 export class CreateFeedDto extends OmitType(BlogPost, [
   'id',

@@ -2,12 +2,23 @@ import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
 
 @Entity('blog_image', {schema: 'knockknock'})
 export class BlogImage {
-  @PrimaryGeneratedColumn({type: 'int', name: 'id', comment: 'id'})
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('int', {name: 'post_id', comment: '게시글 아이디'})
+  @Column({
+    name: 'post_id',
+    type: 'int',
+    nullable: false,
+    comment: '게시글 아이디',
+  })
   postId: number;
 
-  @Column('varchar', {name: 'file_url', comment: '파일 경로', length: 255})
+  @Column({
+    name: 'file_url',
+    type: 'varchar',
+    length: 255,
+    nullable: false,
+    comment: '게시물 업로드 파일 경로',
+  })
   fileUrl: string;
 }
