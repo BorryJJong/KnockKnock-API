@@ -1,31 +1,35 @@
-import {Injectable, Logger} from '@nestjs/common';
+import {Injectable, InternalServerErrorException, Logger} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository, Connection, QueryRunner} from 'typeorm';
-import {CreateFeedDto} from './dto/feed.dto';
-import {UpdateFeedDto} from './dto/feed.dto';
+import {
+  CreateFeedDTO,
+  UpdateFeedDTO,
+  CreateBlogPostDTO,
+  CreateBlogChallengesDTO,
+} from './dto/feed.dto';
 import {ImageService} from 'src/api/image/image.service';
-import {BlogPost} from '../../entities/BlogPost';
-import {BlogChallenges} from '../../entities/BlogChallenges';
-import {BlogPromotion} from '../../entities/BlogPromotion';
-import {BlogImage} from '../../entities/BlogImage';
+import {BlogChallengesRepository} from './blogChallenges.repository';
+import {BlogImageRepository} from './blogImage.repository';
+import {BlogPostRepository} from './blogPost.repository';
+import {BlogPromotionRepository} from './blogPromotion.repository';
 @Injectable()
 export class FeedService {
   private readonly logger = new Logger(FeedService.name);
 
   constructor(
-    @InjectRepository(BlogPost)
-    private blogPostRepository: Repository<BlogPost>,
-    @InjectRepository(BlogChallenges)
-    private blogChallengesRepository: Repository<BlogChallenges>,
-    @InjectRepository(BlogPromotion)
-    private blogPromotionRepository: Repository<BlogPromotion>,
-    @InjectRepository(BlogImage)
-    private blogImageRepository: Repository<BlogImage>,
+    @InjectRepository(BlogPostRepository)
+    private blogPostRepository: BlogPostRepository,
+    @InjectRepository(BlogChallengesRepository)
+    private blogChallengesRepository: BlogChallengesRepository,
+    @InjectRepository(BlogPromotionRepository)
+    private blogPromotionRepository: BlogPromotionRepository,
+    @InjectRepository(BlogImageRepository)
+    private blogImageRepository: BlogImageRepository,
     private readonly imageService: ImageService,
     private connection: Connection,
   ) {}
 
-  async create(files: Express.Multer.File[], data: CreateFeedDto) {
+  async create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO) {
     const queryRunner = this.connection.createQueryRunner();
     let result = false;
 
@@ -34,29 +38,22 @@ export class FeedService {
 
     try {
       // 1. 포스트 저장
-      const postId: number = await this.savePost(
-        queryRunner,
-        data.userId,
-        data.content,
-        data.storeAddress,
-        data.locationX,
-        data.locationY,
-      );
+      const post = await this.savePost(queryRunner, createFeedDTO);
+      const postId: number = post.id;
 
       // 2. 챌린지 저장
-      await this.saveChallenges(queryRunner, postId, data.challenges);
+      await this.saveChallenges(queryRunner, postId, createFeedDTO.challenges);
 
       // 3. 프로모션 저장
-      await this.savePromotion(queryRunner, postId, data.promotions);
+      await this.savePromotion(queryRunner, postId, createFeedDTO.promotions);
 
       // 4. 이미지 저장
       if (files !== undefined) {
         await Promise.all(
           files.map(
-            async file => await this.saveImage(queryRunner, postId, file),
+            async file => await this.savePostImage(queryRunner, postId, file),
           ),
         );
-        // await this.saveImage(queryRunner, postId, file);
       }
 
       // throw new InternalServerErrorException(); // 일부러 에러를 발생시켜 본다
@@ -72,25 +69,17 @@ export class FeedService {
 
     return result;
   }
-
   async savePost(
     queryRunner: QueryRunner,
-    userId: number,
-    content: string,
-    storeAddress?: string,
-    locationX?: string,
-    locationY?: string,
+    createBlogPostDTO: CreateBlogPostDTO,
   ) {
-    const post = await this.blogPostRepository.create({
-      userId,
-      content,
-      storeAddress,
-      locationX,
-      locationY,
-    });
-    const returned = await queryRunner.manager.save(post);
+    const post = this.blogPostRepository.createBlogPost(createBlogPostDTO);
+    const returned = await this.blogPostRepository.saveBlogPost(
+      queryRunner,
+      post,
+    );
 
-    return returned.id;
+    return returned;
   }
 
   async saveChallenges(
@@ -100,11 +89,14 @@ export class FeedService {
   ) {
     await Promise.all(
       challenges.split(',').map(async id => {
-        const challenge = await this.blogChallengesRepository.create({
-          postId,
+        const challenge = this.blogChallengesRepository.createBlogChallenges({
+          postId: postId,
           challengeId: Number(id),
         });
-        await queryRunner.manager.save(challenge);
+        await this.blogChallengesRepository.saveBlogChallenges(
+          queryRunner,
+          challenge,
+        );
       }),
     );
   }
@@ -116,16 +108,19 @@ export class FeedService {
   ) {
     await Promise.all(
       promotions.split(',').map(async id => {
-        const promotion = await this.blogPromotionRepository.create({
-          postId,
+        const promotion = this.blogPromotionRepository.createBlogPromotion({
+          postId: postId,
           promotionId: Number(id),
         });
-        await queryRunner.manager.save(promotion);
+        await this.blogPromotionRepository.saveBlogPromotion(
+          queryRunner,
+          promotion,
+        );
       }),
     );
   }
 
-  async saveImage(
+  async savePostImage(
     queryRunner: QueryRunner,
     postId: number,
     file: Express.Multer.File,
@@ -140,11 +135,12 @@ export class FeedService {
       }
 
       // 2. save db
-      const image = await this.blogImageRepository.create({
-        postId,
+      const image = this.blogImageRepository.createBlogImage({
+        postId: postId,
         fileUrl: resultS3.url,
       });
-      await queryRunner.manager.save(image);
+
+      await this.blogImageRepository.saveBlogImage(queryRunner, image);
     } catch (e) {
       if (resultS3.ok) {
         this.imageService.deleteS3(resultS3.Key);
@@ -161,7 +157,7 @@ export class FeedService {
     return `This action returns a #${id} feed`;
   }
 
-  update(id: number, updateFeedDto: UpdateFeedDto) {
+  update(id: number, updateFeedDTO: UpdateFeedDTO) {
     return `This action updates a #${id} feed`;
   }
 
