@@ -1,13 +1,15 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {EntityRepository, getManager, Repository} from 'typeorm';
-import {Challenges} from 'src/entities/Challenges';
-import {BlogPost} from 'src/entities/BlogPost';
 import {
   GetChallengeListResponseDTO,
   ParticipantUserDTO,
 } from './dto/challenges.dto';
-import {User} from 'src/entities/User';
 import {BlogChallenges} from '../../entities/BlogChallenges';
+import {Challenges} from '../../entities/Challenges';
+import {User} from '../../entities/User';
+import {BlogPost} from '../../entities/BlogPost';
+import {IChallengeTitle} from './challenges.interface';
+import {map} from 'ramda';
 
 @Injectable()
 @EntityRepository(Challenges)
@@ -15,7 +17,7 @@ export class ChallengesRepository extends Repository<Challenges> {
   public async checkExistChallenge({id}) {
     const challenge = await this.findOne({select: ['id'], where: {id}});
     if (challenge) {
-      throw new UnauthorizedException('이미 존재하는 챌린지입니다.');
+      throw new Error('이미 존재하는 챌린지입니다.');
     }
   }
 
@@ -25,7 +27,7 @@ export class ChallengesRepository extends Repository<Challenges> {
       where: {id},
     });
     if (!challenge) {
-      throw new UnauthorizedException('존재하지 않는 챌린지입니다.');
+      throw new Error('존재하지 않는 챌린지입니다.');
     }
     return challenge;
   }
@@ -146,5 +148,20 @@ export class ChallengesRepository extends Repository<Challenges> {
     });
 
     return participants;
+  }
+
+  public async getChallengeTitles(): Promise<IChallengeTitle[]> {
+    return await this.manager
+      .find(Challenges, {
+        select: ['id', 'title'],
+      })
+      .then(
+        map(challenge => {
+          return {
+            id: challenge.id,
+            title: challenge.title,
+          };
+        }),
+      );
   }
 }

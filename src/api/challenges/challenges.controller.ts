@@ -5,38 +5,54 @@ import {
   GetChallengeListResponseDTO,
   GetChallengeRequestDTO,
   GetChallengeResponseDTO,
+  GetChallengeTitleDTO,
 } from './dto/challenges.dto';
 
 @ApiTags('challenges')
 @Controller('challenges')
 export class ChallengesController {
-  constructor(
-    private readonly challengesService: ChallengesService, //private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly challengesService: ChallengesService) {}
+
+  @Get('/titles')
+  @ApiOperation({
+    summary: '챌린지 이름 목록 API',
+    description: '피드 목록 검색에 필요한 챌린지 키워드 API',
+    externalDocs: {
+      description: 'Figma링크',
+      url: 'https://www.figma.com/file/1g4o56bPFBBzbGfpL29jo2?node-id=1907:21526#208250263',
+    },
+    deprecated: false,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '성공!!!',
+    type: [GetChallengeTitleDTO],
+  })
+  public async getChallengeTitles(): Promise<GetChallengeTitleDTO[]> {
+    return this.challengesService.getChallengeTitles();
+  }
 
   @Get('/:id')
-  //@UseGuards(JwtAuthGuard)
   @ApiOperation({summary: '챌린지 상세조회'})
   @ApiResponse({
     status: 200,
     description: '성공',
     type: GetChallengeResponseDTO,
   })
-  getChallenge(
+  public async getChallenge(
     @Param() param: GetChallengeRequestDTO,
   ): Promise<GetChallengeResponseDTO> {
     return this.challengesService.getChallenge(param);
   }
 
   @Get('/')
-  //@UseGuards(JwtAuthGuard)
   @ApiOperation({summary: '챌린지 목록조회'})
   @ApiResponse({
     status: 200,
     description: '성공',
     type: GetChallengeResponseDTO,
   })
-  getChallengeList(): Promise<GetChallengeListResponseDTO[]> {
+  public async getChallengeList(): Promise<GetChallengeListResponseDTO[]> {
     return this.challengesService.getChallengeList();
   }
 }

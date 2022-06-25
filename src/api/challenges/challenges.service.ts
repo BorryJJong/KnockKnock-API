@@ -5,6 +5,7 @@ import {
   GetChallengeListResponseDTO,
   GetChallengeRequestDTO,
   GetChallengeResponseDTO,
+  GetChallengeTitleDTO,
 } from './dto/challenges.dto';
 
 @Injectable()
@@ -46,5 +47,9 @@ export class ChallengesService {
     }
 
     return challengeList;
+  }
+
+  async getChallengeTitles(): Promise<GetChallengeTitleDTO[]> {
+    return await this.challengesRepository.getChallengeTitles();
   }
 }
