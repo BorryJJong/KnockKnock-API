@@ -37,6 +37,14 @@ export class User {
   })
   social_uuid: string;
 
+  @Column({
+    name: 'image',
+    nullable: true,
+    comment: '회원 프로필 이미지',
+    type: 'text',
+  })
+  image: string;
+
   @CreateDateColumn({
     name: 'reg_date',
     type: 'timestamp',

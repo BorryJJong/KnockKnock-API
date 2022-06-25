@@ -1,3 +1,4 @@
+import {ApiProperty} from '@nestjs/swagger';
 import {
   BeforeInsert,
   Column,
@@ -18,6 +19,11 @@ export class Challenges {
     length: 20,
     nullable: false,
   })
+  @ApiProperty({
+    description: '챌린지명',
+    example: '용기내챌린지',
+    required: true,
+  })
   title: string;
 
   @Column({
@@ -27,9 +33,19 @@ export class Challenges {
     length: 45,
     nullable: false,
   })
+  @ApiProperty({
+    description: '서브타이틀',
+    example: '용기내챌린지',
+    required: true,
+  })
   subTitle: string;
 
   @Column({name: 'content', type: 'text', comment: '내용', nullable: false})
+  @ApiProperty({
+    description: '내용',
+    example: '용기내챌린지 소개내용입니다',
+    required: true,
+  })
   content: string;
 
   @CreateDateColumn({
