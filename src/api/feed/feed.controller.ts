@@ -10,8 +10,7 @@ import {
   UploadedFiles,
 } from '@nestjs/common';
 import {FeedService} from './feed.service';
-import {CreateFeedDto} from './dto/feed.dto';
-import {UpdateFeedDto} from './dto/feed.dto';
+import {CreateFeedDTO, UpdateFeedDTO} from './dto/feed.dto';
 import {ApiCreatedResponse, ApiOperation, ApiTags} from '@nestjs/swagger';
 import {FilesInterceptor} from '@nestjs/platform-express';
 import {FeedCreateResponse} from 'src/shared/response_entities/feed/temp.response';
@@ -40,9 +39,10 @@ export class FeedController {
   @UseInterceptors(FilesInterceptor('images'))
   async create(
     @UploadedFiles() files: Express.Multer.File[],
-    @Body() body: CreateFeedDto,
+    @Body() createFeedDTO: CreateFeedDTO,
   ) {
-    const status = await this.feedService.create(files, body);
+    //return;
+    const status = await this.feedService.create(files, createFeedDTO);
     const result: FeedCreateResponse = {
       code: status ? 201 : 500,
       message: status ? '생성 성공' : '생성 실패',
@@ -66,8 +66,8 @@ export class FeedController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFeedDto: UpdateFeedDto) {
-    return this.feedService.update(+id, updateFeedDto);
+  update(@Param('id') id: string, @Body() updateFeedDTO: UpdateFeedDTO) {
+    return this.feedService.update(+id, updateFeedDTO);
   }
 
   @Delete(':id')

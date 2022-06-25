@@ -1,24 +1,24 @@
 import {Module} from '@nestjs/common';
+import {TypeOrmModule} from '@nestjs/typeorm';
 import {FeedService} from './feed.service';
 import {FeedController} from './feed.controller';
 import {ImageModule} from 'src/api/image/image.module';
-import {BlogChallenges} from 'src/entities/BlogChallenges';
-import {BlogImage} from 'src/entities/BlogImage';
-import {BlogPost} from 'src/entities/BlogPost';
-import {BlogPromotion} from 'src/entities/BlogPromotion';
-import {TypeOrmModule} from '@nestjs/typeorm';
+import {BlogChallengesRepository} from './blogChallenges.repository';
+import {BlogImageRepository} from './blogImage.repository';
+import {BlogPostRepository} from './blogPost.repository';
+import {BlogPromotionRepository} from './blogPromotion.repository';
 
 @Module({
-  controllers: [FeedController],
-  providers: [FeedService],
   imports: [
     ImageModule,
     TypeOrmModule.forFeature([
-      BlogChallenges,
-      BlogImage,
-      BlogPost,
-      BlogPromotion,
+      BlogChallengesRepository,
+      BlogImageRepository,
+      BlogPostRepository,
+      BlogPromotionRepository,
     ]),
   ],
+  controllers: [FeedController],
+  providers: [FeedService],
 })
 export class FeedModule {}
