@@ -26,7 +26,6 @@ export class FeedService {
   ) {}
 
   async create(files: Express.Multer.File[], data: CreateFeedDto) {
-    // TODO: queryRunner 더 잘쓸 수 있는 방안?
     const queryRunner = this.connection.createQueryRunner();
     let result = false;
 
@@ -78,9 +77,9 @@ export class FeedService {
     queryRunner: QueryRunner,
     userId: number,
     content: string,
-    storeAddress: string,
-    locationX: string,
-    locationY: string,
+    storeAddress?: string,
+    locationX?: string,
+    locationY?: string,
   ) {
     const post = await this.blogPostRepository.create({
       userId,
