@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import {ConnectionOptions} from 'typeorm';
-import {User} from '../api/users/users.entity';
 import {BlogChallenges} from '../entities/BlogChallenges';
 import {BlogComment} from '../entities/BlogComment';
 import {BlogImage} from '../entities/BlogImage';
@@ -9,6 +8,7 @@ import {BlogPost} from '../entities/BlogPost';
 import {BlogPromotion} from '../entities/BlogPromotion';
 import {Challenges} from '../entities/Challenges';
 import {Promotions} from '../entities/Promotions';
+import {User} from '../entities/User';
 
 export const ormConfig: ConnectionOptions = {
   type: 'mysql',

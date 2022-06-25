@@ -1,6 +1,7 @@
-import {PickType} from '@nestjs/swagger';
-import {Challenges} from 'src/entities/Challenges';
+import {ApiProperty, PickType} from '@nestjs/swagger';
 import {Column} from 'typeorm';
+import {Challenges} from '../../../entities/Challenges';
+import {IChallengeTitle} from '../challenges.interface';
 
 export class CreateChallengeRequestDTO extends PickType(Challenges, [
   'title',
@@ -52,4 +53,12 @@ export class ParticipantUserDTO {
   id: number;
   nickname: string;
   image: string;
+}
+
+export class GetChallengeTitleDTO implements IChallengeTitle {
+  @ApiProperty({description: '챌린지 id', example: '1'})
+  id: number;
+
+  @ApiProperty({description: '제목', example: '챌린지'})
+  title: string;
 }
