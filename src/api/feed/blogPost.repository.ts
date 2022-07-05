@@ -2,6 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {EntityRepository, QueryRunner, Repository} from 'typeorm';
 import {CreateBlogPostDTO} from './dto/feed.dto';
 import {BlogPost} from 'src/entities/BlogPost';
+import {IGetBlogPostItems} from './blogPost.interface';
 
 @Injectable()
 @EntityRepository(BlogPost)
@@ -19,5 +20,32 @@ export class BlogPostRepository extends Repository<BlogPost> {
     } else {
       return await queryRunner.manager.save(blogPost);
     }
+  }
+
+  async getBlogPosts(
+    skip: number,
+    take: number,
+    blogPostIds: number[],
+  ): Promise<IGetBlogPostItems> {
+    const queryBuilder = await this.createQueryBuilder('blogPost');
+
+    if (blogPostIds.length > 0) {
+      queryBuilder.andWhereInIds(blogPostIds);
+    }
+
+    const [blogPosts, total] = await queryBuilder
+      .skip(skip)
+      .take(take)
+      .orderBy('blogPost.regDate', 'ASC')
+      .getManyAndCount();
+
+    return {
+      items: blogPosts,
+      pagination: {
+        total,
+        skip,
+        take,
+      },
+    };
   }
 }

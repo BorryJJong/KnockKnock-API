@@ -8,10 +8,21 @@ import {
   Delete,
   UseInterceptors,
   UploadedFiles,
+  Query,
 } from '@nestjs/common';
 import {FeedService} from './feed.service';
-import {CreateFeedDTO, UpdateFeedDTO} from './dto/feed.dto';
-import {ApiCreatedResponse, ApiOperation, ApiTags} from '@nestjs/swagger';
+import {
+  CreateFeedDTO,
+  UpdateFeedDTO,
+  GetFeedsRequestDTO,
+  GetFeedsResponseDTO,
+} from './dto/feed.dto';
+import {
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import {FilesInterceptor} from '@nestjs/platform-express';
 import {FeedCreateResponse} from 'src/shared/response_entities/feed/temp.response';
 
@@ -29,6 +40,26 @@ import {FeedCreateResponse} from 'src/shared/response_entities/feed/temp.respons
 @Controller('feed')
 export class FeedController {
   constructor(private readonly feedService: FeedService) {}
+
+  @Get()
+  @ApiOperation({
+    summary: '피드 목록 API',
+    externalDocs: {
+      description: 'Figma링크',
+      url: 'https://www.figma.com/file/1g4o56bPFBBzbGfpL29jo2/%23%EC%A0%9C%EB%A1%9C%EC%9B%A8%EC%9D%B4%EC%8A%A4%ED%8A%B8?node-id=1907%3A21526',
+    },
+    deprecated: false,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '성공!!!',
+    type: [GetFeedsResponseDTO],
+  })
+  public async getFeedsByChallengesFilter(
+    @Query() query: GetFeedsRequestDTO,
+  ): Promise<GetFeedsResponseDTO> {
+    return this.feedService.getFeedsByChallengesFilter(query);
+  }
 
   @Post()
   @ApiOperation({summary: '피드 등록'})
@@ -51,13 +82,6 @@ export class FeedController {
       },
     };
     return result;
-  }
-
-  // 피드검색 - 인기(3), 계정/태그/장소
-  // list
-  @Get()
-  findAll() {
-    return this.feedService.findAll();
   }
 
   @Get(':id')

@@ -59,6 +59,14 @@ export class GetChallengeTitleDTO implements IChallengeTitle {
   @ApiProperty({description: '챌린지 id', example: '1'})
   id: number;
 
-  @ApiProperty({description: '제목', example: '챌린지'})
+  @ApiProperty({description: '챌린지 이름', example: '챌린지'})
+  title: string;
+}
+
+export class GetChallengeDTO implements IChallengeTitle {
+  @ApiProperty({description: '챌린지 id', example: '1'})
+  id: number;
+
+  @ApiProperty({description: '챌린지 이름', example: '챌린지'})
   title: string;
 }
