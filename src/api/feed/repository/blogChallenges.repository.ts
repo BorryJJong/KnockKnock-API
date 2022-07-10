@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {EntityRepository, QueryRunner, Repository} from 'typeorm';
-import {CreateBlogChallengesDTO} from './dto/feed.dto';
+import {CreateBlogChallengesDTO} from '../dto/feed.dto';
 import {BlogChallenges} from 'src/entities/BlogChallenges';
 
 @Injectable()

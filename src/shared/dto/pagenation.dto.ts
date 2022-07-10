@@ -1,6 +1,6 @@
 import {ApiProperty} from '@nestjs/swagger';
 
-export class PagenationRequestDTO {
+export class PagenationReqDTO {
   @ApiProperty({description: '현재 페이지', example: '0'})
   skip: number;
 
@@ -8,7 +8,7 @@ export class PagenationRequestDTO {
   take: number;
 }
 
-export class PagenationResponseDTO {
+export class PagenationResDTO {
   @ApiProperty({description: '다음 페이지 여부', example: 'true'})
   isNext: boolean;
 
