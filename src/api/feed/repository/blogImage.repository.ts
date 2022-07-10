@@ -1,8 +1,8 @@
 import {Injectable} from '@nestjs/common';
 import {EntityRepository, QueryRunner, Repository} from 'typeorm';
-import {CreateBlogImageDTO} from './dto/feed.dto';
+import {CreateBlogImageDTO} from '../dto/feed.dto';
 import {BlogImage} from 'src/entities/BlogImage';
-import {IGetBlogImagesByBlogPost} from './blogImage.interface';
+import {IGetBlogImagesByBlogPost} from '../interface/blogImage.interface';
 
 @Injectable()
 @EntityRepository(BlogImage)

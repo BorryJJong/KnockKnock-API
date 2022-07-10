@@ -5,7 +5,7 @@ import {
   GetChallengeListResponseDTO,
   GetChallengeRequestDTO,
   GetChallengeResponseDTO,
-  GetChallengeTitleDTO,
+  GetChallengeTitleReqDTO,
 } from './dto/challenges.dto';
 
 @ApiTags('challenges')
@@ -26,9 +26,9 @@ export class ChallengesController {
   @ApiResponse({
     status: 200,
     description: '성공!!!',
-    type: [GetChallengeTitleDTO],
+    type: [GetChallengeTitleReqDTO],
   })
-  public async getChallengeTitles(): Promise<GetChallengeTitleDTO[]> {
+  public async getChallengeTitles(): Promise<GetChallengeTitleReqDTO[]> {
     return this.challengesService.getChallengeTitles();
   }
 

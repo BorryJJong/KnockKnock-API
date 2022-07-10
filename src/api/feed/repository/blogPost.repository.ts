@@ -1,8 +1,8 @@
 import {Injectable} from '@nestjs/common';
 import {EntityRepository, QueryRunner, Repository} from 'typeorm';
-import {CreateBlogPostDTO} from './dto/feed.dto';
+import {CreateBlogPostDTO} from '../dto/feed.dto';
 import {BlogPost} from 'src/entities/BlogPost';
-import {IGetBlogPostItems} from './blogPost.interface';
+import {IGetBlogPostItems} from '../interface/blogPost.interface';
 
 @Injectable()
 @EntityRepository(BlogPost)

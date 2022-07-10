@@ -1,4 +1,4 @@
-import {BlogPost} from '../../entities/BlogPost';
+import {BlogPost} from '../../../entities/BlogPost';
 
 export interface IGetBlogPostItems {
   items: IGetBlogPostItem[];

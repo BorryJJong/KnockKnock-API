@@ -5,7 +5,7 @@ import {
   GetChallengeListResponseDTO,
   GetChallengeRequestDTO,
   GetChallengeResponseDTO,
-  GetChallengeTitleDTO,
+  GetChallengeTitleReqDTO,
 } from './dto/challenges.dto';
 
 @Injectable()
@@ -49,7 +49,7 @@ export class ChallengesService {
     return challengeList;
   }
 
-  async getChallengeTitles(): Promise<GetChallengeTitleDTO[]> {
+  async getChallengeTitles(): Promise<GetChallengeTitleReqDTO[]> {
     const challengeTitles =
       await this.challengesRepository.getChallengeTitles();
     challengeTitles.unshift({id: 0, title: '전체'});

@@ -14,8 +14,8 @@ import {FeedService} from './feed.service';
 import {
   CreateFeedDTO,
   UpdateFeedDTO,
-  GetFeedsRequestDTO,
-  GetFeedsResponseDTO,
+  GetListFeedReqDTO as GetFeedReqDTO,
+  GetListFeedResDTO,
 } from './dto/feed.dto';
 import {
   ApiCreatedResponse,
@@ -53,11 +53,11 @@ export class FeedController {
   @ApiResponse({
     status: 200,
     description: '성공!!!',
-    type: [GetFeedsResponseDTO],
+    type: [GetListFeedResDTO],
   })
   public async getFeedsByChallengesFilter(
-    @Query() query: GetFeedsRequestDTO,
-  ): Promise<GetFeedsResponseDTO> {
+    @Query() query: GetFeedReqDTO,
+  ): Promise<GetListFeedResDTO> {
     return this.feedService.getFeedsByChallengesFilter(query);
   }
 

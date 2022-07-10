@@ -5,8 +5,8 @@ import {BlogPromotion} from '../../../entities/BlogPromotion';
 import {BlogImage} from '../../../entities/BlogImage';
 import {BlogPost} from '../../../entities/BlogPost';
 import {
-  PagenationRequestDTO,
-  PagenationResponseDTO,
+  PagenationReqDTO,
+  PagenationResDTO,
 } from '../../../shared/dto/Pagenation.dto';
 
 export class CreateFeedDTO extends OmitType(BlogPost, [
@@ -58,11 +58,11 @@ export class CreateBlogPromotionDTO extends OmitType(BlogPromotion, ['id']) {}
 export class CreateBlogImageDTO extends OmitType(BlogImage, ['id']) {}
 export class UpdateFeedDto extends PartialType(CreateFeedDTO) {}
 
-export class GetFeedsRequestDTO extends PagenationRequestDTO {
+export class GetListFeedReqDTO extends PagenationReqDTO {
   @ApiProperty({required: true, description: '챌린지ID', example: '1'})
   challengeId: number;
 }
-export class GetFeedResponseDTO {
+export class GetFeedResDTO {
   @ApiProperty({description: '피드ID', example: '1'})
   private id: number;
 
@@ -75,7 +75,6 @@ export class GetFeedResponseDTO {
   @ApiProperty({description: '이미지가 2장 이상일 경우 true', example: 'true'})
   private isImageMore: boolean;
 
-  // 여기서하는게 맞는걸까? 맞는거 같기도..아닌거같기도..레이어로 나눠야하나?
   constructor(id: number, thumbnailUrl: string, isImageMore: boolean) {
     this.id = id;
     this.thumbnailUrl = thumbnailUrl;
@@ -83,16 +82,16 @@ export class GetFeedResponseDTO {
   }
 }
 
-export class GetFeedsResponseDTO extends PagenationResponseDTO {
+export class GetListFeedResDTO extends PagenationResDTO {
   @ApiProperty({
     description: '피드 목록',
-    type: GetFeedResponseDTO,
-    example: GetFeedResponseDTO,
+    type: GetFeedResDTO,
+    example: GetFeedResDTO,
   })
-  feeds: GetFeedResponseDTO[];
+  feeds: GetFeedResDTO[];
 }
 
-export class GetBlogImagesByBlogPostDTO {
+export class GetListBlogImageByBlogPostResDTO {
   @ApiProperty({description: '피드ID', example: '1'})
   private postId: number;
 
