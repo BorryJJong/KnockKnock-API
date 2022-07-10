@@ -1,17 +1,21 @@
-import {Injectable, InternalServerErrorException, Logger} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository, Connection, QueryRunner} from 'typeorm';
+import {Connection, QueryRunner} from 'typeorm';
 import {
   CreateFeedDTO,
   UpdateFeedDTO,
   CreateBlogPostDTO,
-  CreateBlogChallengesDTO,
+  GetFeedsRequestDTO,
+  GetFeedsResponseDTO,
+  GetFeedResponseDTO,
 } from './dto/feed.dto';
 import {ImageService} from 'src/api/image/image.service';
 import {BlogChallengesRepository} from './blogChallenges.repository';
 import {BlogImageRepository} from './blogImage.repository';
 import {BlogPostRepository} from './blogPost.repository';
 import {BlogPromotionRepository} from './blogPromotion.repository';
+import {IGetBlogImagesByBlogPost} from './blogImage.interface';
+
 @Injectable()
 export class FeedService {
   private readonly logger = new Logger(FeedService.name);
@@ -149,10 +153,6 @@ export class FeedService {
     }
   }
 
-  findAll() {
-    return `This action returns all feed`;
-  }
-
   findOne(id: number) {
     return `This action returns a #${id} feed`;
   }
@@ -163,5 +163,46 @@ export class FeedService {
 
   remove(id: number) {
     return `This action removes a #${id} feed`;
+  }
+
+  public async getFeedsByChallengesFilter(
+    query: GetFeedsRequestDTO,
+  ): Promise<GetFeedsResponseDTO> {
+    let blogPostIds: number[] = [];
+    const blogChallenges =
+      await this.blogChallengesRepository.getBlogChallengesByChallengeId(
+        query.challengeId,
+      );
+
+    if (blogChallenges.length > 0) {
+      blogPostIds = blogChallenges.map(bc => bc.postId);
+    }
+
+    const blogPosts = await this.blogPostRepository.getBlogPosts(
+      query.skip,
+      query.take,
+      blogPostIds,
+    );
+
+    const blogImages: IGetBlogImagesByBlogPost[] =
+      await this.blogImageRepository.getBlogImagesByBlogPost(
+        blogPosts.items.map(post => post.id),
+      );
+
+    return {
+      feeds: blogPosts.items.map(blogPost => {
+        const filterBlogImages = blogImages.filter(
+          blogImage => blogImage.postId === blogPost.id,
+        );
+        const isImageMore = filterBlogImages.length > 1 ? true : false;
+        const thumbnailUrl = filterBlogImages[0].fileUrl;
+
+        return new GetFeedResponseDTO(blogPost.id, thumbnailUrl, isImageMore);
+      }),
+      isNext:
+        blogPosts.pagination.total >
+        blogPosts.pagination.skip + blogPosts.pagination.take,
+      total: blogPosts.pagination.total,
+    };
   }
 }
