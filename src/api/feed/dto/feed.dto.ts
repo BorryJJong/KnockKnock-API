@@ -58,11 +58,12 @@ export class CreateBlogPromotionDTO extends OmitType(BlogPromotion, ['id']) {}
 export class CreateBlogImageDTO extends OmitType(BlogImage, ['id']) {}
 export class UpdateFeedDto extends PartialType(CreateFeedDTO) {}
 
-export class GetListFeedReqDTO extends PagenationReqDTO {
+export class GetListFeedMainReqDTO extends PagenationReqDTO {
   @ApiProperty({required: true, description: '챌린지ID', example: '1'})
   challengeId: number;
 }
-export class GetFeedResDTO {
+
+export class GetFeedMainResDTO {
   @ApiProperty({description: '피드ID', example: '1'})
   private id: number;
 
@@ -82,13 +83,13 @@ export class GetFeedResDTO {
   }
 }
 
-export class GetListFeedResDTO extends PagenationResDTO {
+export class GetListFeedMainResDTO extends PagenationResDTO {
   @ApiProperty({
-    description: '피드 목록',
-    type: GetFeedResDTO,
-    example: GetFeedResDTO,
+    description: '피드 메인 목록',
+    type: GetFeedMainResDTO,
+    example: GetFeedMainResDTO,
   })
-  feeds: GetFeedResDTO[];
+  feeds: GetFeedMainResDTO[];
 }
 
 export class GetListBlogImageByBlogPostResDTO {

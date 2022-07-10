@@ -14,8 +14,8 @@ import {FeedService} from './feed.service';
 import {
   CreateFeedDTO,
   UpdateFeedDTO,
-  GetListFeedReqDTO as GetFeedReqDTO,
-  GetListFeedResDTO,
+  GetListFeedMainResDTO,
+  GetListFeedMainReqDTO,
 } from './dto/feed.dto';
 import {
   ApiCreatedResponse,
@@ -43,7 +43,7 @@ export class FeedController {
 
   @Get()
   @ApiOperation({
-    summary: '피드 목록 API',
+    summary: '피드 메인 API',
     externalDocs: {
       description: 'Figma링크',
       url: 'https://www.figma.com/file/1g4o56bPFBBzbGfpL29jo2/%23%EC%A0%9C%EB%A1%9C%EC%9B%A8%EC%9D%B4%EC%8A%A4%ED%8A%B8?node-id=1907%3A21526',
@@ -53,11 +53,11 @@ export class FeedController {
   @ApiResponse({
     status: 200,
     description: '성공!!!',
-    type: [GetListFeedResDTO],
+    type: [GetListFeedMainResDTO],
   })
   public async getFeedsByChallengesFilter(
-    @Query() query: GetFeedReqDTO,
-  ): Promise<GetListFeedResDTO> {
+    @Query() query: GetListFeedMainReqDTO,
+  ): Promise<GetListFeedMainResDTO> {
     return this.feedService.getFeedsByChallengesFilter(query);
   }
 
@@ -82,11 +82,6 @@ export class FeedController {
       },
     };
     return result;
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.feedService.findOne(+id);
   }
 
   @Patch(':id')

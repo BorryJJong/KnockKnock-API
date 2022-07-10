@@ -5,9 +5,9 @@ import {
   CreateFeedDTO,
   UpdateFeedDTO,
   CreateBlogPostDTO,
-  GetListFeedReqDTO,
-  GetListFeedResDTO,
-  GetFeedResDTO,
+  GetListFeedMainReqDTO,
+  GetListFeedMainResDTO,
+  GetFeedMainResDTO,
 } from './dto/feed.dto';
 import {ImageService} from 'src/api/image/image.service';
 import {BlogChallengesRepository} from './repository/blogChallenges.repository';
@@ -166,8 +166,8 @@ export class FeedService {
   }
 
   public async getFeedsByChallengesFilter(
-    query: GetListFeedReqDTO,
-  ): Promise<GetListFeedResDTO> {
+    query: GetListFeedMainReqDTO,
+  ): Promise<GetListFeedMainResDTO> {
     let blogPostIds: number[] = [];
     const blogChallenges =
       await this.blogChallengesRepository.getBlogChallengesByChallengeId(
@@ -197,7 +197,7 @@ export class FeedService {
         const isImageMore = filterBlogImages.length > 1 ? true : false;
         const thumbnailUrl = filterBlogImages[0].fileUrl;
 
-        return new GetFeedResDTO(blogPost.id, thumbnailUrl, isImageMore);
+        return new GetFeedMainResDTO(blogPost.id, thumbnailUrl, isImageMore);
       }),
       isNext:
         blogPosts.pagination.total >
