@@ -4,10 +4,8 @@ import {BlogChallenges} from '../../../entities/BlogChallenges';
 import {BlogPromotion} from '../../../entities/BlogPromotion';
 import {BlogImage} from '../../../entities/BlogImage';
 import {BlogPost} from '../../../entities/BlogPost';
-import {
-  PagenationReqDTO,
-  PagenationResDTO,
-} from '../../../shared/dto/Pagenation.dto';
+import { BlogComment } from '../../../entities/BlogComment';
+import { PagenationReqDTO, PagenationResDTO } from '../../../shared/dto/pagenation.dto';
 
 export class CreateFeedDTO extends OmitType(BlogPost, [
   'id',
@@ -106,3 +104,6 @@ export class GetListBlogImageByBlogPostResDTO {
     this.fileUrl = fileUrl;
   }
 }
+
+// BlogComment
+export class InsBlogCommentDTO extends OmitType(BlogComment, ['id', 'regDate', 'delDate', 'isDeleted',]) {};
