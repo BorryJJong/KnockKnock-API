@@ -1,5 +1,6 @@
 import {IsNotEmpty, IsString} from 'class-validator';
-import {ApiProperty, OmitType, PartialType} from '@nestjs/swagger';
+import { Exclude, Expose, Type } from 'class-transformer';
+import {ApiProperty, OmitType, PartialType, PickType} from '@nestjs/swagger';
 import {BlogChallenges} from '../../../entities/BlogChallenges';
 import {BlogPromotion} from '../../../entities/BlogPromotion';
 import {BlogImage} from '../../../entities/BlogImage';
@@ -105,4 +106,145 @@ export class GetListBlogImageByBlogPostResDTO {
     this.postId = id;
     this.fileUrl = fileUrl;
   }
+}
+
+// 피드 상세 조회
+export class GetFeedViewReqDTO extends PickType(BlogPost, [
+  'id',
+] as const) {}
+
+@Exclude()
+export class GetBlogPostDTO {
+  @Expose()
+  @ApiProperty({
+    description: '게시글 id',
+    example: '1',
+  })
+  id: number;
+
+  @Expose({name: 'user_id'})
+  @ApiProperty({
+    description: '사용자 id',
+    example: '1',
+  })
+  userId: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '사용자 닉네임',
+    example: '홍길동',
+  })
+  nickname: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '사용자 프로필 이미지',
+    example: '{aws.s3.endpoint}/user/filename.png',
+  })
+  image: string;
+
+  @ApiProperty({
+    description: '내용',
+    example:
+      '패키지 상품을 받았을때의 기쁨 후엔 늘 골치아픈 쓰레기와 분리수거의 노동시간이 뒤따릅니다.',
+  })
+  content: string;
+
+  @Expose({name: 'store_address'})
+  @ApiProperty({
+    description: '매장 주소',
+    example: '경기 성남시 분당구 대왕판교로 374',
+  })
+  storeAddress?: string;
+
+  @Expose({name: 'location_x'})
+  @ApiProperty({
+    description: '매장 주소 x좌표',
+    example: '127.102269186127',
+  })
+  locationX?: string;
+
+  @Expose({name: 'location_y'})
+  @ApiProperty({
+    description: '매장 주소 y좌표',
+    example: '37.3771012046504',
+  })
+  locationY?: string;
+
+  @Expose({name: 'reg_date'})
+  @ApiProperty({
+    description: '등록 날짜',
+    example: '시간 -> text 변환 작업 아직 안함',
+  })
+  regDate: Date;
+}
+
+@Exclude()
+export class GetBlogPromotionDTO {
+  @Expose()
+  @ApiProperty({
+    description: '블로그 프로모션 id',
+    example: '1',
+  })
+  id: number;
+
+  @Expose({name: 'promotion_id'})
+  @ApiProperty({
+    description: '프로모션 id',
+    example: '1',
+  })
+  promotionId: number;
+
+  @Expose({name: 'type'})
+  @ApiProperty({
+    description: '프로모션 종류',
+    example: '다회용기 할인',
+  })
+  title: string;
+}
+
+@Exclude()
+export class GetBlogChallengesDTO {
+  @Expose()
+  @ApiProperty({
+    description: '블로그 챌린지 id',
+    example: '1',
+  })
+  id: number;
+
+  @Expose({name: 'challenge_id'})
+  @ApiProperty({
+    description: '챌린지 id',
+    example: '1',
+  })
+  challengeId: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '챌린지명',
+    example: '용기내챌린지',
+  })
+  title: string;
+}
+
+export class GetBlogImageDTO extends BlogImage {};
+
+// TODO: example 정리
+// 피드 상세 조회
+export class GetFeedViewResDTO {
+  @ApiProperty({description: '피드 데이터', example: ''})
+  @Type(() => GetBlogPostDTO)
+  feed: GetBlogPostDTO;
+
+  @ApiProperty({description: '프로모션 목록', example: ''})
+  @Type(() => GetBlogPromotionDTO)
+  promotions: GetBlogPromotionDTO[];
+
+  @ApiProperty({description: '챌린지 목록', example: ''})
+  @Type(() => GetBlogChallengesDTO)
+  challenges: GetBlogChallengesDTO[];
+
+  @ApiProperty({description: '이미지 목록', example: ''})
+  @Type(() => GetBlogImageDTO)
+  images: GetBlogImageDTO[];
 }

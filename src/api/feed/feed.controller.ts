@@ -16,6 +16,8 @@ import {
   UpdateFeedDTO,
   GetListFeedReqDTO as GetFeedReqDTO,
   GetListFeedResDTO,
+  GetFeedViewReqDTO,
+  GetFeedViewResDTO,
 } from './dto/feed.dto';
 import {
   ApiCreatedResponse,
@@ -24,7 +26,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {FilesInterceptor} from '@nestjs/platform-express';
-import {FeedCreateResponse} from 'src/shared/response_entities/feed/temp.response';
+import {FeedCreateResponse, GetFeedViewResponse} from 'src/shared/response_entities/feed/temp.response';
 
 // TODO: 400,401,403,404등 공통 사용 응답코드는 컨트롤러에 붙이기
 // @ApiBadRequestResponse({
@@ -76,11 +78,35 @@ export class FeedController {
     const status = await this.feedService.create(files, createFeedDTO);
     const result: FeedCreateResponse = {
       code: status ? 201 : 500,
-      message: status ? '생성 성공' : '생성 실패',
+      message: status ? '성공' : '실패',
       data: {
         status: status,
       },
     };
+    return result;
+  }
+
+  @Get(':id')
+  @ApiOperation({summary: '피드 상세 조회'})
+  @ApiResponse({
+    description: '',
+    type: GetFeedViewResponse
+  })
+  async getFeed(@Param() param: GetFeedViewReqDTO) {
+    const result: GetFeedViewResponse = {
+      code: 200,
+      message: 'success',
+      data: null,
+    };
+    
+    try{
+      const feed:GetFeedViewResDTO = await this.feedService.getFeed(param);
+      result.data = feed;
+    } catch (e) {
+      result.code = 500;
+      result.message = e.message;
+    }
+
     return result;
   }
 

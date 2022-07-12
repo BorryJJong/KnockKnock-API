@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {EntityRepository, QueryRunner, Repository} from 'typeorm';
-import {CreateBlogImageDTO} from '../dto/feed.dto';
+import {CreateBlogImageDTO, GetBlogImageDTO} from '../dto/feed.dto';
 import {BlogImage} from 'src/entities/BlogImage';
 import {IGetBlogImagesByBlogPost} from '../interface/blogImage.interface';
 
@@ -32,5 +32,14 @@ export class BlogImageRepository extends Repository<BlogImage> {
       .getMany();
 
     return blogImages;
+  }
+
+  async getBlogImageByPostId(id:number){
+    const images:GetBlogImageDTO[] = await this.find({
+      select: ['id', 'fileUrl'],
+      where: {post_id: id}
+    });
+
+    return images;
   }
 }
