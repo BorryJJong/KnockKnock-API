@@ -17,6 +17,8 @@ import {
   GetListFeedReqDTO as GetFeedReqDTO,
   GetListFeedResDTO,
   InsBlogCommentDTO,
+  GetListFeedCommentReqDTO,
+  GetListFeedCommentResDTO,
 } from './dto/feed.dto';
 import {
   ApiCreatedResponse,
@@ -25,7 +27,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {FilesInterceptor} from '@nestjs/platform-express';
-import {FeedCreateResponse} from 'src/shared/response_entities/feed/temp.response';
+import {FeedCreateResponse, GetFeedCommentResponse} from 'src/shared/response_entities/feed/temp.response';
 
 // TODO: 400,401,403,404등 공통 사용 응답코드는 컨트롤러에 붙이기
 // @ApiBadRequestResponse({
@@ -106,6 +108,30 @@ export class FeedController {
       result.code = 500;
       result.message = e.message;
       result.data.status = false;
+    }
+
+    return result;
+  }
+
+  @Get(':id/comment')
+  @ApiOperation({summary: '댓글 목록 조회'})
+  @ApiCreatedResponse({
+    description: '성공',
+    type: GetFeedCommentResponse,
+  })
+  async getFeed(@Param() param: GetListFeedCommentReqDTO) {
+    const result: GetFeedCommentResponse = {
+      code: 200,
+      message: 'success',
+      data: null,
+    };
+    
+    try{
+      const comments:GetListFeedCommentResDTO[] = await this.feedService.getListFeedComment(param);
+      result.data = comments;
+    } catch (e) {
+      result.code = 500;
+      result.message = e.message;
     }
 
     return result;

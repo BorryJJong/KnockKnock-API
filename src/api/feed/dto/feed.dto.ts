@@ -6,6 +6,7 @@ import {BlogImage} from '../../../entities/BlogImage';
 import {BlogPost} from '../../../entities/BlogPost';
 import { BlogComment } from '../../../entities/BlogComment';
 import { PagenationReqDTO, PagenationResDTO } from '../../../shared/dto/pagenation.dto';
+import { Exclude, Expose, Type } from 'class-transformer';
 
 export class CreateFeedDTO extends OmitType(BlogPost, [
   'id',
@@ -107,3 +108,73 @@ export class GetListBlogImageByBlogPostResDTO {
 
 // BlogComment
 export class InsBlogCommentDTO extends OmitType(BlogComment, ['id', 'regDate', 'delDate', 'isDeleted',]) {};
+
+@Exclude()
+export class GetBlogCommentDTO {
+  @Expose()
+  @ApiProperty({
+    description: '댓글 아이디',
+    example: 1,
+  })
+  id: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '사용자 아이디',
+    example: 1,
+  })
+  userId: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '사용자 닉네임',
+    example: '홍길동',
+  })
+  nickname: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '사용자 프로필 이미지',
+    example: '{aws.s3.endpoint}/user/filename.png',
+  })
+  image: string;
+  
+  @Expose()
+  @ApiProperty({
+    description: '내용',
+    example: '잘 봤습니다.',
+  })
+  content: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '등록 날짜',
+    example: '시간 -> text 변환 작업 아직 안함',
+  })
+  regDate: Date;
+
+  @Expose()
+  @ApiProperty({
+    description: '삭제 여부',
+    example: 'false'
+  })
+  isDeleted: boolean;
+};
+
+@Exclude()
+export class GetListFeedCommentResDTO extends GetBlogCommentDTO {
+  @Expose()
+  @Type(() => Number)
+  @ApiProperty({description: '리댓글 개수', example: 5})
+  replyCnt?: number;
+
+  @Expose()
+  @ApiProperty({description: '리댓글 목록', example: GetBlogCommentDTO, type: [GetBlogCommentDTO]})
+  @Type(() => GetBlogCommentDTO)
+  reply?: GetBlogCommentDTO[];
+}
+
+export class GetListFeedCommentReqDTO {
+  @ApiProperty({description: '피드 id', example: '1'})
+  id: number;
+}

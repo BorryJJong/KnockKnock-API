@@ -9,6 +9,9 @@ import {
   GetListFeedResDTO,
   GetFeedResDTO,
   InsBlogCommentDTO,
+  GetListFeedCommentReqDTO,
+  GetListFeedCommentResDTO,
+  GetBlogCommentDTO,
 } from './dto/feed.dto';
 import {ImageService} from 'src/api/image/image.service';
 import {BlogChallengesRepository} from './repository/blogChallenges.repository';
@@ -17,6 +20,7 @@ import {BlogPostRepository} from './repository/blogPost.repository';
 import {BlogPromotionRepository} from './repository/blogPromotion.repository';
 import {IGetBlogImagesByBlogPost} from './interface/blogImage.interface';
 import { BlogCommentRepository } from './repository/blogComment.repository';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class FeedService {
@@ -218,5 +222,27 @@ export class FeedService {
         blogPosts.pagination.skip + blogPosts.pagination.take,
       total: blogPosts.pagination.total,
     };
+  }
+
+  async getListFeedComment({id}: GetListFeedCommentReqDTO): Promise<GetListFeedCommentResDTO[]>{
+    try{
+      let comment = await this.blogCommentRepository.getBlogCommentByPostId(id);
+      comment = plainToInstance(GetListFeedCommentResDTO, comment);
+      
+      const result:GetListFeedCommentResDTO[] = await Promise.all(
+        comment.map(async c => {
+          if(c.replyCnt != 0){
+            let reply:GetBlogCommentDTO[] = await this.blogCommentRepository.getBlogCommentByCommentId(c.id);
+            c.reply = plainToInstance(GetBlogCommentDTO, reply);
+          }
+          return c;
+        })
+      )
+
+      return result;
+    } catch (e) {
+      this.logger.error(e);
+      throw new Error(e);
+    }
   }
 }
