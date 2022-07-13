@@ -37,9 +37,9 @@ export class BlogImageRepository extends Repository<BlogImage> {
   async getBlogImageByPostId(id:number){
     const images:GetBlogImageDTO[] = await this.find({
       select: ['id', 'fileUrl'],
-      where: {post_id: id}
+      where: {postId: id}
     });
-
+    
     return images;
   }
 }

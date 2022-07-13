@@ -110,11 +110,6 @@ export class FeedController {
     return result;
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.feedService.findOne(+id);
-  }
-
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateFeedDTO: UpdateFeedDTO) {
     return this.feedService.update(+id, updateFeedDTO);

@@ -8,7 +8,7 @@ import {BlogPost} from '../../../entities/BlogPost';
 import {
   PagenationReqDTO,
   PagenationResDTO,
-} from '../../../shared/dto/Pagenation.dto';
+} from '../../../shared/dto/pagenation.dto';
 
 export class CreateFeedDTO extends OmitType(BlogPost, [
   'id',
@@ -109,9 +109,10 @@ export class GetListBlogImageByBlogPostResDTO {
 }
 
 // 피드 상세 조회
-export class GetFeedViewReqDTO extends PickType(BlogPost, [
-  'id',
-] as const) {}
+export class GetFeedViewReqDTO {
+  @ApiProperty({description: '피드 id', example: '1'})
+  id: number;
+}
 
 @Exclude()
 export class GetBlogPostDTO {
@@ -122,12 +123,48 @@ export class GetBlogPostDTO {
   })
   id: number;
 
-  @Expose({name: 'user_id'})
+  @Expose()
   @ApiProperty({
     description: '사용자 id',
     example: '1',
   })
   userId: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '내용',
+    example:
+      '패키지 상품을 받았을때의 기쁨 후엔 늘 골치아픈 쓰레기와 분리수거의 노동시간이 뒤따릅니다.',
+  })
+  content: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '매장 주소',
+    example: '경기 성남시 분당구 대왕판교로 374',
+  })
+  storeAddress?: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '매장 주소 x좌표',
+    example: '127.102269186127',
+  })
+  locationX?: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '매장 주소 y좌표',
+    example: '37.3771012046504',
+  })
+  locationY?: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '등록 날짜',
+    example: '시간 -> text 변환 작업 아직 안함',
+  })
+  regDate: Date;
 
   @Expose()
   @ApiProperty({
@@ -142,41 +179,6 @@ export class GetBlogPostDTO {
     example: '{aws.s3.endpoint}/user/filename.png',
   })
   image: string;
-
-  @ApiProperty({
-    description: '내용',
-    example:
-      '패키지 상품을 받았을때의 기쁨 후엔 늘 골치아픈 쓰레기와 분리수거의 노동시간이 뒤따릅니다.',
-  })
-  content: string;
-
-  @Expose({name: 'store_address'})
-  @ApiProperty({
-    description: '매장 주소',
-    example: '경기 성남시 분당구 대왕판교로 374',
-  })
-  storeAddress?: string;
-
-  @Expose({name: 'location_x'})
-  @ApiProperty({
-    description: '매장 주소 x좌표',
-    example: '127.102269186127',
-  })
-  locationX?: string;
-
-  @Expose({name: 'location_y'})
-  @ApiProperty({
-    description: '매장 주소 y좌표',
-    example: '37.3771012046504',
-  })
-  locationY?: string;
-
-  @Expose({name: 'reg_date'})
-  @ApiProperty({
-    description: '등록 날짜',
-    example: '시간 -> text 변환 작업 아직 안함',
-  })
-  regDate: Date;
 }
 
 @Exclude()
@@ -188,14 +190,14 @@ export class GetBlogPromotionDTO {
   })
   id: number;
 
-  @Expose({name: 'promotion_id'})
+  @Expose()
   @ApiProperty({
     description: '프로모션 id',
     example: '1',
   })
   promotionId: number;
 
-  @Expose({name: 'type'})
+  @Expose()
   @ApiProperty({
     description: '프로모션 종류',
     example: '다회용기 할인',
@@ -212,7 +214,7 @@ export class GetBlogChallengesDTO {
   })
   id: number;
 
-  @Expose({name: 'challenge_id'})
+  @Expose()
   @ApiProperty({
     description: '챌린지 id',
     example: '1',
@@ -227,24 +229,38 @@ export class GetBlogChallengesDTO {
   title: string;
 }
 
-export class GetBlogImageDTO extends BlogImage {};
+@Exclude()
+export class GetBlogImageDTO {
+  @Expose()
+  @ApiProperty({
+    description: '이미지 id',
+    example: '1',
+  })
+  id: number;
 
-// TODO: example 정리
+  @Expose()
+  @ApiProperty({
+    description: '파일 url',
+    example: '{aws.s3.endpoint}/feed/filename.png',
+  })
+  fileUrl: string;
+};
+
 // 피드 상세 조회
 export class GetFeedViewResDTO {
-  @ApiProperty({description: '피드 데이터', example: ''})
+  @ApiProperty({description: '피드 데이터', example: GetBlogPostDTO})
   @Type(() => GetBlogPostDTO)
   feed: GetBlogPostDTO;
 
-  @ApiProperty({description: '프로모션 목록', example: ''})
+  @ApiProperty({description: '프로모션 목록', example: GetBlogPromotionDTO, type: [GetBlogPromotionDTO]})
   @Type(() => GetBlogPromotionDTO)
   promotions: GetBlogPromotionDTO[];
 
-  @ApiProperty({description: '챌린지 목록', example: ''})
+  @ApiProperty({description: '챌린지 목록', example: GetBlogChallengesDTO, type: [GetBlogChallengesDTO]})
   @Type(() => GetBlogChallengesDTO)
   challenges: GetBlogChallengesDTO[];
 
-  @ApiProperty({description: '이미지 목록', example: ''})
+  @ApiProperty({description: '이미지 목록', example: GetBlogImageDTO, type: [GetBlogImageDTO]})
   @Type(() => GetBlogImageDTO)
   images: GetBlogImageDTO[];
 }

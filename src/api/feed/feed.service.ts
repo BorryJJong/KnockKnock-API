@@ -14,6 +14,7 @@ import {
   GetBlogChallengesDTO,
   GetBlogPromotionDTO,
   GetBlogPostDTO,
+  GetBlogImageDTO,
 } from './dto/feed.dto';
 import {ImageService} from 'src/api/image/image.service';
 import {BlogChallengesRepository} from './repository/blogChallenges.repository';
@@ -170,7 +171,7 @@ export class FeedService {
         feed: plainToInstance(GetBlogPostDTO, post),
         promotions: plainToInstance(GetBlogPromotionDTO,promotions),
         challenges: plainToInstance(GetBlogChallengesDTO,challenges),
-        images: images
+        images: plainToInstance(GetBlogImageDTO,images)
       };
 
       return result;
