@@ -45,7 +45,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '성공!!!',
-        type: [challenges_dto_1.GetChallengeTitleDTO],
+        type: [challenges_dto_1.GetChallengeTitleReqDTO],
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
