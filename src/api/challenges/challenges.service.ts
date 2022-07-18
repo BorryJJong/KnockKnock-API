@@ -2,10 +2,11 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {ChallengesRepository} from './challenges.repository';
 import {
-  GetChallengeListResponseDTO,
-  GetChallengeRequestDTO,
-  GetChallengeResponseDTO,
+  GetListChallengeResDTO,
+  GetChallengeReqDTO,
+  GetChallengeResDTO,
   GetChallengeTitleReqDTO,
+  GetChallengeDetailResDTO,
 } from './dto/challenges.dto';
 
 @Injectable()
@@ -17,7 +18,7 @@ export class ChallengesService {
 
   async getChallenge({
     id,
-  }: GetChallengeRequestDTO): Promise<GetChallengeResponseDTO> {
+  }: GetChallengeReqDTO): Promise<GetChallengeResDTO> {
     const challenge = await this.challengesRepository.findChallengeById(id);
     const {title, subTitle, content, regDate} = challenge;
     return {
@@ -29,12 +30,27 @@ export class ChallengesService {
     };
   }
 
-  async getAllChallenges(): Promise<GetChallengeResponseDTO[]> {
+  async getAllChallenges(): Promise<GetChallengeResDTO[]> {
     const challenges = await this.challengesRepository.findChallengeAll();
     return challenges;
   }
+ 
+  async getChallengeDetail({
+    id,
+  }: GetChallengeReqDTO): Promise<GetChallengeDetailResDTO> {
 
-  async getChallengeList(): Promise<GetChallengeListResponseDTO[]> {
+    const challengeDTO = await this.challengesRepository.findChallengeById(id);
+    
+    const participantList = await this.challengesRepository.getParticipantList(id);
+    
+    let challenge = new GetChallengeDetailResDTO();
+    challenge.challenge = challengeDTO;
+    challenge.participants = participantList;
+    
+    return challenge;  
+  }
+  
+  async getChallengeList(): Promise<GetListChallengeResDTO[]> {
     const challengeList = await this.challengesRepository.getChallengeList();
 
     for (let index = 0; index < (await challengeList).length; index++) {
