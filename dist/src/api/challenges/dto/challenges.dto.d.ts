@@ -21,7 +21,7 @@ export declare class ParticipantUserDTO {
     nickname: string;
     image: string;
 }
-export declare class GetChallengeTitleDTO implements IChallengeTitle {
+export declare class GetChallengeTitleReqDTO implements IChallengeTitle {
     id: number;
     title: string;
 }

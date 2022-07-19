@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetChallengeTitleDTO = exports.ParticipantUserDTO = exports.GetChallengeListResponseDTO = exports.GetChallengeResponseDTO = exports.GetChallengeRequestDTO = exports.CreateChallengeRequestDTO = void 0;
+exports.GetChallengeTitleReqDTO = exports.ParticipantUserDTO = exports.GetChallengeListResponseDTO = exports.GetChallengeResponseDTO = exports.GetChallengeRequestDTO = exports.CreateChallengeRequestDTO = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 const Challenges_1 = require("../../../entities/Challenges");
@@ -67,15 +67,15 @@ exports.GetChallengeListResponseDTO = GetChallengeListResponseDTO;
 class ParticipantUserDTO {
 }
 exports.ParticipantUserDTO = ParticipantUserDTO;
-class GetChallengeTitleDTO {
+class GetChallengeTitleReqDTO {
 }
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '챌린지 id', example: '1' }),
     __metadata("design:type", Number)
-], GetChallengeTitleDTO.prototype, "id", void 0);
+], GetChallengeTitleReqDTO.prototype, "id", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '제목', example: '챌린지' }),
+    (0, swagger_1.ApiProperty)({ description: '챌린지 이름', example: '챌린지' }),
     __metadata("design:type", String)
-], GetChallengeTitleDTO.prototype, "title", void 0);
-exports.GetChallengeTitleDTO = GetChallengeTitleDTO;
+], GetChallengeTitleReqDTO.prototype, "title", void 0);
+exports.GetChallengeTitleReqDTO = GetChallengeTitleReqDTO;
 //# sourceMappingURL=challenges.dto.js.map
