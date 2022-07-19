@@ -1,5 +1,6 @@
 import {IsNotEmpty, IsString} from 'class-validator';
-import {ApiProperty, OmitType, PartialType} from '@nestjs/swagger';
+import { Exclude, Expose, Type } from 'class-transformer';
+import {ApiProperty, OmitType, PartialType, PickType} from '@nestjs/swagger';
 import {BlogChallenges} from '../../../entities/BlogChallenges';
 import {BlogPromotion} from '../../../entities/BlogPromotion';
 import {BlogImage} from '../../../entities/BlogImage';
@@ -7,7 +8,7 @@ import {BlogPost} from '../../../entities/BlogPost';
 import {
   PagenationReqDTO,
   PagenationResDTO,
-} from '../../../shared/dto/Pagenation.dto';
+} from '../../../shared/dto/pagenation.dto';
 
 export class CreateFeedDTO extends OmitType(BlogPost, [
   'id',
@@ -105,4 +106,161 @@ export class GetListBlogImageByBlogPostResDTO {
     this.postId = id;
     this.fileUrl = fileUrl;
   }
+}
+
+// 피드 상세 조회
+export class GetFeedViewReqDTO {
+  @ApiProperty({description: '피드 id', example: '1'})
+  id: number;
+}
+
+@Exclude()
+export class GetBlogPostDTO {
+  @Expose()
+  @ApiProperty({
+    description: '게시글 id',
+    example: '1',
+  })
+  id: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '사용자 id',
+    example: '1',
+  })
+  userId: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '내용',
+    example:
+      '패키지 상품을 받았을때의 기쁨 후엔 늘 골치아픈 쓰레기와 분리수거의 노동시간이 뒤따릅니다.',
+  })
+  content: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '매장 주소',
+    example: '경기 성남시 분당구 대왕판교로 374',
+  })
+  storeAddress?: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '매장 주소 x좌표',
+    example: '127.102269186127',
+  })
+  locationX?: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '매장 주소 y좌표',
+    example: '37.3771012046504',
+  })
+  locationY?: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '등록 날짜',
+    example: '시간 -> text 변환 작업 아직 안함',
+  })
+  regDate: Date;
+
+  @Expose()
+  @ApiProperty({
+    description: '사용자 닉네임',
+    example: '홍길동',
+  })
+  nickname: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '사용자 프로필 이미지',
+    example: '{aws.s3.endpoint}/user/filename.png',
+  })
+  image: string;
+}
+
+@Exclude()
+export class GetBlogPromotionDTO {
+  @Expose()
+  @ApiProperty({
+    description: '블로그 프로모션 id',
+    example: '1',
+  })
+  id: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '프로모션 id',
+    example: '1',
+  })
+  promotionId: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '프로모션 종류',
+    example: '다회용기 할인',
+  })
+  title: string;
+}
+
+@Exclude()
+export class GetBlogChallengesDTO {
+  @Expose()
+  @ApiProperty({
+    description: '블로그 챌린지 id',
+    example: '1',
+  })
+  id: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '챌린지 id',
+    example: '1',
+  })
+  challengeId: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '챌린지명',
+    example: '용기내챌린지',
+  })
+  title: string;
+}
+
+@Exclude()
+export class GetBlogImageDTO {
+  @Expose()
+  @ApiProperty({
+    description: '이미지 id',
+    example: '1',
+  })
+  id: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '파일 url',
+    example: '{aws.s3.endpoint}/feed/filename.png',
+  })
+  fileUrl: string;
+};
+
+// 피드 상세 조회
+export class GetFeedViewResDTO {
+  @ApiProperty({description: '피드 데이터', example: GetBlogPostDTO})
+  @Type(() => GetBlogPostDTO)
+  feed: GetBlogPostDTO;
+
+  @ApiProperty({description: '프로모션 목록', example: GetBlogPromotionDTO, type: [GetBlogPromotionDTO]})
+  @Type(() => GetBlogPromotionDTO)
+  promotions: GetBlogPromotionDTO[];
+
+  @ApiProperty({description: '챌린지 목록', example: GetBlogChallengesDTO, type: [GetBlogChallengesDTO]})
+  @Type(() => GetBlogChallengesDTO)
+  challenges: GetBlogChallengesDTO[];
+
+  @ApiProperty({description: '이미지 목록', example: GetBlogImageDTO, type: [GetBlogImageDTO]})
+  @Type(() => GetBlogImageDTO)
+  images: GetBlogImageDTO[];
 }

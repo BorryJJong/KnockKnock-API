@@ -1,6 +1,7 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Connection, QueryRunner} from 'typeorm';
+import {plainToInstance} from 'class-transformer';
 import {
   CreateFeedDTO,
   UpdateFeedDTO,
@@ -8,6 +9,12 @@ import {
   GetListFeedReqDTO,
   GetListFeedResDTO,
   GetFeedResDTO,
+  GetFeedViewReqDTO,
+  GetFeedViewResDTO,
+  GetBlogChallengesDTO,
+  GetBlogPromotionDTO,
+  GetBlogPostDTO,
+  GetBlogImageDTO,
 } from './dto/feed.dto';
 import {ImageService} from 'src/api/image/image.service';
 import {BlogChallengesRepository} from './repository/blogChallenges.repository';
@@ -153,8 +160,25 @@ export class FeedService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} feed`;
+  async getFeed({id}: GetFeedViewReqDTO) : Promise<GetFeedViewResDTO>{
+    try{
+      const post = await this.blogPostRepository.getBlogPostById(id);
+      const promotions = await this.blogPromotionRepository.getBlogPromotionByPostId(id);
+      const challenges = await this.blogChallengesRepository.getBlogChallengesByPostId(id);
+      const images = await this.blogImageRepository.getBlogImageByPostId(id);
+
+      const result:GetFeedViewResDTO = {
+        feed: plainToInstance(GetBlogPostDTO, post),
+        promotions: plainToInstance(GetBlogPromotionDTO,promotions),
+        challenges: plainToInstance(GetBlogChallengesDTO,challenges),
+        images: plainToInstance(GetBlogImageDTO,images)
+      };
+
+      return result;
+    } catch (e) {
+      this.logger.error(e);
+      throw new Error(e);
+    }
   }
 
   update(id: number, updateFeedDTO: UpdateFeedDTO) {
