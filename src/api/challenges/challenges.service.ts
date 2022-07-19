@@ -7,6 +7,8 @@ import {
   GetChallengeResDTO,
   GetChallengeTitleReqDTO,
   GetChallengeDetailResDTO,
+  ChallengeContentDTO,
+  ChallengeSubContentDTO,
 } from './dto/challenges.dto';
 
 @Injectable()
@@ -46,10 +48,32 @@ export class ChallengesService {
     let challenge = new GetChallengeDetailResDTO();
     challenge.challenge = challengeDTO;
     challenge.participants = participantList;
-    
+
+    let contentJson = JSON.parse(challengeDTO.content);
+    let challengeContent = new ChallengeContentDTO();
+    challengeContent.image = contentJson.image;
+    challengeContent.title = contentJson.title;
+    challengeContent.subTitle = contentJson.subTitle;
+    challengeContent.rule = contentJson.rule;
+
+    let subContents = [];
+    for(var i=0;i<contentJson.contents.length;i++){
+      let subContent = contentJson.contents[i];
+
+      let challengeSubContent = new ChallengeSubContentDTO();
+      challengeSubContent.title = subContent.title;
+      challengeSubContent.image = subContent.image;
+      challengeSubContent.content = subContent.content;
+
+      subContents[i] = challengeSubContent;
+    }
+    challengeContent.subContents = subContents;
+
+    challenge.content = challengeContent;
+
     return challenge;  
   }
-  
+
   async getChallengeList(): Promise<GetListChallengeResDTO[]> {
     const challengeList = await this.challengesRepository.getChallengeList();
 
