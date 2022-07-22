@@ -5,10 +5,8 @@ import {BlogChallenges} from '../../../entities/BlogChallenges';
 import {BlogPromotion} from '../../../entities/BlogPromotion';
 import {BlogImage} from '../../../entities/BlogImage';
 import {BlogPost} from '../../../entities/BlogPost';
-import {
-  PagenationReqDTO,
-  PagenationResDTO,
-} from '../../../shared/dto/pagenation.dto';
+import { BlogComment } from '../../../entities/BlogComment';
+import { PagenationReqDTO, PagenationResDTO } from '../../../shared/dto/pagenation.dto';
 
 export class CreateFeedDTO extends OmitType(BlogPost, [
   'id',
@@ -108,6 +106,8 @@ export class GetListBlogImageByBlogPostResDTO {
   }
 }
 
+// BlogComment
+export class InsBlogCommentDTO extends OmitType(BlogComment, ['id', 'regDate', 'delDate', 'isDeleted',]) {};
 // 피드 상세 조회
 export class GetFeedViewReqDTO {
   @ApiProperty({description: '피드 id', example: '1'})

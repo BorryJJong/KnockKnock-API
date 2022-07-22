@@ -9,6 +9,7 @@ import {
   GetListFeedReqDTO,
   GetListFeedResDTO,
   GetFeedResDTO,
+  InsBlogCommentDTO,
   GetFeedViewReqDTO,
   GetFeedViewResDTO,
   GetBlogChallengesDTO,
@@ -22,6 +23,7 @@ import {BlogImageRepository} from './repository/blogImage.repository';
 import {BlogPostRepository} from './repository/blogPost.repository';
 import {BlogPromotionRepository} from './repository/blogPromotion.repository';
 import {IGetBlogImagesByBlogPost} from './interface/blogImage.interface';
+import { BlogCommentRepository } from './repository/blogComment.repository';
 
 @Injectable()
 export class FeedService {
@@ -36,6 +38,8 @@ export class FeedService {
     private blogPromotionRepository: BlogPromotionRepository,
     @InjectRepository(BlogImageRepository)
     private blogImageRepository: BlogImageRepository,
+    @InjectRepository(BlogCommentRepository)
+    private blogCommentRepository: BlogCommentRepository,
     private readonly imageService: ImageService,
     private connection: Connection,
   ) {}
@@ -80,6 +84,7 @@ export class FeedService {
 
     return result;
   }
+
   async savePost(
     queryRunner: QueryRunner,
     createBlogPostDTO: CreateBlogPostDTO,
@@ -160,6 +165,15 @@ export class FeedService {
     }
   }
 
+  async saveBlogComment(insBlogCommentDTO: InsBlogCommentDTO) {
+    try{
+      const comment = this.blogCommentRepository.createBlogComment(insBlogCommentDTO);
+      await this.blogCommentRepository.saveBlogComment(null, comment);
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
+  
   async getFeed({id}: GetFeedViewReqDTO) : Promise<GetFeedViewResDTO>{
     try{
       const post = await this.blogPostRepository.getBlogPostById(id);

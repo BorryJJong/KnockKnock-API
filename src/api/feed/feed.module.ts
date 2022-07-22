@@ -7,6 +7,7 @@ import {BlogChallengesRepository} from './repository/blogChallenges.repository';
 import {BlogImageRepository} from './repository/blogImage.repository';
 import {BlogPostRepository} from './repository/blogPost.repository';
 import {BlogPromotionRepository} from './repository/blogPromotion.repository';
+import { BlogCommentRepository } from './repository/blogComment.repository';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import {BlogPromotionRepository} from './repository/blogPromotion.repository';
       BlogImageRepository,
       BlogPostRepository,
       BlogPromotionRepository,
+      BlogCommentRepository
     ]),
   ],
   controllers: [FeedController],
