@@ -19,7 +19,10 @@ import {BlogImageRepository} from './repository/blogImage.repository';
 import {BlogPostRepository} from './repository/blogPost.repository';
 import {BlogPromotionRepository} from './repository/blogPromotion.repository';
 import {IGetBlogImagesByBlogPost} from './interface/blogImage.interface';
-import {IGetBlogPostItem} from './interface/blogPost.interface';
+import {
+  IBlogPostRepository,
+  IGetBlogPostItem,
+} from './interface/blogPost.interface';
 
 @Injectable()
 export class FeedService {
@@ -27,7 +30,7 @@ export class FeedService {
 
   constructor(
     @InjectRepository(BlogPostRepository)
-    private blogPostRepository: BlogPostRepository,
+    private blogPostRepository: IBlogPostRepository,
     @InjectRepository(BlogChallengesRepository)
     private blogChallengesRepository: BlogChallengesRepository,
     @InjectRepository(BlogPromotionRepository)
@@ -217,7 +220,6 @@ export class FeedService {
   ): Promise<GetListFeedResDTO> {
     // 선택한 데이터 맨상단에 노출 [데이터 고정]
     const {feedId: blogPostId} = param;
-    console.log('#blogPostId', blogPostId);
     const blogPost = await this.blogPostRepository.getBlogPost(blogPostId);
 
     // 챌린지ID가 있다면, 챌린지ID에 맞는 데이터를 랜덤으로 노출

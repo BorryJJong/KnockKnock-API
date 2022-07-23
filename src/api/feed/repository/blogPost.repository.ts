@@ -2,11 +2,17 @@ import {Injectable} from '@nestjs/common';
 import {EntityRepository, QueryRunner, Repository} from 'typeorm';
 import {BlogPost} from '../../../entities/BlogPost';
 import {CreateBlogPostDTO} from '../dto/feed.dto';
-import {IGetBlogPostItems} from '../interface/blogPost.interface';
+import {
+  IBlogPostRepository,
+  IGetBlogPostItems,
+} from '../interface/blogPost.interface';
 
 @Injectable()
 @EntityRepository(BlogPost)
-export class BlogPostRepository extends Repository<BlogPost> {
+export class BlogPostRepository
+  extends Repository<BlogPost>
+  implements IBlogPostRepository
+{
   createBlogPost(createBlogPostDTO: CreateBlogPostDTO): BlogPost {
     return this.create({...createBlogPostDTO});
   }
