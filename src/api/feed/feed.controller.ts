@@ -16,6 +16,9 @@ import {
   UpdateFeedDTO,
   GetListFeedMainResDTO,
   GetListFeedMainReqDTO,
+  GetListFeedReqQueryDTO,
+  GetListFeedReqParamDTO,
+  GetListFeedResDTO,
 } from './dto/feed.dto';
 import {
   ApiCreatedResponse,
@@ -59,6 +62,27 @@ export class FeedController {
     @Query() query: GetListFeedMainReqDTO,
   ): Promise<GetListFeedMainResDTO> {
     return this.feedService.getFeedsByChallengesFilter(query);
+  }
+
+  @Get(':feedId')
+  @ApiOperation({
+    summary: '피드 게시글 목록 API',
+    externalDocs: {
+      description: 'Figma링크',
+      url: 'https://www.figma.com/file/1g4o56bPFBBzbGfpL29jo2/%23%EC%A0%9C%EB%A1%9C%EC%9B%A8%EC%9D%B4%EC%8A%A4%ED%8A%B8?node-id=1907%3A22097',
+    },
+    deprecated: false,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '성공!!!',
+    type: [GetListFeedResDTO],
+  })
+  public async getListFeed(
+    @Param() param: GetListFeedReqParamDTO,
+    @Query() query: GetListFeedReqQueryDTO,
+  ): Promise<GetListFeedResDTO> {
+    return this.feedService.getListFeed(param, query);
   }
 
   @Post()

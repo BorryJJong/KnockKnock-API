@@ -8,6 +8,7 @@ import {
   PagenationReqDTO,
   PagenationResDTO,
 } from '../../../shared/dto/Pagenation.dto';
+import {IGetBlogImagesByBlogPost} from '../interface/blogImage.interface';
 
 export class CreateFeedDTO extends OmitType(BlogPost, [
   'id',
@@ -106,4 +107,86 @@ export class GetListBlogImageByBlogPostResDTO {
     this.postId = id;
     this.fileUrl = fileUrl;
   }
+}
+
+export class GetListFeedReqQueryDTO extends PagenationReqDTO {
+  @ApiProperty({required: false, description: '챌린지ID', example: '1'})
+  challengeId?: number;
+}
+
+export class GetListFeedReqParamDTO {
+  @ApiProperty({required: true, description: '피드ID', example: '1'})
+  feedId: number;
+}
+
+export class GetFeedImageResDTO {
+  @ApiProperty({description: '피드 이미지 id', example: '1'})
+  private id: number;
+
+  @ApiProperty({
+    description: '피드 이미지 url',
+    example: '[{aws.s3.endpoint}/feed/filename.png]',
+  })
+  private fileUrl: string;
+
+  constructor(id: number, fileUrl: string) {
+    this.id = id;
+    this.fileUrl = fileUrl;
+  }
+}
+
+export class GetFeedResDTO {
+  @ApiProperty({description: '피드ID', example: '1'})
+  private id: number;
+
+  @ApiProperty({description: '글쓴이 닉네임', example: 'sungmin_kim94'})
+  private userName: string;
+
+  @ApiProperty({description: '작성 시간(생성일)', example: '1시간전'})
+  private regDateToString: string;
+
+  @ApiProperty({
+    description: '피드 이미지 목록',
+    type: GetFeedImageResDTO,
+    example: GetFeedImageResDTO,
+  })
+  blogImages: GetFeedImageResDTO[];
+
+  @ApiProperty({description: '좋아요 개수', example: '1,301'})
+  private blogLikeCount: string;
+
+  @ApiProperty({description: '좋아요 선택 여부', example: 'true'})
+  private isLike: boolean;
+
+  @ApiProperty({description: '댓글 개수', example: '2,456'})
+  private blogCommentCount: string;
+
+  constructor(
+    id: number,
+    userName: string,
+    regDateToString: string,
+    blogLikeCount: string,
+    isLike: boolean,
+    blogCommentCount: string,
+    blogImages: IGetBlogImagesByBlogPost[],
+  ) {
+    this.id = id;
+    this.userName = userName;
+    this.regDateToString = regDateToString;
+    this.blogLikeCount = blogLikeCount;
+    this.isLike = isLike;
+    this.blogCommentCount = blogCommentCount;
+    this.blogImages = blogImages.map(
+      blogImage => new GetFeedImageResDTO(blogImage.id, blogImage.fileUrl),
+    );
+  }
+}
+
+export class GetListFeedResDTO extends PagenationResDTO {
+  @ApiProperty({
+    description: '피드 게시글 목록',
+    type: GetFeedResDTO,
+    example: GetFeedResDTO,
+  })
+  feeds: GetFeedResDTO[];
 }

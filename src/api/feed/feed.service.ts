@@ -8,6 +8,10 @@ import {
   GetListFeedMainReqDTO,
   GetListFeedMainResDTO,
   GetFeedMainResDTO,
+  GetListFeedReqParamDTO,
+  GetListFeedReqQueryDTO,
+  GetListFeedResDTO,
+  GetFeedResDTO,
 } from './dto/feed.dto';
 import {ImageService} from 'src/api/image/image.service';
 import {BlogChallengesRepository} from './repository/blogChallenges.repository';
@@ -15,6 +19,7 @@ import {BlogImageRepository} from './repository/blogImage.repository';
 import {BlogPostRepository} from './repository/blogPost.repository';
 import {BlogPromotionRepository} from './repository/blogPromotion.repository';
 import {IGetBlogImagesByBlogPost} from './interface/blogImage.interface';
+import {IGetBlogPostItem} from './interface/blogPost.interface';
 
 @Injectable()
 export class FeedService {
@@ -192,12 +197,74 @@ export class FeedService {
     return {
       feeds: blogPosts.items.map(blogPost => {
         const filterBlogImages = blogImages.filter(
-          blogImage => blogImage.postId === blogPost.id,
+          blogImage => blogImage.id === blogPost.id,
         );
         const isImageMore = filterBlogImages.length > 1 ? true : false;
         const thumbnailUrl = filterBlogImages[0].fileUrl;
 
         return new GetFeedMainResDTO(blogPost.id, thumbnailUrl, isImageMore);
+      }),
+      isNext:
+        blogPosts.pagination.total >
+        blogPosts.pagination.skip + blogPosts.pagination.take,
+      total: blogPosts.pagination.total,
+    };
+  }
+
+  public async getListFeed(
+    param: GetListFeedReqParamDTO,
+    query: GetListFeedReqQueryDTO,
+  ): Promise<GetListFeedResDTO> {
+    // 선택한 데이터 맨상단에 노출 [데이터 고정]
+    const {feedId: blogPostId} = param;
+    console.log('#blogPostId', blogPostId);
+    const blogPost = await this.blogPostRepository.getBlogPost(blogPostId);
+
+    // 챌린지ID가 있다면, 챌린지ID에 맞는 데이터를 랜덤으로 노출
+    const {challengeId, skip, take} = query;
+    let blogPostIds: number[] = [];
+
+    if (challengeId) {
+      const blogChallenges =
+        await this.blogChallengesRepository.getBlogChallengesByChallengeId(
+          challengeId,
+        );
+      blogPostIds = blogChallenges.map(bc => bc.postId);
+    }
+
+    const blogPosts = await this.blogPostRepository.getListBlogPost(
+      skip,
+      take,
+      blogPostIds,
+      blogPost.id,
+    );
+
+    blogPosts.items.unshift(blogPost);
+    let blogImages: IGetBlogImagesByBlogPost[] = [];
+
+    // [추후 개발]피드 이미지 정보, 피드 정보, 유저 정보, 좋아요 정보, 댓글 정보 [Service OR Dao 호출 고민]
+    blogPostIds = blogPosts.items.map(bp => bp.id);
+    if (blogPostIds.length > 0) {
+      blogImages = await this.blogImageRepository.getBlogImagesByBlogPost(
+        blogPostIds,
+      );
+    }
+    // const user = await this.userRepository.getUser(blogPost.userId);
+    // const isLikeByUser await this.blogLikeRepository.getBlogLikeByUser();
+    // const blogCommentCount = await this.blogCommentRepository.getBlogCommentCount(blogPost.id);
+    // const blogLikeCount = await this.blogLikeRepository.getBlogLikeCount(blogPost.id);
+
+    return {
+      feeds: blogPosts.items.map((blogPost: IGetBlogPostItem) => {
+        return new GetFeedResDTO(
+          blogPost.id,
+          '녹녹제리다',
+          blogPost.regDate.toString(),
+          '1,301',
+          true,
+          '2,456',
+          blogImages,
+        );
       }),
       isNext:
         blogPosts.pagination.total >

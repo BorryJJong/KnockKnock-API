@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {EntityRepository, QueryRunner, Repository} from 'typeorm';
+import {BlogPost} from '../../../entities/BlogPost';
 import {CreateBlogPostDTO} from '../dto/feed.dto';
-import {BlogPost} from 'src/entities/BlogPost';
 import {IGetBlogPostItems} from '../interface/blogPost.interface';
 
 @Injectable()
@@ -27,10 +27,10 @@ export class BlogPostRepository extends Repository<BlogPost> {
     take: number,
     blogPostIds: number[],
   ): Promise<IGetBlogPostItems> {
-    const queryBuilder = await this.createQueryBuilder('blogPost');
+    let queryBuilder = await this.createQueryBuilder('blogPost');
 
     if (blogPostIds.length > 0) {
-      queryBuilder.andWhereInIds(blogPostIds);
+      queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
     }
 
     const [blogPosts, total] = await queryBuilder
@@ -47,5 +47,44 @@ export class BlogPostRepository extends Repository<BlogPost> {
         take,
       },
     };
+  }
+
+  async getListBlogPost(
+    skip: number,
+    take: number,
+    blogPostIds: number[],
+    excludeBlogPostId: number,
+  ): Promise<IGetBlogPostItems> {
+    let queryBuilder = await this.createQueryBuilder('blogPost').where(
+      'blogPost.id != :id',
+      {
+        id: excludeBlogPostId,
+      },
+    );
+
+    if (blogPostIds.length > 0) {
+      queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
+    }
+
+    const [blogPosts, total] = await queryBuilder
+      .skip(skip)
+      .take(take)
+      .orderBy('RAND()')
+      .getManyAndCount();
+
+    return {
+      items: blogPosts,
+      pagination: {
+        total: total + 1,
+        skip,
+        take,
+      },
+    };
+  }
+
+  async getBlogPost(blogPostId: number): Promise<BlogPost> {
+    return await this.createQueryBuilder('blogPost')
+      .where('blogPost.id = :id', {id: blogPostId})
+      .getOneOrFail();
   }
 }
