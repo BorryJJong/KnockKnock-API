@@ -151,7 +151,7 @@ export class GetFeedResDTO {
     type: GetFeedImageResDTO,
     example: GetFeedImageResDTO,
   })
-  blogImages: GetFeedImageResDTO[];
+  private blogImages: GetFeedImageResDTO[];
 
   @ApiProperty({description: '좋아요 개수', example: '1,301'})
   private blogLikeCount: string;
