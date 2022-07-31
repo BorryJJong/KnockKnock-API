@@ -9,9 +9,10 @@ export class CreateChallengeRequestDTO extends PickType(Challenges, [
   'content',
 ] as const) {}
 
-export class GetChallengeRequestDTO extends PickType(Challenges, [
-  'id',
-] as const) {}
+export class GetChallengeRequestDTO {
+  @ApiProperty({description: '챌린지ID', example: '1', required: true})
+  id: number;
+}
 
 export class GetChallengeResponseDTO extends PickType(Challenges, [
   'id',

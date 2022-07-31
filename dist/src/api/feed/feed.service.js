@@ -17,11 +17,13 @@ exports.FeedService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
+const class_transformer_1 = require("class-transformer");
+const feed_dto_1 = require("./dto/feed.dto");
 const image_service_1 = require("../image/image.service");
-const BlogPost_1 = require("../../entities/BlogPost");
-const BlogChallenges_1 = require("../../entities/BlogChallenges");
-const BlogPromotion_1 = require("../../entities/BlogPromotion");
-const BlogImage_1 = require("../../entities/BlogImage");
+const blogChallenges_repository_1 = require("./repository/blogChallenges.repository");
+const blogImage_repository_1 = require("./repository/blogImage.repository");
+const blogPost_repository_1 = require("./repository/blogPost.repository");
+const blogPromotion_repository_1 = require("./repository/blogPromotion.repository");
 let FeedService = FeedService_1 = class FeedService {
     constructor(blogPostRepository, blogChallengesRepository, blogPromotionRepository, blogImageRepository, imageService, connection) {
         this.blogPostRepository = blogPostRepository;
@@ -32,17 +34,18 @@ let FeedService = FeedService_1 = class FeedService {
         this.connection = connection;
         this.logger = new common_1.Logger(FeedService_1.name);
     }
-    async create(files, data) {
+    async create(files, createFeedDTO) {
         const queryRunner = this.connection.createQueryRunner();
         let result = false;
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            const postId = await this.savePost(queryRunner, data.userId, data.content, data.storeAddress, data.locationX, data.locationY);
-            await this.saveChallenges(queryRunner, postId, data.challenges);
-            await this.savePromotion(queryRunner, postId, data.promotions);
+            const post = await this.savePost(queryRunner, createFeedDTO);
+            const postId = post.id;
+            await this.saveChallenges(queryRunner, postId, createFeedDTO.challenges);
+            await this.savePromotion(queryRunner, postId, createFeedDTO.promotions);
             if (files !== undefined) {
-                await Promise.all(files.map(async (file) => await this.saveImage(queryRunner, postId, file)));
+                await Promise.all(files.map(async (file) => await this.savePostImage(queryRunner, postId, file)));
             }
             await queryRunner.commitTransaction();
             result = true;
@@ -56,47 +59,41 @@ let FeedService = FeedService_1 = class FeedService {
         }
         return result;
     }
-    async savePost(queryRunner, userId, content, storeAddress, locationX, locationY) {
-        const post = await this.blogPostRepository.create({
-            userId,
-            content,
-            storeAddress,
-            locationX,
-            locationY,
-        });
-        const returned = await queryRunner.manager.save(post);
-        return returned.id;
+    async savePost(queryRunner, createBlogPostDTO) {
+        const post = this.blogPostRepository.createBlogPost(createBlogPostDTO);
+        const returned = await this.blogPostRepository.saveBlogPost(queryRunner, post);
+        return returned;
     }
     async saveChallenges(queryRunner, postId, challenges) {
         await Promise.all(challenges.split(',').map(async (id) => {
-            const challenge = await this.blogChallengesRepository.create({
-                postId,
+            const challenge = this.blogChallengesRepository.createBlogChallenges({
+                postId: postId,
                 challengeId: Number(id),
             });
-            await queryRunner.manager.save(challenge);
+            await this.blogChallengesRepository.saveBlogChallenges(queryRunner, challenge);
         }));
     }
     async savePromotion(queryRunner, postId, promotions) {
         await Promise.all(promotions.split(',').map(async (id) => {
-            const promotion = await this.blogPromotionRepository.create({
-                postId,
+            const promotion = this.blogPromotionRepository.createBlogPromotion({
+                postId: postId,
                 promotionId: Number(id),
             });
-            await queryRunner.manager.save(promotion);
+            await this.blogPromotionRepository.saveBlogPromotion(queryRunner, promotion);
         }));
     }
-    async saveImage(queryRunner, postId, file) {
+    async savePostImage(queryRunner, postId, file) {
         let resultS3 = null;
         try {
             resultS3 = await this.imageService.uploadS3(file, 'feed');
             if (!resultS3.ok) {
                 throw new Error('S3 image upload failed');
             }
-            const image = await this.blogImageRepository.create({
-                postId,
+            const image = this.blogImageRepository.createBlogImage({
+                postId: postId,
                 fileUrl: resultS3.url,
             });
-            await queryRunner.manager.save(image);
+            await this.blogImageRepository.saveBlogImage(queryRunner, image);
         }
         catch (e) {
             if (resultS3.ok) {
@@ -105,29 +102,86 @@ let FeedService = FeedService_1 = class FeedService {
             throw new Error(e);
         }
     }
-    findAll() {
-        return `This action returns all feed`;
+    async getFeed({ id }) {
+        try {
+            const post = await this.blogPostRepository.getBlogPostById(id);
+            const promotions = await this.blogPromotionRepository.getBlogPromotionByPostId(id);
+            const challenges = await this.blogChallengesRepository.getBlogChallengesByPostId(id);
+            const images = await this.blogImageRepository.getBlogImageByPostId(id);
+            const result = {
+                feed: (0, class_transformer_1.plainToInstance)(feed_dto_1.GetBlogPostDTO, post),
+                promotions: (0, class_transformer_1.plainToInstance)(feed_dto_1.GetBlogPromotionDTO, promotions),
+                challenges: (0, class_transformer_1.plainToInstance)(feed_dto_1.GetBlogChallengesDTO, challenges),
+                images: (0, class_transformer_1.plainToInstance)(feed_dto_1.GetBlogImageDTO, images),
+            };
+            return result;
+        }
+        catch (e) {
+            this.logger.error(e);
+            throw new Error(e);
+        }
     }
-    findOne(id) {
-        return `This action returns a #${id} feed`;
-    }
-    update(id, updateFeedDto) {
+    update(id, updateFeedDTO) {
         return `This action updates a #${id} feed`;
     }
     remove(id) {
         return `This action removes a #${id} feed`;
     }
+    async getFeedsByChallengesFilter(query) {
+        let blogPostIds = [];
+        const blogChallenges = await this.blogChallengesRepository.getBlogChallengesByChallengeId(query.challengeId);
+        if (blogChallenges.length > 0) {
+            blogPostIds = blogChallenges.map(bc => bc.postId);
+        }
+        const blogPosts = await this.blogPostRepository.getBlogPosts(query.skip, query.take, blogPostIds);
+        const blogImages = await this.blogImageRepository.getBlogImagesByBlogPost(blogPosts.items.map(post => post.id));
+        return {
+            feeds: blogPosts.items.map(blogPost => {
+                const filterBlogImages = blogImages.filter(blogImage => blogImage.id === blogPost.id);
+                const isImageMore = filterBlogImages.length > 1 ? true : false;
+                const thumbnailUrl = filterBlogImages[0].fileUrl;
+                return new feed_dto_1.GetFeedMainResDTO(blogPost.id, thumbnailUrl, isImageMore);
+            }),
+            isNext: blogPosts.pagination.total >
+                blogPosts.pagination.skip + blogPosts.pagination.take,
+            total: blogPosts.pagination.total,
+        };
+    }
+    async getListFeed(param, query) {
+        const { feedId: blogPostId } = param;
+        const blogPost = await this.blogPostRepository.getBlogPost(blogPostId);
+        const { challengeId, skip, take } = query;
+        let blogPostIds = [];
+        if (challengeId) {
+            const blogChallenges = await this.blogChallengesRepository.getBlogChallengesByChallengeId(challengeId);
+            blogPostIds = blogChallenges.map(bc => bc.postId);
+        }
+        const blogPosts = await this.blogPostRepository.getListBlogPost(skip, take, blogPostIds, blogPost.id);
+        blogPosts.items.unshift(blogPost);
+        let blogImages = [];
+        blogPostIds = blogPosts.items.map(bp => bp.id);
+        if (blogPostIds.length > 0) {
+            blogImages = await this.blogImageRepository.getBlogImagesByBlogPost(blogPostIds);
+        }
+        return {
+            feeds: blogPosts.items.map((blogPost) => {
+                return new feed_dto_1.GetFeedResDTO(blogPost.id, '녹녹제리다', blogPost.regDate.toString(), '1,301', true, '2,456', blogImages);
+            }),
+            isNext: blogPosts.pagination.total >
+                blogPosts.pagination.skip + blogPosts.pagination.take,
+            total: blogPosts.pagination.total,
+        };
+    }
 };
 FeedService = FeedService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(BlogPost_1.BlogPost)),
-    __param(1, (0, typeorm_1.InjectRepository)(BlogChallenges_1.BlogChallenges)),
-    __param(2, (0, typeorm_1.InjectRepository)(BlogPromotion_1.BlogPromotion)),
-    __param(3, (0, typeorm_1.InjectRepository)(BlogImage_1.BlogImage)),
-    __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository,
-        typeorm_2.Repository,
-        typeorm_2.Repository,
+    __param(0, (0, typeorm_1.InjectRepository)(blogPost_repository_1.BlogPostRepository)),
+    __param(1, (0, typeorm_1.InjectRepository)(blogChallenges_repository_1.BlogChallengesRepository)),
+    __param(2, (0, typeorm_1.InjectRepository)(blogPromotion_repository_1.BlogPromotionRepository)),
+    __param(3, (0, typeorm_1.InjectRepository)(blogImage_repository_1.BlogImageRepository)),
+    __metadata("design:paramtypes", [Object, blogChallenges_repository_1.BlogChallengesRepository,
+        blogPromotion_repository_1.BlogPromotionRepository,
+        blogImage_repository_1.BlogImageRepository,
         image_service_1.ImageService,
         typeorm_2.Connection])
 ], FeedService);

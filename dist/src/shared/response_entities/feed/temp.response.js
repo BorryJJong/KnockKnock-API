@@ -9,8 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FeedCreateResponse = exports.FeedCreateResponseData = void 0;
+exports.GetFeedViewResponse = exports.FeedCreateResponse = exports.FeedCreateResponseData = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const feed_dto_1 = require("../../../api/feed/dto/feed.dto");
 const base_response_1 = require("../base.response");
 class FeedCreateResponseData {
 }
@@ -29,4 +30,14 @@ __decorate([
     __metadata("design:type", FeedCreateResponseData)
 ], FeedCreateResponse.prototype, "data", void 0);
 exports.FeedCreateResponse = FeedCreateResponse;
+class GetFeedViewResponse extends base_response_1.BaseResponse {
+    constructor() {
+        super();
+    }
+}
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", feed_dto_1.GetFeedViewResDTO)
+], GetFeedViewResponse.prototype, "data", void 0);
+exports.GetFeedViewResponse = GetFeedViewResponse;
 //# sourceMappingURL=temp.response.js.map

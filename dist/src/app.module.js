@@ -17,6 +17,7 @@ const orm_1 = require("./config/orm");
 const users_module_1 = require("./api/users/users.module");
 const feed_module_1 = require("./api/feed/feed.module");
 const promotions_module_1 = require("./api/promotions/promotions.module");
+const like_module_1 = require("./api/like/like.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -28,6 +29,7 @@ AppModule = __decorate([
             feed_module_1.FeedModule,
             promotions_module_1.PromotionsModule,
             challenges_module_1.ChallengesModule,
+            like_module_1.LikeModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
