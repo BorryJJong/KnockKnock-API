@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {EntityRepository, getManager, Repository} from 'typeorm';
 import {
-  GetChallengeListResponseDTO,
+  GetListChallengeResDTO,
   ParticipantUserDTO,
 } from './dto/challenges.dto';
 import {BlogChallenges} from '../../entities/BlogChallenges';
@@ -39,7 +39,7 @@ export class ChallengesRepository extends Repository<Challenges> {
     return challenges;
   }
 
-  public async getChallengeList(): Promise<GetChallengeListResponseDTO[]> {
+  public async getChallengeList(): Promise<GetListChallengeResDTO[]> {
     const userPostChallenge: any = getManager()
       .createQueryBuilder()
       .select('bp.user_id', 'user_id')
@@ -82,7 +82,7 @@ export class ChallengesRepository extends Repository<Challenges> {
     //Convert raws to our appropriate objects
     const challenges = challengeListRaws.map((s: any) => {
       console.log(s);
-      const item: GetChallengeListResponseDTO = {
+      const item: GetListChallengeResDTO = {
         id: s.id,
         title: s.title,
         subTitle: s.subTitle,

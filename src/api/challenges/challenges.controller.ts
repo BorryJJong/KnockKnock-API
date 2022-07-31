@@ -2,10 +2,11 @@ import {Controller, Get, Param} from '@nestjs/common';
 import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
 import {ChallengesService} from './challenges.service';
 import {
-  GetChallengeListResponseDTO,
-  GetChallengeRequestDTO,
-  GetChallengeResponseDTO,
+  GetListChallengeResDTO,
+  GetChallengeReqDTO,
+  GetChallengeResDTO,
   GetChallengeTitleReqDTO,
+  GetChallengeDetailResDTO,
 } from './dto/challenges.dto';
 
 @ApiTags('challenges')
@@ -33,16 +34,15 @@ export class ChallengesController {
   }
 
   @Get('/:id')
+  //@UseGuards(JwtAuthGuard)
   @ApiOperation({summary: '챌린지 상세조회'})
   @ApiResponse({
     status: 200,
     description: '성공',
-    type: GetChallengeResponseDTO,
+    type: GetChallengeResDTO,
   })
-  public async getChallenge(
-    @Param() param: GetChallengeRequestDTO,
-  ): Promise<GetChallengeResponseDTO> {
-    return this.challengesService.getChallenge(param);
+  public async getChallenge(@Param() param: GetChallengeReqDTO,): Promise<GetChallengeDetailResDTO> {
+    return this.challengesService.getChallengeDetail(param);
   }
 
   @Get('/')
@@ -50,9 +50,9 @@ export class ChallengesController {
   @ApiResponse({
     status: 200,
     description: '성공',
-    type: GetChallengeResponseDTO,
+    type: GetChallengeResDTO,
   })
-  public async getChallengeList(): Promise<GetChallengeListResponseDTO[]> {
+  public async getChallengeList(): Promise<GetListChallengeResDTO[]> {
     return this.challengesService.getChallengeList();
   }
 }

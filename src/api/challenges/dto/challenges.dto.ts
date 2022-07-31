@@ -3,17 +3,17 @@ import {Column} from 'typeorm';
 import {Challenges} from '../../../entities/Challenges';
 import {IChallengeTitle} from '../challenges.interface';
 
-export class CreateChallengeRequestDTO extends PickType(Challenges, [
+export class insChallengeReqDTO extends PickType(Challenges, [
   'title',
   'subTitle',
   'content',
 ] as const) {}
 
-export class GetChallengeRequestDTO extends PickType(Challenges, [
+export class GetChallengeReqDTO extends PickType(Challenges, [
   'id',
 ] as const) {}
 
-export class GetChallengeResponseDTO extends PickType(Challenges, [
+export class GetChallengeResDTO extends PickType(Challenges, [
   'id',
   'title',
   'subTitle',
@@ -21,7 +21,13 @@ export class GetChallengeResponseDTO extends PickType(Challenges, [
   'regDate',
 ] as const) {}
 
-export class GetChallengeListResponseDTO extends PickType(Challenges, [
+export class GetChallengeDetailResDTO {
+  challenge : Challenges;
+  participants: ParticipantUserDTO[]; 
+  content : ChallengeContentDTO;
+}
+
+export class GetListChallengeResDTO extends PickType(Challenges, [
   'id',
   'title',
   'subTitle',
@@ -53,6 +59,20 @@ export class ParticipantUserDTO {
   id: number;
   nickname: string;
   image: string;
+}
+
+export class ChallengeSubContentDTO {
+  title: string;
+  image: string;
+  content: string;
+}
+
+export class ChallengeContentDTO {
+  image: string;
+  title: string;
+  subTitle: string;
+  rule: string[];
+  subContents: ChallengeSubContentDTO[];
 }
 
 export class GetChallengeTitleReqDTO implements IChallengeTitle {

@@ -10,6 +10,7 @@ import {
 @Entity('challenges', {schema: 'knockknock'})
 export class Challenges {
   @PrimaryGeneratedColumn()
+  @ApiProperty({description: '챌린지 id', example: '1'})
   id: number;
 
   @Column({
