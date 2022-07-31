@@ -1,12 +1,11 @@
 /// <reference types="multer" />
-import { Repository, Connection, QueryRunner } from 'typeorm';
-import { CreateFeedDto } from './dto/feed.dto';
-import { UpdateFeedDto } from './dto/feed.dto';
+import { Connection, QueryRunner } from 'typeorm';
+import { CreateFeedDTO, UpdateFeedDTO, CreateBlogPostDTO, GetListFeedMainReqDTO, GetListFeedMainResDTO, GetListFeedReqParamDTO, GetListFeedReqQueryDTO, GetListFeedResDTO, GetFeedViewReqDTO, GetFeedViewResDTO } from './dto/feed.dto';
 import { ImageService } from 'src/api/image/image.service';
-import { BlogPost } from '../../entities/BlogPost';
-import { BlogChallenges } from '../../entities/BlogChallenges';
-import { BlogPromotion } from '../../entities/BlogPromotion';
-import { BlogImage } from '../../entities/BlogImage';
+import { BlogChallengesRepository } from './repository/blogChallenges.repository';
+import { BlogImageRepository } from './repository/blogImage.repository';
+import { BlogPromotionRepository } from './repository/blogPromotion.repository';
+import { IBlogPostRepository } from './interface/blogPost.interface';
 export declare class FeedService {
     private blogPostRepository;
     private blogChallengesRepository;
@@ -15,14 +14,15 @@ export declare class FeedService {
     private readonly imageService;
     private connection;
     private readonly logger;
-    constructor(blogPostRepository: Repository<BlogPost>, blogChallengesRepository: Repository<BlogChallenges>, blogPromotionRepository: Repository<BlogPromotion>, blogImageRepository: Repository<BlogImage>, imageService: ImageService, connection: Connection);
-    create(files: Express.Multer.File[], data: CreateFeedDto): Promise<boolean>;
-    savePost(queryRunner: QueryRunner, userId: number, content: string, storeAddress?: string, locationX?: string, locationY?: string): Promise<number>;
+    constructor(blogPostRepository: IBlogPostRepository, blogChallengesRepository: BlogChallengesRepository, blogPromotionRepository: BlogPromotionRepository, blogImageRepository: BlogImageRepository, imageService: ImageService, connection: Connection);
+    create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO): Promise<boolean>;
+    savePost(queryRunner: QueryRunner, createBlogPostDTO: CreateBlogPostDTO): Promise<import("../../entities/BlogPost").BlogPost>;
     saveChallenges(queryRunner: QueryRunner, postId: number, challenges: string): Promise<void>;
     savePromotion(queryRunner: QueryRunner, postId: number, promotions: string): Promise<void>;
-    saveImage(queryRunner: QueryRunner, postId: number, file: Express.Multer.File): Promise<void>;
-    findAll(): string;
-    findOne(id: number): string;
-    update(id: number, updateFeedDto: UpdateFeedDto): string;
+    savePostImage(queryRunner: QueryRunner, postId: number, file: Express.Multer.File): Promise<void>;
+    getFeed({ id }: GetFeedViewReqDTO): Promise<GetFeedViewResDTO>;
+    update(id: number, updateFeedDTO: UpdateFeedDTO): string;
     remove(id: number): string;
+    getFeedsByChallengesFilter(query: GetListFeedMainReqDTO): Promise<GetListFeedMainResDTO>;
+    getListFeed(param: GetListFeedReqParamDTO, query: GetListFeedReqQueryDTO): Promise<GetListFeedResDTO>;
 }
