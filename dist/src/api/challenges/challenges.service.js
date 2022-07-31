@@ -46,9 +46,7 @@ let ChallengesService = class ChallengesService {
         return challengeList;
     }
     async getChallengeTitles() {
-        const challengeTitles = await this.challengesRepository.getChallengeTitles();
-        challengeTitles.unshift({ id: 0, title: '전체' });
-        return challengeTitles;
+        return await this.challengesRepository.getChallengeTitles();
     }
 };
 ChallengesService = __decorate([

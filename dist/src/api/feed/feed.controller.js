@@ -16,6 +16,7 @@ exports.FeedController = void 0;
 const common_1 = require("@nestjs/common");
 const feed_service_1 = require("./feed.service");
 const feed_dto_1 = require("./dto/feed.dto");
+const feed_dto_2 = require("./dto/feed.dto");
 const swagger_1 = require("@nestjs/swagger");
 const platform_express_1 = require("@nestjs/platform-express");
 const temp_response_1 = require("../../shared/response_entities/feed/temp.response");
@@ -23,11 +24,8 @@ let FeedController = class FeedController {
     constructor(feedService) {
         this.feedService = feedService;
     }
-    async getFeedsByChallengesFilter(query) {
-        return this.feedService.getFeedsByChallengesFilter(query);
-    }
-    async create(files, createFeedDTO) {
-        const status = await this.feedService.create(files, createFeedDTO);
+    async create(files, body) {
+        const status = await this.feedService.create(files, body);
         const result = {
             code: status ? 201 : 500,
             message: status ? '생성 성공' : '생성 실패',
@@ -37,36 +35,19 @@ let FeedController = class FeedController {
         };
         return result;
     }
+    findAll() {
+        return this.feedService.findAll();
+    }
     findOne(id) {
         return this.feedService.findOne(+id);
     }
-    update(id, updateFeedDTO) {
-        return this.feedService.update(+id, updateFeedDTO);
+    update(id, updateFeedDto) {
+        return this.feedService.update(+id, updateFeedDto);
     }
     remove(id) {
         return this.feedService.remove(+id);
     }
 };
-__decorate([
-    (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({
-        summary: '피드 목록 API',
-        externalDocs: {
-            description: 'Figma링크',
-            url: 'https://www.figma.com/file/1g4o56bPFBBzbGfpL29jo2/%23%EC%A0%9C%EB%A1%9C%EC%9B%A8%EC%9D%B4%EC%8A%A4%ED%8A%B8?node-id=1907%3A21526',
-        },
-        deprecated: false,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '성공!!!',
-        type: [feed_dto_1.GetListFeedResDTO],
-    }),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [feed_dto_1.GetListFeedReqDTO]),
-    __metadata("design:returntype", Promise)
-], FeedController.prototype, "getFeedsByChallengesFilter", null);
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: '피드 등록' }),
@@ -78,9 +59,15 @@ __decorate([
     __param(0, (0, common_1.UploadedFiles)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array, feed_dto_1.CreateFeedDTO]),
+    __metadata("design:paramtypes", [Array, feed_dto_1.CreateFeedDto]),
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], FeedController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -93,7 +80,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, feed_dto_1.UpdateFeedDTO]),
+    __metadata("design:paramtypes", [String, feed_dto_2.UpdateFeedDto]),
     __metadata("design:returntype", void 0)
 ], FeedController.prototype, "update", null);
 __decorate([

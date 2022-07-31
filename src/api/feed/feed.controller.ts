@@ -14,7 +14,10 @@ import {FeedService} from './feed.service';
 import {
   CreateFeedDTO,
   UpdateFeedDTO,
-  GetListFeedReqDTO as GetFeedReqDTO,
+  GetListFeedMainResDTO,
+  GetListFeedMainReqDTO,
+  GetListFeedReqQueryDTO,
+  GetListFeedReqParamDTO,
   GetListFeedResDTO,
   GetFeedViewReqDTO,
   GetFeedViewResDTO,
@@ -26,7 +29,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {FilesInterceptor} from '@nestjs/platform-express';
-import {FeedCreateResponse, GetFeedViewResponse} from 'src/shared/response_entities/feed/temp.response';
+import {
+  FeedCreateResponse,
+  GetFeedViewResponse,
+} from 'src/shared/response_entities/feed/temp.response';
 
 // TODO: 400,401,403,404등 공통 사용 응답코드는 컨트롤러에 붙이기
 // @ApiBadRequestResponse({
@@ -45,7 +51,7 @@ export class FeedController {
 
   @Get()
   @ApiOperation({
-    summary: '피드 목록 API',
+    summary: '피드 메인 API',
     externalDocs: {
       description: 'Figma링크',
       url: 'https://www.figma.com/file/1g4o56bPFBBzbGfpL29jo2/%23%EC%A0%9C%EB%A1%9C%EC%9B%A8%EC%9D%B4%EC%8A%A4%ED%8A%B8?node-id=1907%3A21526',
@@ -55,12 +61,33 @@ export class FeedController {
   @ApiResponse({
     status: 200,
     description: '성공!!!',
-    type: [GetListFeedResDTO],
+    type: [GetListFeedMainResDTO],
   })
   public async getFeedsByChallengesFilter(
-    @Query() query: GetFeedReqDTO,
-  ): Promise<GetListFeedResDTO> {
+    @Query() query: GetListFeedMainReqDTO,
+  ): Promise<GetListFeedMainResDTO> {
     return this.feedService.getFeedsByChallengesFilter(query);
+  }
+
+  @Get(':feedId')
+  @ApiOperation({
+    summary: '피드 게시글 목록 API',
+    externalDocs: {
+      description: 'Figma링크',
+      url: 'https://www.figma.com/file/1g4o56bPFBBzbGfpL29jo2/%23%EC%A0%9C%EB%A1%9C%EC%9B%A8%EC%9D%B4%EC%8A%A4%ED%8A%B8?node-id=1907%3A22097',
+    },
+    deprecated: false,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '성공!!!',
+    type: [GetListFeedResDTO],
+  })
+  public async getListFeed(
+    @Param() param: GetListFeedReqParamDTO,
+    @Query() query: GetListFeedReqQueryDTO,
+  ): Promise<GetListFeedResDTO> {
+    return this.feedService.getListFeed(param, query);
   }
 
   @Post()
@@ -90,7 +117,7 @@ export class FeedController {
   @ApiOperation({summary: '피드 상세 조회'})
   @ApiResponse({
     description: '',
-    type: GetFeedViewResponse
+    type: GetFeedViewResponse,
   })
   async getFeed(@Param() param: GetFeedViewReqDTO) {
     const result: GetFeedViewResponse = {
@@ -98,9 +125,9 @@ export class FeedController {
       message: 'success',
       data: null,
     };
-    
-    try{
-      const feed:GetFeedViewResDTO = await this.feedService.getFeed(param);
+
+    try {
+      const feed: GetFeedViewResDTO = await this.feedService.getFeed(param);
       result.data = feed;
     } catch (e) {
       result.code = 500;

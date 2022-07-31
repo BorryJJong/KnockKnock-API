@@ -1,13 +1,19 @@
 import {Injectable} from '@nestjs/common';
+import {BlogPost} from '../../../entities/BlogPost';
+import {
+  IBlogPostRepository,
+  IGetBlogPostItems,
+} from '../interface/blogPost.interface';
 import {EntityRepository, getManager, QueryRunner, Repository} from 'typeorm';
 import {CreateBlogPostDTO, GetBlogPostDTO} from '../dto/feed.dto';
-import {BlogPost} from 'src/entities/BlogPost';
-import {IGetBlogPostItems} from '../interface/blogPost.interface';
-import { User } from 'src/entities/User';
+import {User} from '../../../entities/User';
 
 @Injectable()
 @EntityRepository(BlogPost)
-export class BlogPostRepository extends Repository<BlogPost> {
+export class BlogPostRepository
+  extends Repository<BlogPost>
+  implements IBlogPostRepository
+{
   createBlogPost(createBlogPostDTO: CreateBlogPostDTO): BlogPost {
     return this.create({...createBlogPostDTO});
   }
@@ -28,10 +34,10 @@ export class BlogPostRepository extends Repository<BlogPost> {
     take: number,
     blogPostIds: number[],
   ): Promise<IGetBlogPostItems> {
-    const queryBuilder = await this.createQueryBuilder('blogPost');
+    let queryBuilder = await this.createQueryBuilder('blogPost');
 
     if (blogPostIds.length > 0) {
-      queryBuilder.andWhereInIds(blogPostIds);
+      queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
     }
 
     const [blogPosts, total] = await queryBuilder
@@ -50,8 +56,47 @@ export class BlogPostRepository extends Repository<BlogPost> {
     };
   }
 
-  async getBlogPostById(id: number): Promise<GetBlogPostDTO>{
-    const post:GetBlogPostDTO = await getManager()
+  async getListBlogPost(
+    skip: number,
+    take: number,
+    blogPostIds: number[],
+    excludeBlogPostId: number,
+  ): Promise<IGetBlogPostItems> {
+    let queryBuilder = await this.createQueryBuilder('blogPost').where(
+      'blogPost.id != :id',
+      {
+        id: excludeBlogPostId,
+      },
+    );
+
+    if (blogPostIds.length > 0) {
+      queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
+    }
+
+    const [blogPosts, total] = await queryBuilder
+      .skip(skip)
+      .take(take)
+      .orderBy('RAND()')
+      .getManyAndCount();
+
+    return {
+      items: blogPosts,
+      pagination: {
+        total: total + 1,
+        skip,
+        take,
+      },
+    };
+  }
+
+  async getBlogPost(blogPostId: number): Promise<BlogPost> {
+    return await this.createQueryBuilder('blogPost')
+      .where('blogPost.id = :id', {id: blogPostId})
+      .getOneOrFail();
+  }
+
+  async getBlogPostById(id: number): Promise<GetBlogPostDTO> {
+    const post: GetBlogPostDTO = await getManager()
       .createQueryBuilder()
       .select('bp.id', 'id')
       .addSelect('bp.user_id', 'userId')
@@ -64,9 +109,9 @@ export class BlogPostRepository extends Repository<BlogPost> {
       .addSelect('u.image', 'image')
       .from(BlogPost, 'bp')
       .innerJoin(User, 'u', 'bp.user_id = u.id')
-      .where("bp.id = :id", { id: id })
+      .where('bp.id = :id', {id: id})
       .getRawOne();
-    
+
     return post;
   }
 }
