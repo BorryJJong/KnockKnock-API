@@ -8,7 +8,7 @@ import {BlogPost} from '../../../entities/BlogPost';
 import {
   PagenationReqDTO,
   PagenationResDTO,
-} from '../../../shared/dto/Pagenation.dto';
+} from '../../../shared/dto/pagenation.dto';
 import {IGetBlogImagesByBlogPost} from '../interface/blogImage.interface';
 
 export class CreateFeedDTO extends OmitType(BlogPost, [
