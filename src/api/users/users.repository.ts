@@ -37,4 +37,8 @@ export class UserRepository extends Repository<User> {
     delete user.password;
     return user;
   }
+
+  public getUser(id: number): Promise<User> {
+    return this.findOne(id);
+  }
 }

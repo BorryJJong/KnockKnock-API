@@ -9,4 +9,5 @@ export declare class UserRepository extends Repository<User> {
     findUserByEmail(email: string): Promise<User>;
     findUserById(id: number): Promise<User>;
     findUserByIdWithoutPassword(id: string): Promise<User>;
+    getUser(id: number): Promise<User>;
 }
