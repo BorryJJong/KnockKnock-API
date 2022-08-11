@@ -405,8 +405,9 @@ export class GetBlogCommentDTO {
   @Expose()
   @ApiProperty({
     description: '등록 날짜',
-    example: '시간 -> text 변환 작업 아직 안함',
+    example: '1일 전',
   })
+  @Transform(r => convertTimeToStr(convertTime(r.value)))
   regDate: Date;
 
   @Expose()
