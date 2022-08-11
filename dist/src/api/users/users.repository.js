@@ -36,6 +36,9 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
         delete user.password;
         return user;
     }
+    getUser(id) {
+        return this.findOne(id);
+    }
 };
 UserRepository = __decorate([
     (0, common_1.Injectable)(),

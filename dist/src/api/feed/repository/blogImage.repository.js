@@ -30,6 +30,13 @@ let BlogImageRepository = class BlogImageRepository extends typeorm_1.Repository
             .getMany();
         return blogImages;
     }
+    async getBlogImageByPostId(id) {
+        const images = await this.find({
+            select: ['id', 'fileUrl'],
+            where: { postId: id }
+        });
+        return images;
+    }
 };
 BlogImageRepository = __decorate([
     (0, common_1.Injectable)(),

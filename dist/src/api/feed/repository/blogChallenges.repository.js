@@ -10,6 +10,7 @@ exports.BlogChallengesRepository = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const BlogChallenges_1 = require("../../../entities/BlogChallenges");
+const Challenges_1 = require("../../../entities/Challenges");
 let BlogChallengesRepository = class BlogChallengesRepository extends typeorm_1.Repository {
     createBlogChallenges(createBlogChallengesDTO) {
         return this.create(Object.assign({}, createBlogChallengesDTO));
@@ -26,6 +27,18 @@ let BlogChallengesRepository = class BlogChallengesRepository extends typeorm_1.
         return this.createQueryBuilder('blogChallenges')
             .where('blogChallenges.challengeId = :challengeId ', { challengeId })
             .getMany();
+    }
+    async getBlogChallengesByPostId(id) {
+        const challenges = await (0, typeorm_1.getManager)()
+            .createQueryBuilder()
+            .select('bc.id', 'id')
+            .addSelect('bc.challenge_id', 'challengeId')
+            .addSelect('c.title', 'title')
+            .from(BlogChallenges_1.BlogChallenges, 'bc')
+            .innerJoin(Challenges_1.Challenges, 'c', 'bc.challenge_id = c.id')
+            .where("bc.post_id = :id", { id: id })
+            .getRawMany();
+        return challenges;
     }
 };
 BlogChallengesRepository = __decorate([

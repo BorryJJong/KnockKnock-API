@@ -4,6 +4,7 @@ import { BlogPromotion } from '../../../entities/BlogPromotion';
 import { BlogImage } from '../../../entities/BlogImage';
 import { BlogPost } from '../../../entities/BlogPost';
 import { PagenationReqDTO, PagenationResDTO } from '../../../shared/dto/Pagenation.dto';
+import { IGetBlogImagesByBlogPost } from '../interface/blogImage.interface';
 declare const CreateFeedDTO_base: import("@nestjs/common").Type<Omit<BlogPost, "id" | "delDate" | "regDate" | "hits" | "modDate" | "isDeleted">>;
 export declare class CreateFeedDTO extends CreateFeedDTO_base {
     promotions: string;
@@ -28,21 +29,79 @@ export declare class CreateBlogImageDTO extends CreateBlogImageDTO_base {
 declare const UpdateFeedDto_base: import("@nestjs/common").Type<Partial<CreateFeedDTO>>;
 export declare class UpdateFeedDto extends UpdateFeedDto_base {
 }
-export declare class GetListFeedReqDTO extends PagenationReqDTO {
+export declare class GetListFeedMainReqDTO extends PagenationReqDTO {
     challengeId: number;
 }
-export declare class GetFeedResDTO {
+export declare class GetFeedMainResDTO {
     private id;
     private thumbnailUrl;
     private isImageMore;
     constructor(id: number, thumbnailUrl: string, isImageMore: boolean);
 }
-export declare class GetListFeedResDTO extends PagenationResDTO {
-    feeds: GetFeedResDTO[];
+export declare class GetListFeedMainResDTO extends PagenationResDTO {
+    feeds: GetFeedMainResDTO[];
 }
 export declare class GetListBlogImageByBlogPostResDTO {
     private postId;
     private fileUrl;
     constructor(id: number, fileUrl: string);
+}
+export declare class GetListFeedReqQueryDTO extends PagenationReqDTO {
+    challengeId?: number;
+}
+export declare class GetListFeedReqParamDTO {
+    feedId: number;
+}
+export declare class GetFeedImageResDTO {
+    private id;
+    private fileUrl;
+    constructor(id: number, fileUrl: string);
+}
+export declare class GetFeedResDTO {
+    private id;
+    private userName;
+    private regDateToString;
+    private blogImages;
+    private blogLikeCount;
+    private isLike;
+    private blogCommentCount;
+    constructor(id: number, userName: string, regDateToString: string, blogLikeCount: string, isLike: boolean, blogCommentCount: string, blogImages: IGetBlogImagesByBlogPost[]);
+}
+export declare class GetListFeedResDTO extends PagenationResDTO {
+    feeds: GetFeedResDTO[];
+}
+export declare class GetFeedViewReqDTO {
+    id: number;
+}
+export declare class GetBlogPostDTO {
+    id: number;
+    userId: number;
+    content: string;
+    storeAddress?: string;
+    locationX?: string;
+    locationY?: string;
+    regDate: Date;
+    nickname: string;
+    image: string;
+}
+export declare class GetBlogPromotionDTO {
+    id: number;
+    promotionId: number;
+    title: string;
+}
+export declare class GetBlogChallengesDTO {
+    id: number;
+    challengeId: number;
+    title: string;
+}
+export declare class GetBlogImageDTO {
+    id: number;
+    fileUrl: string;
+}
+export declare class GetFeedViewResDTO {
+    feed: GetBlogPostDTO;
+    promotions: GetBlogPromotionDTO[];
+    challenges: GetBlogChallengesDTO[];
+    images: GetBlogImageDTO[];
 }
 export {};

@@ -26,19 +26,35 @@ let FeedController = class FeedController {
     async getFeedsByChallengesFilter(query) {
         return this.feedService.getFeedsByChallengesFilter(query);
     }
+    async getListFeed(param, query) {
+        return this.feedService.getListFeed(param, query);
+    }
     async create(files, createFeedDTO) {
         const status = await this.feedService.create(files, createFeedDTO);
         const result = {
             code: status ? 201 : 500,
-            message: status ? '생성 성공' : '생성 실패',
+            message: status ? '성공' : '실패',
             data: {
                 status: status,
             },
         };
         return result;
     }
-    findOne(id) {
-        return this.feedService.findOne(+id);
+    async getFeed(param) {
+        const result = {
+            code: 200,
+            message: 'success',
+            data: null,
+        };
+        try {
+            const feed = await this.feedService.getFeed(param);
+            result.data = feed;
+        }
+        catch (e) {
+            result.code = 500;
+            result.message = e.message;
+        }
+        return result;
     }
     update(id, updateFeedDTO) {
         return this.feedService.update(+id, updateFeedDTO);
@@ -50,7 +66,7 @@ let FeedController = class FeedController {
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({
-        summary: '피드 목록 API',
+        summary: '피드 메인 API',
         externalDocs: {
             description: 'Figma링크',
             url: 'https://www.figma.com/file/1g4o56bPFBBzbGfpL29jo2/%23%EC%A0%9C%EB%A1%9C%EC%9B%A8%EC%9D%B4%EC%8A%A4%ED%8A%B8?node-id=1907%3A21526',
@@ -60,13 +76,35 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '성공!!!',
-        type: [feed_dto_1.GetListFeedResDTO],
+        type: [feed_dto_1.GetListFeedMainResDTO],
     }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [feed_dto_1.GetListFeedReqDTO]),
+    __metadata("design:paramtypes", [feed_dto_1.GetListFeedMainReqDTO]),
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "getFeedsByChallengesFilter", null);
+__decorate([
+    (0, common_1.Get)(':feedId'),
+    (0, swagger_1.ApiOperation)({
+        summary: '피드 게시글 목록 API',
+        externalDocs: {
+            description: 'Figma링크',
+            url: 'https://www.figma.com/file/1g4o56bPFBBzbGfpL29jo2/%23%EC%A0%9C%EB%A1%9C%EC%9B%A8%EC%9D%B4%EC%8A%A4%ED%8A%B8?node-id=1907%3A22097',
+        },
+        deprecated: false,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '성공!!!',
+        type: [feed_dto_1.GetListFeedResDTO],
+    }),
+    __param(0, (0, common_1.Param)()),
+    __param(1, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [feed_dto_1.GetListFeedReqParamDTO,
+        feed_dto_1.GetListFeedReqQueryDTO]),
+    __metadata("design:returntype", Promise)
+], FeedController.prototype, "getListFeed", null);
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: '피드 등록' }),
@@ -83,11 +121,16 @@ __decorate([
 ], FeedController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, swagger_1.ApiOperation)({ summary: '피드 상세 조회' }),
+    (0, swagger_1.ApiResponse)({
+        description: '',
+        type: temp_response_1.GetFeedViewResponse,
+    }),
+    __param(0, (0, common_1.Param)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], FeedController.prototype, "findOne", null);
+    __metadata("design:paramtypes", [feed_dto_1.GetFeedViewReqDTO]),
+    __metadata("design:returntype", Promise)
+], FeedController.prototype, "getFeed", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),

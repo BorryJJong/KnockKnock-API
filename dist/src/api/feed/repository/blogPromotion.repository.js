@@ -10,6 +10,7 @@ exports.BlogPromotionRepository = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const BlogPromotion_1 = require("../../../entities/BlogPromotion");
+const Promotions_1 = require("../../../entities/Promotions");
 let BlogPromotionRepository = class BlogPromotionRepository extends typeorm_1.Repository {
     createBlogPromotion(createBlogPromotionDTO) {
         return this.create(Object.assign({}, createBlogPromotionDTO));
@@ -21,6 +22,18 @@ let BlogPromotionRepository = class BlogPromotionRepository extends typeorm_1.Re
         else {
             return await queryRunner.manager.save(blogPromotion);
         }
+    }
+    async getBlogPromotionByPostId(id) {
+        const promotions = await (0, typeorm_1.getManager)()
+            .createQueryBuilder()
+            .select('bp.id', 'id')
+            .addSelect('bp.promotion_id', 'promotionId')
+            .addSelect('p.type', 'title')
+            .from(BlogPromotion_1.BlogPromotion, 'bp')
+            .innerJoin(Promotions_1.Promotions, 'p', 'bp.promotion_id = p.id')
+            .where("bp.post_id = :id", { id: id })
+            .getRawMany();
+        return promotions;
     }
 };
 BlogPromotionRepository = __decorate([

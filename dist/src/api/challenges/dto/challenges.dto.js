@@ -20,10 +20,12 @@ class CreateChallengeRequestDTO extends (0, swagger_1.PickType)(Challenges_1.Cha
 ]) {
 }
 exports.CreateChallengeRequestDTO = CreateChallengeRequestDTO;
-class GetChallengeRequestDTO extends (0, swagger_1.PickType)(Challenges_1.Challenges, [
-    'id',
-]) {
+class GetChallengeRequestDTO {
 }
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '챌린지ID', example: '1', required: true }),
+    __metadata("design:type", Number)
+], GetChallengeRequestDTO.prototype, "id", void 0);
 exports.GetChallengeRequestDTO = GetChallengeRequestDTO;
 class GetChallengeResponseDTO extends (0, swagger_1.PickType)(Challenges_1.Challenges, [
     'id',
