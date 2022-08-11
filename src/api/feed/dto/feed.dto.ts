@@ -5,6 +5,7 @@ import {BlogChallenges} from '../../../entities/BlogChallenges';
 import {BlogPromotion} from '../../../entities/BlogPromotion';
 import {BlogImage} from '../../../entities/BlogImage';
 import {BlogPost} from '../../../entities/BlogPost';
+import { BlogComment } from '../../../entities/BlogComment';
 import {
   PagenationReqDTO,
   PagenationResDTO,
@@ -110,6 +111,8 @@ export class GetListBlogImageByBlogPostResDTO {
   }
 }
 
+export class InsBlogCommentDTO extends OmitType(BlogComment, ['id', 'regDate', 'delDate', 'isDeleted',]) {};
+
 export class GetListFeedReqQueryDTO extends PagenationReqDTO {
   @ApiProperty({required: false, description: '챌린지ID', example: '1'})
   challengeId?: number;
@@ -191,6 +194,7 @@ export class GetListFeedResDTO extends PagenationResDTO {
   })
   feeds: GetFeedResDTO[];
 }
+
 // 피드 상세 조회
 export class GetFeedViewReqDTO {
   @ApiProperty({description: '피드 id', example: '1'})

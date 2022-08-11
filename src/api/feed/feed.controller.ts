@@ -19,6 +19,7 @@ import {
   GetListFeedReqQueryDTO,
   GetListFeedReqParamDTO,
   GetListFeedResDTO,
+  InsBlogCommentDTO,
   GetFeedViewReqDTO,
   GetFeedViewResDTO,
 } from './dto/feed.dto';
@@ -110,6 +111,32 @@ export class FeedController {
         status: status,
       },
     };
+    return result;
+  }
+
+  @Post('/comment')
+  @ApiOperation({summary: '댓글 등록'})
+  @ApiCreatedResponse({
+    description: '성공',
+    type: FeedCreateResponse,
+  })
+  async insertBlogComment(@Body() insBlogCommentDTO: InsBlogCommentDTO) {
+    const result: FeedCreateResponse = {
+      code: 201,
+      message: 'success',
+      data: {
+        status: true,
+      },
+    }
+
+    try{
+      await this.feedService.saveBlogComment(insBlogCommentDTO);
+    } catch (e) {
+      result.code = 500;
+      result.message = e.message;
+      result.data.status = false;
+    }
+
     return result;
   }
 
