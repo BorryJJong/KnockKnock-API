@@ -9,7 +9,6 @@ import {
   GetListFeedMainReqDTO,
   GetListFeedMainResDTO,
   GetFeedMainResDTO,
-  GetListFeedReqParamDTO,
   GetListFeedReqQueryDTO,
   GetListFeedResDTO,
   GetFeedResDTO,
@@ -173,10 +172,10 @@ export class FeedService {
     }
   }
 
-
   async saveBlogComment(insBlogCommentDTO: InsBlogCommentDTO) {
-    try{
-      const comment = this.blogCommentRepository.createBlogComment(insBlogCommentDTO);
+    try {
+      const comment =
+        this.blogCommentRepository.createBlogComment(insBlogCommentDTO);
       await this.blogCommentRepository.saveBlogComment(null, comment);
     } catch (e) {
       throw new Error(e.message);
@@ -256,15 +255,13 @@ export class FeedService {
   }
 
   public async getListFeed(
-    param: GetListFeedReqParamDTO,
     query: GetListFeedReqQueryDTO,
   ): Promise<GetListFeedResDTO> {
+    const {feedId: blogPostId, challengeId, skip, take} = query;
     // 선택한 데이터 맨상단에 노출 [데이터 고정]
-    const {feedId: blogPostId} = param;
     const blogPost = await this.blogPostRepository.getBlogPost(blogPostId);
 
     // 챌린지ID가 있다면, 챌린지ID에 맞는 데이터를 랜덤으로 노출
-    const {challengeId, skip, take} = query;
     let blogPostIds: number[] = [];
 
     if (challengeId) {

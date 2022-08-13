@@ -5,7 +5,7 @@ import {BlogChallenges} from '../../../entities/BlogChallenges';
 import {BlogPromotion} from '../../../entities/BlogPromotion';
 import {BlogImage} from '../../../entities/BlogImage';
 import {BlogPost} from '../../../entities/BlogPost';
-import { BlogComment } from '../../../entities/BlogComment';
+import {BlogComment} from '../../../entities/BlogComment';
 import {
   PagenationReqDTO,
   PagenationResDTO,
@@ -111,16 +111,19 @@ export class GetListBlogImageByBlogPostResDTO {
   }
 }
 
-export class InsBlogCommentDTO extends OmitType(BlogComment, ['id', 'regDate', 'delDate', 'isDeleted',]) {};
+export class InsBlogCommentDTO extends OmitType(BlogComment, [
+  'id',
+  'regDate',
+  'delDate',
+  'isDeleted',
+]) {}
 
 export class GetListFeedReqQueryDTO extends PagenationReqDTO {
-  @ApiProperty({required: false, description: '챌린지ID', example: '1'})
-  challengeId?: number;
-}
-
-export class GetListFeedReqParamDTO {
   @ApiProperty({required: true, description: '피드ID', example: '1'})
   feedId: number;
+
+  @ApiProperty({required: false, description: '챌린지ID', example: '1'})
+  challengeId?: number;
 }
 
 export class GetFeedImageResDTO {
