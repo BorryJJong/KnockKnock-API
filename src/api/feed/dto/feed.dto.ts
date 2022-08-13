@@ -149,6 +149,12 @@ export class GetFeedResDTO {
   @ApiProperty({description: '글쓴이 닉네임', example: 'sungmin_kim94'})
   private userName: string;
 
+  @ApiProperty({
+    description: '글쓴이 프로필 이미지',
+    example: 'https://github.com/hiong04',
+  })
+  private userImage: string;
+
   @ApiProperty({description: '작성 시간(생성일)', example: '1시간전'})
   private regDateToString: string;
 
@@ -171,6 +177,7 @@ export class GetFeedResDTO {
   constructor(
     id: number,
     userName: string,
+    userImage: string,
     regDateToString: string,
     blogLikeCount: string,
     isLike: boolean,
@@ -179,6 +186,7 @@ export class GetFeedResDTO {
   ) {
     this.id = id;
     this.userName = userName;
+    this.userImage = userImage;
     this.regDateToString = regDateToString;
     this.blogLikeCount = blogLikeCount;
     this.isLike = isLike;

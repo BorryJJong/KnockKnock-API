@@ -31,6 +31,7 @@ import {
   IBlogPostRepository,
   IGetBlogPostItem,
 } from './interface/blogPost.interface';
+import {convertTimeToStr} from '../../shared/utils';
 
 @Injectable()
 export class FeedService {
@@ -299,7 +300,8 @@ export class FeedService {
         return new GetFeedResDTO(
           blogPost.id,
           '녹녹제리다',
-          blogPost.regDate.toString(),
+          'https://github.com/hiong04',
+          convertTimeToStr(blogPost.regDate),
           '1,301',
           true,
           '2,456',
