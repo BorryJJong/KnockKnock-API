@@ -61,7 +61,7 @@ export class FeedController {
   @ApiResponse({
     status: 200,
     description: '성공!!!',
-    type: [GetListFeedMainResDTO],
+    type: GetListFeedMainResDTO,
   })
   public async getFeedsByChallengesFilter(
     @Query() query: GetListFeedMainReqDTO,
