@@ -240,7 +240,7 @@ export class FeedService {
     return {
       feeds: blogPosts.items.map(blogPost => {
         const filterBlogImages = blogImages.filter(
-          blogImage => blogImage.id === blogPost.id,
+          blogImage => blogImage.postId === blogPost.id,
         );
         const isImageMore = filterBlogImages.length > 1 ? true : false;
         const thumbnailUrl = filterBlogImages[0].fileUrl;
