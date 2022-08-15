@@ -7,6 +7,7 @@ import {
 import {EntityRepository, getManager, QueryRunner, Repository} from 'typeorm';
 import {CreateBlogPostDTO, GetBlogPostDTO} from '../dto/feed.dto';
 import {User} from '../../../entities/User';
+import {getCurrentPageCount} from '../../../shared/utils';
 
 @Injectable()
 @EntityRepository(BlogPost)
@@ -30,7 +31,7 @@ export class BlogPostRepository
   }
 
   async getBlogPosts(
-    skip: number,
+    page: number,
     take: number,
     blogPostIds: number[],
   ): Promise<IGetBlogPostItems> {
@@ -41,7 +42,7 @@ export class BlogPostRepository
     }
 
     const [blogPosts, total] = await queryBuilder
-      .skip(skip)
+      .skip(getCurrentPageCount(page, take))
       .take(take)
       .orderBy('blogPost.regDate', 'ASC')
       .getManyAndCount();
@@ -50,14 +51,14 @@ export class BlogPostRepository
       items: blogPosts,
       pagination: {
         total,
-        skip,
+        page,
         take,
       },
     };
   }
 
   async getListBlogPost(
-    skip: number,
+    page: number,
     take: number,
     blogPostIds: number[],
     excludeBlogPostId: number,
@@ -74,7 +75,7 @@ export class BlogPostRepository
     }
 
     const [blogPosts, total] = await queryBuilder
-      .skip(skip)
+      .skip(getCurrentPageCount(page, take))
       .take(take)
       .orderBy('RAND()')
       .getManyAndCount();
@@ -83,7 +84,7 @@ export class BlogPostRepository
       items: blogPosts,
       pagination: {
         total: total + 1,
-        skip,
+        page,
         take,
       },
     };

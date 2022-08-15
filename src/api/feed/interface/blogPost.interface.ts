@@ -9,12 +9,12 @@ export interface IBlogPostRepository {
     blogPost: BlogPost,
   ): Promise<BlogPost>;
   getBlogPosts(
-    skip: number,
+    page: number,
     take: number,
     blogPostIds: number[],
   ): Promise<IGetBlogPostItems>;
   getListBlogPost(
-    skip: number,
+    page: number,
     take: number,
     blogPostIds: number[],
     excludeBlogPostId: number,
@@ -31,7 +31,7 @@ export interface IGetBlogPostItems {
 export type IGetBlogPostItem = BlogPost;
 
 export interface IPagenationResponse {
-  skip: number;
+  page: number;
   take: number;
   total: number;
 }
