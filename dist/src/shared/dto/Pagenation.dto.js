@@ -14,11 +14,14 @@ const swagger_1 = require("@nestjs/swagger");
 class PagenationReqDTO {
 }
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '현재 페이지', example: '0' }),
+    (0, swagger_1.ApiProperty)({
+        description: '현재 페이지의 번호(기본 시작값 1부터)',
+        example: '1',
+    }),
     __metadata("design:type", Number)
-], PagenationReqDTO.prototype, "skip", void 0);
+], PagenationReqDTO.prototype, "page", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '페이지에 보여질 개수', example: '10' }),
+    (0, swagger_1.ApiProperty)({ description: '페이지에 호출될 데이터 개수', example: '10' }),
     __metadata("design:type", Number)
 ], PagenationReqDTO.prototype, "take", void 0);
 exports.PagenationReqDTO = PagenationReqDTO;
@@ -33,4 +36,4 @@ __decorate([
     __metadata("design:type", Number)
 ], PagenationResDTO.prototype, "total", void 0);
 exports.PagenationResDTO = PagenationResDTO;
-//# sourceMappingURL=Pagenation.dto.js.map
+//# sourceMappingURL=pagenation.dto.js.map

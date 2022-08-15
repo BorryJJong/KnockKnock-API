@@ -1,5 +1,5 @@
 export declare class PagenationReqDTO {
-    skip: number;
+    page: number;
     take: number;
 }
 export declare class PagenationResDTO {

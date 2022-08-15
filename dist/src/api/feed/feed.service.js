@@ -24,12 +24,15 @@ const blogChallenges_repository_1 = require("./repository/blogChallenges.reposit
 const blogImage_repository_1 = require("./repository/blogImage.repository");
 const blogPost_repository_1 = require("./repository/blogPost.repository");
 const blogPromotion_repository_1 = require("./repository/blogPromotion.repository");
+const blogComment_repository_1 = require("./repository/blogComment.repository");
+const utils_1 = require("../../shared/utils");
 let FeedService = FeedService_1 = class FeedService {
-    constructor(blogPostRepository, blogChallengesRepository, blogPromotionRepository, blogImageRepository, imageService, connection) {
+    constructor(blogPostRepository, blogChallengesRepository, blogPromotionRepository, blogImageRepository, blogCommentRepository, imageService, connection) {
         this.blogPostRepository = blogPostRepository;
         this.blogChallengesRepository = blogChallengesRepository;
         this.blogPromotionRepository = blogPromotionRepository;
         this.blogImageRepository = blogImageRepository;
+        this.blogCommentRepository = blogCommentRepository;
         this.imageService = imageService;
         this.connection = connection;
         this.logger = new common_1.Logger(FeedService_1.name);
@@ -102,6 +105,15 @@ let FeedService = FeedService_1 = class FeedService {
             throw new Error(e);
         }
     }
+    async saveBlogComment(insBlogCommentDTO) {
+        try {
+            const comment = this.blogCommentRepository.createBlogComment(insBlogCommentDTO);
+            await this.blogCommentRepository.saveBlogComment(null, comment);
+        }
+        catch (e) {
+            throw new Error(e.message);
+        }
+    }
     async getFeed({ id }) {
         try {
             const post = await this.blogPostRepository.getBlogPostById(id);
@@ -133,24 +145,22 @@ let FeedService = FeedService_1 = class FeedService {
         if (blogChallenges.length > 0) {
             blogPostIds = blogChallenges.map(bc => bc.postId);
         }
-        const blogPosts = await this.blogPostRepository.getBlogPosts(query.skip, query.take, blogPostIds);
+        const blogPosts = await this.blogPostRepository.getBlogPosts(query.page, query.take, blogPostIds);
         const blogImages = await this.blogImageRepository.getBlogImagesByBlogPost(blogPosts.items.map(post => post.id));
         return {
             feeds: blogPosts.items.map(blogPost => {
-                const filterBlogImages = blogImages.filter(blogImage => blogImage.id === blogPost.id);
+                const filterBlogImages = blogImages.filter(blogImage => blogImage.postId === blogPost.id);
                 const isImageMore = filterBlogImages.length > 1 ? true : false;
                 const thumbnailUrl = filterBlogImages[0].fileUrl;
                 return new feed_dto_1.GetFeedMainResDTO(blogPost.id, thumbnailUrl, isImageMore);
             }),
-            isNext: blogPosts.pagination.total >
-                blogPosts.pagination.skip + blogPosts.pagination.take,
+            isNext: (0, utils_1.isPageNext)(blogPosts.pagination.page, blogPosts.pagination.take, blogPosts.pagination.total),
             total: blogPosts.pagination.total,
         };
     }
-    async getListFeed(param, query) {
-        const { feedId: blogPostId } = param;
+    async getListFeed(query) {
+        const { feedId: blogPostId, challengeId, page: skip, take } = query;
         const blogPost = await this.blogPostRepository.getBlogPost(blogPostId);
-        const { challengeId, skip, take } = query;
         let blogPostIds = [];
         if (challengeId) {
             const blogChallenges = await this.blogChallengesRepository.getBlogChallengesByChallengeId(challengeId);
@@ -165,10 +175,9 @@ let FeedService = FeedService_1 = class FeedService {
         }
         return {
             feeds: blogPosts.items.map((blogPost) => {
-                return new feed_dto_1.GetFeedResDTO(blogPost.id, '녹녹제리다', blogPost.regDate.toString(), '1,301', true, '2,456', blogImages);
+                return new feed_dto_1.GetFeedResDTO(blogPost.id, '녹녹제리다', 'https://github.com/hiong04', (0, utils_1.convertTimeToStr)(blogPost.regDate), '1,301', true, '2,456', blogImages);
             }),
-            isNext: blogPosts.pagination.total >
-                blogPosts.pagination.skip + blogPosts.pagination.take,
+            isNext: (0, utils_1.isPageNext)(blogPosts.pagination.page, blogPosts.pagination.take, blogPosts.pagination.total),
             total: blogPosts.pagination.total,
         };
     }
@@ -179,9 +188,11 @@ FeedService = FeedService_1 = __decorate([
     __param(1, (0, typeorm_1.InjectRepository)(blogChallenges_repository_1.BlogChallengesRepository)),
     __param(2, (0, typeorm_1.InjectRepository)(blogPromotion_repository_1.BlogPromotionRepository)),
     __param(3, (0, typeorm_1.InjectRepository)(blogImage_repository_1.BlogImageRepository)),
+    __param(4, (0, typeorm_1.InjectRepository)(blogComment_repository_1.BlogCommentRepository)),
     __metadata("design:paramtypes", [Object, blogChallenges_repository_1.BlogChallengesRepository,
         blogPromotion_repository_1.BlogPromotionRepository,
         blogImage_repository_1.BlogImageRepository,
+        blogComment_repository_1.BlogCommentRepository,
         image_service_1.ImageService,
         typeorm_2.Connection])
 ], FeedService);

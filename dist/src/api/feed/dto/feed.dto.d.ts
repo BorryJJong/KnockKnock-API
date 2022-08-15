@@ -3,7 +3,8 @@ import { BlogChallenges } from '../../../entities/BlogChallenges';
 import { BlogPromotion } from '../../../entities/BlogPromotion';
 import { BlogImage } from '../../../entities/BlogImage';
 import { BlogPost } from '../../../entities/BlogPost';
-import { PagenationReqDTO, PagenationResDTO } from '../../../shared/dto/Pagenation.dto';
+import { BlogComment } from '../../../entities/BlogComment';
+import { PagenationReqDTO, PagenationResDTO } from '../../../shared/dto/pagenation.dto';
 import { IGetBlogImagesByBlogPost } from '../interface/blogImage.interface';
 declare const CreateFeedDTO_base: import("@nestjs/common").Type<Omit<BlogPost, "id" | "delDate" | "regDate" | "hits" | "modDate" | "isDeleted">>;
 export declare class CreateFeedDTO extends CreateFeedDTO_base {
@@ -46,11 +47,12 @@ export declare class GetListBlogImageByBlogPostResDTO {
     private fileUrl;
     constructor(id: number, fileUrl: string);
 }
-export declare class GetListFeedReqQueryDTO extends PagenationReqDTO {
-    challengeId?: number;
+declare const InsBlogCommentDTO_base: import("@nestjs/common").Type<Omit<BlogComment, "id" | "delDate" | "regDate" | "isDeleted">>;
+export declare class InsBlogCommentDTO extends InsBlogCommentDTO_base {
 }
-export declare class GetListFeedReqParamDTO {
+export declare class GetListFeedReqQueryDTO extends PagenationReqDTO {
     feedId: number;
+    challengeId?: number;
 }
 export declare class GetFeedImageResDTO {
     private id;
@@ -60,12 +62,13 @@ export declare class GetFeedImageResDTO {
 export declare class GetFeedResDTO {
     private id;
     private userName;
+    private userImage;
     private regDateToString;
     private blogImages;
     private blogLikeCount;
     private isLike;
     private blogCommentCount;
-    constructor(id: number, userName: string, regDateToString: string, blogLikeCount: string, isLike: boolean, blogCommentCount: string, blogImages: IGetBlogImagesByBlogPost[]);
+    constructor(id: number, userName: string, userImage: string, regDateToString: string, blogLikeCount: string, isLike: boolean, blogCommentCount: string, blogImages: IGetBlogImagesByBlogPost[]);
 }
 export declare class GetListFeedResDTO extends PagenationResDTO {
     feeds: GetFeedResDTO[];

@@ -16,6 +16,7 @@ const blogChallenges_repository_1 = require("./repository/blogChallenges.reposit
 const blogImage_repository_1 = require("./repository/blogImage.repository");
 const blogPost_repository_1 = require("./repository/blogPost.repository");
 const blogPromotion_repository_1 = require("./repository/blogPromotion.repository");
+const blogComment_repository_1 = require("./repository/blogComment.repository");
 let FeedModule = class FeedModule {
 };
 FeedModule = __decorate([
@@ -27,6 +28,7 @@ FeedModule = __decorate([
                 blogImage_repository_1.BlogImageRepository,
                 blogPost_repository_1.BlogPostRepository,
                 blogPromotion_repository_1.BlogPromotionRepository,
+                blogComment_repository_1.BlogCommentRepository
             ]),
         ],
         controllers: [feed_controller_1.FeedController],
