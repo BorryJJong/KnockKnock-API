@@ -1,4 +1,5 @@
 import {hash, compare, genSalt} from 'bcrypt';
+import {add, multiply} from 'ramda';
 
 export const hashPassword = async (password: string): Promise<string> => {
   const saltRound = 10;
@@ -83,4 +84,16 @@ export const convertTimeToStr = (t: Date): string => {
   }
 
   return dateFormat(t);
+};
+
+export const getCurrentPageCount = (page: number, take: number): number => {
+  return (page - 1) * take;
+};
+
+export const isPageNext = (
+  page: number,
+  take: number,
+  total: number,
+): boolean => {
+  return total > multiply(page, take);
 };

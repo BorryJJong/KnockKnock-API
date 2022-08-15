@@ -31,7 +31,7 @@ import {
   IBlogPostRepository,
   IGetBlogPostItem,
 } from './interface/blogPost.interface';
-import {convertTimeToStr} from '../../shared/utils';
+import {convertTimeToStr, isPageNext} from '../../shared/utils';
 
 @Injectable()
 export class FeedService {
@@ -228,7 +228,7 @@ export class FeedService {
     }
 
     const blogPosts = await this.blogPostRepository.getBlogPosts(
-      query.skip,
+      query.page,
       query.take,
       blogPostIds,
     );
@@ -248,9 +248,12 @@ export class FeedService {
 
         return new GetFeedMainResDTO(blogPost.id, thumbnailUrl, isImageMore);
       }),
-      isNext:
-        blogPosts.pagination.total >
-        blogPosts.pagination.skip + blogPosts.pagination.take,
+
+      isNext: isPageNext(
+        blogPosts.pagination.page,
+        blogPosts.pagination.take,
+        blogPosts.pagination.total,
+      ),
       total: blogPosts.pagination.total,
     };
   }
@@ -258,7 +261,7 @@ export class FeedService {
   public async getListFeed(
     query: GetListFeedReqQueryDTO,
   ): Promise<GetListFeedResDTO> {
-    const {feedId: blogPostId, challengeId, skip, take} = query;
+    const {feedId: blogPostId, challengeId, page: skip, take} = query;
     // 선택한 데이터 맨상단에 노출 [데이터 고정]
     const blogPost = await this.blogPostRepository.getBlogPost(blogPostId);
 
@@ -308,9 +311,11 @@ export class FeedService {
           blogImages,
         );
       }),
-      isNext:
-        blogPosts.pagination.total >
-        blogPosts.pagination.skip + blogPosts.pagination.take,
+      isNext: isPageNext(
+        blogPosts.pagination.page,
+        blogPosts.pagination.take,
+        blogPosts.pagination.total,
+      ),
       total: blogPosts.pagination.total,
     };
   }
