@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const BlogPost_1 = require("../../../entities/BlogPost");
 const typeorm_1 = require("typeorm");
 const User_1 = require("../../../entities/User");
+const utils_1 = require("../../../shared/utils");
 let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
     createBlogPost(createBlogPostDTO) {
         return this.create(Object.assign({}, createBlogPostDTO));
@@ -23,13 +24,13 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             return await queryRunner.manager.save(blogPost);
         }
     }
-    async getBlogPosts(skip, take, blogPostIds) {
+    async getBlogPosts(page, take, blogPostIds) {
         let queryBuilder = await this.createQueryBuilder('blogPost');
         if (blogPostIds.length > 0) {
             queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
         }
         const [blogPosts, total] = await queryBuilder
-            .skip(skip)
+            .skip((0, utils_1.getCurrentPageCount)(page, take))
             .take(take)
             .orderBy('blogPost.regDate', 'ASC')
             .getManyAndCount();
@@ -37,12 +38,12 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             items: blogPosts,
             pagination: {
                 total,
-                skip,
+                page,
                 take,
             },
         };
     }
-    async getListBlogPost(skip, take, blogPostIds, excludeBlogPostId) {
+    async getListBlogPost(page, take, blogPostIds, excludeBlogPostId) {
         let queryBuilder = await this.createQueryBuilder('blogPost').where('blogPost.id != :id', {
             id: excludeBlogPostId,
         });
@@ -50,7 +51,7 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
         }
         const [blogPosts, total] = await queryBuilder
-            .skip(skip)
+            .skip((0, utils_1.getCurrentPageCount)(page, take))
             .take(take)
             .orderBy('RAND()')
             .getManyAndCount();
@@ -58,7 +59,7 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             items: blogPosts,
             pagination: {
                 total: total + 1,
-                skip,
+                page,
                 take,
             },
         };

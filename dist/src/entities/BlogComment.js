@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BlogComment = void 0;
+const swagger_1 = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 let BlogComment = class BlogComment {
     beforeInsert() {
@@ -17,28 +18,44 @@ let BlogComment = class BlogComment {
     }
 };
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '댓글 id',
+        example: 1,
+    }),
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
 ], BlogComment.prototype, "id", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '게시글 id',
+        example: 1,
+    }),
     (0, typeorm_1.Column)({
         name: 'post_id',
         type: 'int',
-        comment: '게시글 아이디',
+        comment: '게시글 id',
         nullable: false,
     }),
     __metadata("design:type", Number)
 ], BlogComment.prototype, "postId", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '사용자 id',
+        example: 1,
+    }),
     (0, typeorm_1.Column)({
         name: 'user_id',
         type: 'int',
-        comment: '사용자 아이디',
+        comment: '사용자 id',
         nullable: false,
     }),
     __metadata("design:type", Number)
 ], BlogComment.prototype, "userId", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '내용',
+        example: '용기낸 모습이 아름답습니다.',
+    }),
     (0, typeorm_1.Column)({
         name: 'content',
         type: 'text',
@@ -48,11 +65,15 @@ __decorate([
     __metadata("design:type", String)
 ], BlogComment.prototype, "content", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '리댓글 대상 댓글 pk',
+        example: 'null || 리댓글 대상 댓글 pk(int)',
+    }),
     (0, typeorm_1.Column)({
         name: 'comment_id',
         type: 'int',
         nullable: true,
-        comment: '리댓글 대상(?) 댓글 pk',
+        comment: 'null || 리댓글 대상 댓글 pk',
     }),
     __metadata("design:type", Number)
 ], BlogComment.prototype, "commentId", void 0);
