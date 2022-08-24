@@ -4,8 +4,8 @@ import { BlogPromotion } from '../../../entities/BlogPromotion';
 import { BlogImage } from '../../../entities/BlogImage';
 import { BlogPost } from '../../../entities/BlogPost';
 import { BlogComment } from '../../../entities/BlogComment';
-import { PagenationReqDTO, PagenationResDTO } from '../../../shared/dto/pagenation.dto';
 import { IGetBlogImagesByBlogPost } from '../interface/blogImage.interface';
+import { PagenationReqDTO, PagenationResDTO } from 'src/shared/dto/pagenation.dto';
 declare const CreateFeedDTO_base: import("@nestjs/common").Type<Omit<BlogPost, "id" | "delDate" | "regDate" | "hits" | "modDate" | "isDeleted">>;
 export declare class CreateFeedDTO extends CreateFeedDTO_base {
     promotions: string;
