@@ -7,10 +7,7 @@ import {BlogImage} from '../../../entities/BlogImage';
 import {BlogPost} from '../../../entities/BlogPost';
 import {BlogComment} from '../../../entities/BlogComment';
 import {IGetBlogImagesByBlogPost} from '../interface/blogImage.interface';
-import {
-  PagenationReqDTO,
-  PagenationResDTO,
-} from 'src/shared/dto/pagenation.dto';
+import {PagenationReqDTO, PagenationResDTO} from '@shared/dto/pagenation.dto';
 
 export class CreateFeedDTO extends OmitType(BlogPost, [
   'id',
