@@ -1,5 +1,5 @@
 import {ApiProperty} from '@nestjs/swagger';
-import { GetFeedViewResDTO } from 'src/api/feed/dto/feed.dto';
+import {GetFeedViewResDTO} from 'src/api/feed/dto/feed.dto';
 import {BaseResponse} from '../base.response';
 
 export abstract class FeedCreateResponseData {
