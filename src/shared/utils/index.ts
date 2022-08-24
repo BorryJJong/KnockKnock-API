@@ -1,5 +1,5 @@
 import {hash, compare, genSalt} from 'bcrypt';
-import {add, multiply} from 'ramda';
+import {multiply} from 'ramda';
 
 export const hashPassword = async (password: string): Promise<string> => {
   const saltRound = 10;
