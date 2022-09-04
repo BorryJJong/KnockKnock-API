@@ -2,10 +2,13 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {ChallengesRepository} from './challenges.repository';
 import {
-  GetChallengeListResponseDTO,
-  GetChallengeRequestDTO,
-  GetChallengeResponseDTO,
+  GetListChallengeResDTO,
+  GetChallengeReqDTO,
+  GetChallengeResDTO,
   GetChallengeTitleReqDTO,
+  GetChallengeDetailResDTO,
+  ChallengeContentDTO,
+  ChallengeSubContentDTO,
 } from './dto/challenges.dto';
 
 @Injectable()
@@ -17,7 +20,7 @@ export class ChallengesService {
 
   async getChallenge({
     id,
-  }: GetChallengeRequestDTO): Promise<GetChallengeResponseDTO> {
+  }: GetChallengeReqDTO): Promise<GetChallengeResDTO> {
     const challenge = await this.challengesRepository.findChallengeById(id);
     const {title, subTitle, content, regDate} = challenge;
     return {
@@ -29,12 +32,49 @@ export class ChallengesService {
     };
   }
 
-  async getAllChallenges(): Promise<GetChallengeResponseDTO[]> {
+  async getAllChallenges(): Promise<GetChallengeResDTO[]> {
     const challenges = await this.challengesRepository.findChallengeAll();
     return challenges;
   }
+ 
+  async getChallengeDetail({
+    id,
+  }: GetChallengeReqDTO): Promise<GetChallengeDetailResDTO> {
 
-  async getChallengeList(): Promise<GetChallengeListResponseDTO[]> {
+    const challengeDTO = await this.challengesRepository.findChallengeById(id);
+    
+    const participantList = await this.challengesRepository.getParticipantList(id);
+    
+    let challenge = new GetChallengeDetailResDTO();
+    challenge.challenge = challengeDTO;
+    challenge.participants = participantList;
+
+    let contentJson = JSON.parse(challengeDTO.content);
+    let challengeContent = new ChallengeContentDTO();
+    challengeContent.image = contentJson.image;
+    challengeContent.title = contentJson.title;
+    challengeContent.subTitle = contentJson.subTitle;
+    challengeContent.rule = contentJson.rule;
+
+    let subContents = [];
+    for(var i=0;i<contentJson.contents.length;i++){
+      let subContent = contentJson.contents[i];
+
+      let challengeSubContent = new ChallengeSubContentDTO();
+      challengeSubContent.title = subContent.title;
+      challengeSubContent.image = subContent.image;
+      challengeSubContent.content = subContent.content;
+
+      subContents[i] = challengeSubContent;
+    }
+    challengeContent.subContents = subContents;
+
+    challenge.content = challengeContent;
+
+    return challenge;  
+  }
+
+  async getChallengeList(): Promise<GetListChallengeResDTO[]> {
     const challengeList = await this.challengesRepository.getChallengeList();
 
     for (let index = 0; index < (await challengeList).length; index++) {
