@@ -155,6 +155,9 @@ export class GetFeedResDTO {
   @ApiProperty({description: '작성 시간(생성일)', example: '1시간전'})
   private regDateToString: string;
 
+  @ApiProperty({description: '게시글 내 이미지의 비율', example: '1:1'})
+  private scale: string;
+
   @ApiProperty({
     description: '피드 이미지 목록',
     type: GetFeedImageResDTO,
@@ -176,6 +179,7 @@ export class GetFeedResDTO {
     userName: string,
     userImage: string,
     regDateToString: string,
+    scale: string,
     blogLikeCount: string,
     isLike: boolean,
     blogCommentCount: string,
@@ -185,6 +189,7 @@ export class GetFeedResDTO {
     this.userName = userName;
     this.userImage = userImage;
     this.regDateToString = regDateToString;
+    this.scale = scale;
     this.blogLikeCount = blogLikeCount;
     this.isLike = isLike;
     this.blogCommentCount = blogCommentCount;
@@ -266,14 +271,21 @@ export class GetBlogPostDTO {
     description: '사용자 닉네임',
     example: '홍길동',
   })
-  nickname: string;
+  userName: string;
 
   @Expose()
   @ApiProperty({
     description: '사용자 프로필 이미지',
     example: '{aws.s3.endpoint}/user/filename.png',
   })
-  image: string;
+  userImage: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '게시글 내 이미지의 비율',
+    example: '1:!',
+  })
+  scale: string;
 }
 
 @Exclude()
