@@ -305,6 +305,7 @@ export class FeedService {
           '녹녹제리다',
           'https://github.com/hiong04',
           convertTimeToStr(blogPost.regDate),
+          '1:1',
           '1,301',
           true,
           '2,456',
