@@ -14,8 +14,13 @@ import {FeedService} from './feed.service';
 import {
   CreateFeedDTO,
   UpdateFeedDTO,
-  GetListFeedReqDTO as GetFeedReqDTO,
+  GetListFeedMainResDTO,
+  GetListFeedMainReqDTO,
+  GetListFeedReqQueryDTO,
   GetListFeedResDTO,
+  InsBlogCommentDTO,
+  GetFeedViewReqDTO,
+  GetFeedViewResDTO,
 } from './dto/feed.dto';
 import {
   ApiCreatedResponse,
@@ -24,7 +29,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {FilesInterceptor} from '@nestjs/platform-express';
-import {FeedCreateResponse} from 'src/shared/response_entities/feed/temp.response';
+import {
+  FeedCreateResponse,
+  GetFeedViewResponse,
+} from 'src/shared/response_entities/feed/temp.response';
 
 // TODO: 400,401,403,404등 공통 사용 응답코드는 컨트롤러에 붙이기
 // @ApiBadRequestResponse({
@@ -41,9 +49,9 @@ import {FeedCreateResponse} from 'src/shared/response_entities/feed/temp.respons
 export class FeedController {
   constructor(private readonly feedService: FeedService) {}
 
-  @Get()
+  @Get('/main')
   @ApiOperation({
-    summary: '피드 목록 API',
+    summary: '피드 메인 API',
     externalDocs: {
       description: 'Figma링크',
       url: 'https://www.figma.com/file/1g4o56bPFBBzbGfpL29jo2/%23%EC%A0%9C%EB%A1%9C%EC%9B%A8%EC%9D%B4%EC%8A%A4%ED%8A%B8?node-id=1907%3A21526',
@@ -53,12 +61,32 @@ export class FeedController {
   @ApiResponse({
     status: 200,
     description: '성공!!!',
-    type: [GetListFeedResDTO],
+    type: GetListFeedMainResDTO,
   })
   public async getFeedsByChallengesFilter(
-    @Query() query: GetFeedReqDTO,
-  ): Promise<GetListFeedResDTO> {
+    @Query() query: GetListFeedMainReqDTO,
+  ): Promise<GetListFeedMainResDTO> {
     return this.feedService.getFeedsByChallengesFilter(query);
+  }
+
+  @Get('/blog-post')
+  @ApiOperation({
+    summary: '피드 게시글 목록 API',
+    externalDocs: {
+      description: 'Figma링크',
+      url: 'https://www.figma.com/file/1g4o56bPFBBzbGfpL29jo2/%23%EC%A0%9C%EB%A1%9C%EC%9B%A8%EC%9D%B4%EC%8A%A4%ED%8A%B8?node-id=1907%3A22097',
+    },
+    deprecated: false,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '성공!!!',
+    type: [GetListFeedResDTO],
+  })
+  public async getListFeed(
+    @Query() query: GetListFeedReqQueryDTO,
+  ): Promise<GetListFeedResDTO> {
+    return this.feedService.getListFeed(query);
   }
 
   @Post()
@@ -76,7 +104,7 @@ export class FeedController {
     const status = await this.feedService.create(files, createFeedDTO);
     const result: FeedCreateResponse = {
       code: status ? 201 : 500,
-      message: status ? '생성 성공' : '생성 실패',
+      message: status ? '성공' : '실패',
       data: {
         status: status,
       },
@@ -84,9 +112,54 @@ export class FeedController {
     return result;
   }
 
+  @Post('/comment')
+  @ApiOperation({summary: '댓글 등록'})
+  @ApiCreatedResponse({
+    description: '성공',
+    type: FeedCreateResponse,
+  })
+  async insertBlogComment(@Body() insBlogCommentDTO: InsBlogCommentDTO) {
+    const result: FeedCreateResponse = {
+      code: 201,
+      message: 'success',
+      data: {
+        status: true,
+      },
+    };
+
+    try {
+      await this.feedService.saveBlogComment(insBlogCommentDTO);
+    } catch (e) {
+      result.code = 500;
+      result.message = e.message;
+      result.data.status = false;
+    }
+
+    return result;
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.feedService.findOne(+id);
+  @ApiOperation({summary: '피드 상세 조회'})
+  @ApiResponse({
+    description: '',
+    type: GetFeedViewResponse,
+  })
+  async getFeed(@Param() param: GetFeedViewReqDTO) {
+    const result: GetFeedViewResponse = {
+      code: 200,
+      message: 'success',
+      data: null,
+    };
+
+    try {
+      const feed: GetFeedViewResDTO = await this.feedService.getFeed(param);
+      result.data = feed;
+    } catch (e) {
+      result.code = 500;
+      result.message = e.message;
+    }
+
+    return result;
   }
 
   @Patch(':id')

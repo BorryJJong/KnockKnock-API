@@ -1,10 +1,13 @@
 import {ApiProperty} from '@nestjs/swagger';
 
 export class PagenationReqDTO {
-  @ApiProperty({description: '현재 페이지', example: '0'})
-  skip: number;
+  @ApiProperty({
+    description: '현재 페이지의 번호(기본 시작값 1부터)',
+    example: '1',
+  })
+  page: number;
 
-  @ApiProperty({description: '페이지에 보여질 개수', example: '10'})
+  @ApiProperty({description: '페이지에 호출될 데이터 개수', example: '10'})
   take: number;
 }
 

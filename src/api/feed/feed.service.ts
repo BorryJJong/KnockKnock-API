@@ -1,13 +1,24 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Connection, QueryRunner} from 'typeorm';
+import {plainToInstance} from 'class-transformer';
 import {
   CreateFeedDTO,
   UpdateFeedDTO,
   CreateBlogPostDTO,
-  GetListFeedReqDTO,
+  GetListFeedMainReqDTO,
+  GetListFeedMainResDTO,
+  GetFeedMainResDTO,
+  GetListFeedReqQueryDTO,
   GetListFeedResDTO,
   GetFeedResDTO,
+  InsBlogCommentDTO,
+  GetFeedViewReqDTO,
+  GetFeedViewResDTO,
+  GetBlogChallengesDTO,
+  GetBlogPromotionDTO,
+  GetBlogPostDTO,
+  GetBlogImageDTO,
 } from './dto/feed.dto';
 import {ImageService} from 'src/api/image/image.service';
 import {BlogChallengesRepository} from './repository/blogChallenges.repository';
@@ -15,6 +26,12 @@ import {BlogImageRepository} from './repository/blogImage.repository';
 import {BlogPostRepository} from './repository/blogPost.repository';
 import {BlogPromotionRepository} from './repository/blogPromotion.repository';
 import {IGetBlogImagesByBlogPost} from './interface/blogImage.interface';
+import {BlogCommentRepository} from './repository/blogComment.repository';
+import {
+  IBlogPostRepository,
+  IGetBlogPostItem,
+} from './interface/blogPost.interface';
+import {convertTimeToStr, isPageNext} from '../../shared/utils';
 
 @Injectable()
 export class FeedService {
@@ -22,13 +39,15 @@ export class FeedService {
 
   constructor(
     @InjectRepository(BlogPostRepository)
-    private blogPostRepository: BlogPostRepository,
+    private blogPostRepository: IBlogPostRepository,
     @InjectRepository(BlogChallengesRepository)
     private blogChallengesRepository: BlogChallengesRepository,
     @InjectRepository(BlogPromotionRepository)
     private blogPromotionRepository: BlogPromotionRepository,
     @InjectRepository(BlogImageRepository)
     private blogImageRepository: BlogImageRepository,
+    @InjectRepository(BlogCommentRepository)
+    private blogCommentRepository: BlogCommentRepository,
     private readonly imageService: ImageService,
     private connection: Connection,
   ) {}
@@ -73,6 +92,7 @@ export class FeedService {
 
     return result;
   }
+
   async savePost(
     queryRunner: QueryRunner,
     createBlogPostDTO: CreateBlogPostDTO,
@@ -153,8 +173,37 @@ export class FeedService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} feed`;
+  async saveBlogComment(insBlogCommentDTO: InsBlogCommentDTO) {
+    try {
+      const comment =
+        this.blogCommentRepository.createBlogComment(insBlogCommentDTO);
+      await this.blogCommentRepository.saveBlogComment(null, comment);
+    } catch (e) {
+      throw new Error(e.message);
+    }
+  }
+
+  async getFeed({id}: GetFeedViewReqDTO): Promise<GetFeedViewResDTO> {
+    try {
+      const post = await this.blogPostRepository.getBlogPostById(id);
+      const promotions =
+        await this.blogPromotionRepository.getBlogPromotionByPostId(id);
+      const challenges =
+        await this.blogChallengesRepository.getBlogChallengesByPostId(id);
+      const images = await this.blogImageRepository.getBlogImageByPostId(id);
+
+      const result: GetFeedViewResDTO = {
+        feed: plainToInstance(GetBlogPostDTO, post),
+        promotions: plainToInstance(GetBlogPromotionDTO, promotions),
+        challenges: plainToInstance(GetBlogChallengesDTO, challenges),
+        images: plainToInstance(GetBlogImageDTO, images),
+      };
+
+      return result;
+    } catch (e) {
+      this.logger.error(e);
+      throw new Error(e);
+    }
   }
 
   update(id: number, updateFeedDTO: UpdateFeedDTO) {
@@ -166,8 +215,8 @@ export class FeedService {
   }
 
   public async getFeedsByChallengesFilter(
-    query: GetListFeedReqDTO,
-  ): Promise<GetListFeedResDTO> {
+    query: GetListFeedMainReqDTO,
+  ): Promise<GetListFeedMainResDTO> {
     let blogPostIds: number[] = [];
     const blogChallenges =
       await this.blogChallengesRepository.getBlogChallengesByChallengeId(
@@ -179,7 +228,7 @@ export class FeedService {
     }
 
     const blogPosts = await this.blogPostRepository.getBlogPosts(
-      query.skip,
+      query.page,
       query.take,
       blogPostIds,
     );
@@ -197,11 +246,76 @@ export class FeedService {
         const isImageMore = filterBlogImages.length > 1 ? true : false;
         const thumbnailUrl = filterBlogImages[0].fileUrl;
 
-        return new GetFeedResDTO(blogPost.id, thumbnailUrl, isImageMore);
+        return new GetFeedMainResDTO(blogPost.id, thumbnailUrl, isImageMore);
       }),
-      isNext:
-        blogPosts.pagination.total >
-        blogPosts.pagination.skip + blogPosts.pagination.take,
+
+      isNext: isPageNext(
+        blogPosts.pagination.page,
+        blogPosts.pagination.take,
+        blogPosts.pagination.total,
+      ),
+      total: blogPosts.pagination.total,
+    };
+  }
+
+  public async getListFeed(
+    query: GetListFeedReqQueryDTO,
+  ): Promise<GetListFeedResDTO> {
+    const {feedId: blogPostId, challengeId, page: skip, take} = query;
+    // 선택한 데이터 맨상단에 노출 [데이터 고정]
+    const blogPost = await this.blogPostRepository.getBlogPost(blogPostId);
+
+    // 챌린지ID가 있다면, 챌린지ID에 맞는 데이터를 랜덤으로 노출
+    let blogPostIds: number[] = [];
+
+    if (challengeId) {
+      const blogChallenges =
+        await this.blogChallengesRepository.getBlogChallengesByChallengeId(
+          challengeId,
+        );
+      blogPostIds = blogChallenges.map(bc => bc.postId);
+    }
+
+    const blogPosts = await this.blogPostRepository.getListBlogPost(
+      skip,
+      take,
+      blogPostIds,
+      blogPost.id,
+    );
+
+    blogPosts.items.unshift(blogPost);
+    let blogImages: IGetBlogImagesByBlogPost[] = [];
+
+    // [추후 개발]피드 이미지 정보, 피드 정보, 유저 정보, 좋아요 정보, 댓글 정보 [Service OR Dao 호출 고민]
+    blogPostIds = blogPosts.items.map(bp => bp.id);
+    if (blogPostIds.length > 0) {
+      blogImages = await this.blogImageRepository.getBlogImagesByBlogPost(
+        blogPostIds,
+      );
+    }
+    // const user = await this.userRepository.getUser(blogPost.userId);
+    // const isLikeByUser await this.blogLikeRepository.getBlogLikeByUser();
+    // const blogCommentCount = await this.blogCommentRepository.getBlogCommentCount(blogPost.id);
+    // const blogLikeCount = await this.blogLikeRepository.getBlogLikeCount(blogPost.id);
+
+    return {
+      feeds: blogPosts.items.map((blogPost: IGetBlogPostItem) => {
+        return new GetFeedResDTO(
+          blogPost.id,
+          '녹녹제리다',
+          'https://github.com/hiong04',
+          convertTimeToStr(blogPost.regDate),
+          '1,301',
+          true,
+          '2,456',
+          blogImages,
+        );
+      }),
+      isNext: isPageNext(
+        blogPosts.pagination.page,
+        blogPosts.pagination.take,
+        blogPosts.pagination.total,
+      ),
       total: blogPosts.pagination.total,
     };
   }

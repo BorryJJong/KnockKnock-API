@@ -8,6 +8,7 @@ import {ormConfig} from './config/orm';
 import {UsersModule} from './api/users/users.module';
 import {FeedModule} from './api/feed/feed.module';
 import {PromotionsModule} from './api/promotions/promotions.module';
+import {LikeModule} from './api/like/like.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import {PromotionsModule} from './api/promotions/promotions.module';
     FeedModule,
     PromotionsModule,
     ChallengesModule,
+    LikeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
