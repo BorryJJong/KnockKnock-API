@@ -175,7 +175,7 @@ let FeedService = FeedService_1 = class FeedService {
         }
         return {
             feeds: blogPosts.items.map((blogPost) => {
-                return new feed_dto_1.GetFeedResDTO(blogPost.id, '녹녹제리다', 'https://github.com/hiong04', (0, utils_1.convertTimeToStr)(blogPost.regDate), '1,301', true, '2,456', blogImages);
+                return new feed_dto_1.GetFeedResDTO(blogPost.id, '녹녹제리다', 'https://github.com/hiong04', (0, utils_1.convertTimeToStr)(blogPost.regDate), '1:1', '1,301', true, '2,456', blogImages);
             }),
             isNext: (0, utils_1.isPageNext)(blogPosts.pagination.page, blogPosts.pagination.take, blogPosts.pagination.total),
             total: blogPosts.pagination.total,

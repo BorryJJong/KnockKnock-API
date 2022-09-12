@@ -93,6 +93,20 @@ __decorate([
 ], BlogPost.prototype, "locationY", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
+        description: '게시글 내 이미지의 비율',
+        example: '1:1',
+    }),
+    (0, typeorm_1.Column)({
+        name: 'scale',
+        type: 'varchar',
+        length: 30,
+        nullable: false,
+        comment: '게시글 내 이미지의 비율',
+    }),
+    __metadata("design:type", String)
+], BlogPost.prototype, "scale", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
         description: '조회수',
         example: '73',
     }),

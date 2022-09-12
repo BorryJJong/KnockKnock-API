@@ -25,7 +25,7 @@ let ChallengesController = class ChallengesController {
         return this.challengesService.getChallengeTitles();
     }
     async getChallenge(param) {
-        return this.challengesService.getChallenge(param);
+        return this.challengesService.getChallengeDetail(param);
     }
     async getChallengeList() {
         return this.challengesService.getChallengeList();
@@ -57,11 +57,11 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '성공',
-        type: challenges_dto_1.GetChallengeResponseDTO,
+        type: challenges_dto_1.GetChallengeResDTO,
     }),
     __param(0, (0, common_1.Param)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [challenges_dto_1.GetChallengeRequestDTO]),
+    __metadata("design:paramtypes", [challenges_dto_1.GetChallengeReqDTO]),
     __metadata("design:returntype", Promise)
 ], ChallengesController.prototype, "getChallenge", null);
 __decorate([
@@ -70,7 +70,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '성공',
-        type: challenges_dto_1.GetChallengeResponseDTO,
+        type: challenges_dto_1.GetChallengeResDTO,
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

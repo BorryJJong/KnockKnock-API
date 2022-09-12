@@ -64,11 +64,12 @@ export declare class GetFeedResDTO {
     private userName;
     private userImage;
     private regDateToString;
+    private scale;
     private blogImages;
     private blogLikeCount;
     private isLike;
     private blogCommentCount;
-    constructor(id: number, userName: string, userImage: string, regDateToString: string, blogLikeCount: string, isLike: boolean, blogCommentCount: string, blogImages: IGetBlogImagesByBlogPost[]);
+    constructor(id: number, userName: string, userImage: string, regDateToString: string, scale: string, blogLikeCount: string, isLike: boolean, blogCommentCount: string, blogImages: IGetBlogImagesByBlogPost[]);
 }
 export declare class GetListFeedResDTO extends PagenationResDTO {
     feeds: GetFeedResDTO[];
@@ -84,8 +85,9 @@ export declare class GetBlogPostDTO {
     locationX?: string;
     locationY?: string;
     regDate: Date;
-    nickname: string;
-    image: string;
+    userName: string;
+    userImage: string;
+    scale: string;
 }
 export declare class GetBlogPromotionDTO {
     id: number;
