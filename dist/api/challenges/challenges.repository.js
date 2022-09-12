@@ -83,7 +83,6 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
         return challenges;
     }
     async getParticipantList(challengeId) {
-        console.log('ChallengeId : ' + challengeId);
         const userPostChallenge = (0, typeorm_1.getManager)()
             .createQueryBuilder()
             .select('bp.user_id', 'user_id')
@@ -109,7 +108,6 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
             .orderBy('mb.reg_date', 'ASC');
         const participantListRaws = await participantList.getRawMany();
         const participants = participantListRaws.map((s) => {
-            console.log(s);
             const item = {
                 id: s.id,
                 nickname: s.nickname,

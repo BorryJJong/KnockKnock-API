@@ -19,6 +19,7 @@ let Challenges = class Challenges {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
+    (0, swagger_1.ApiProperty)({ description: '챌린지 id', example: '1' }),
     __metadata("design:type", Number)
 ], Challenges.prototype, "id", void 0);
 __decorate([

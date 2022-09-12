@@ -167,11 +167,12 @@ __decorate([
 ], GetFeedImageResDTO.prototype, "fileUrl", void 0);
 exports.GetFeedImageResDTO = GetFeedImageResDTO;
 class GetFeedResDTO {
-    constructor(id, userName, userImage, regDateToString, blogLikeCount, isLike, blogCommentCount, blogImages) {
+    constructor(id, userName, userImage, regDateToString, scale, blogLikeCount, isLike, blogCommentCount, blogImages) {
         this.id = id;
         this.userName = userName;
         this.userImage = userImage;
         this.regDateToString = regDateToString;
+        this.scale = scale;
         this.blogLikeCount = blogLikeCount;
         this.isLike = isLike;
         this.blogCommentCount = blogCommentCount;
@@ -197,6 +198,10 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '작성 시간(생성일)', example: '1시간전' }),
     __metadata("design:type", String)
 ], GetFeedResDTO.prototype, "regDateToString", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '게시글 내 이미지의 비율', example: '1:1' }),
+    __metadata("design:type", String)
+], GetFeedResDTO.prototype, "scale", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '피드 이미지 목록',
@@ -301,7 +306,7 @@ __decorate([
         example: '홍길동',
     }),
     __metadata("design:type", String)
-], GetBlogPostDTO.prototype, "nickname", void 0);
+], GetBlogPostDTO.prototype, "userName", void 0);
 __decorate([
     (0, class_transformer_1.Expose)(),
     (0, swagger_1.ApiProperty)({
@@ -309,7 +314,15 @@ __decorate([
         example: '{aws.s3.endpoint}/user/filename.png',
     }),
     __metadata("design:type", String)
-], GetBlogPostDTO.prototype, "image", void 0);
+], GetBlogPostDTO.prototype, "userImage", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, swagger_1.ApiProperty)({
+        description: '게시글 내 이미지의 비율',
+        example: '1:!',
+    }),
+    __metadata("design:type", String)
+], GetBlogPostDTO.prototype, "scale", void 0);
 GetBlogPostDTO = __decorate([
     (0, class_transformer_1.Exclude)()
 ], GetBlogPostDTO);

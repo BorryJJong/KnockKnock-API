@@ -41,7 +41,9 @@ export class ChallengesController {
     description: '성공',
     type: GetChallengeResDTO,
   })
-  public async getChallenge(@Param() param: GetChallengeReqDTO,): Promise<GetChallengeDetailResDTO> {
+  public async getChallenge(
+    @Param() param: GetChallengeReqDTO,
+  ): Promise<GetChallengeDetailResDTO> {
     return this.challengesService.getChallengeDetail(param);
   }
 

@@ -16,11 +16,12 @@ exports.ChallengesService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const challenges_repository_1 = require("./challenges.repository");
+const challenges_dto_1 = require("./dto/challenges.dto");
 let ChallengesService = class ChallengesService {
     constructor(challengesRepository) {
         this.challengesRepository = challengesRepository;
     }
-    async getChallenge({ id, }) {
+    async getChallenge({ id }) {
         const challenge = await this.challengesRepository.findChallengeById(id);
         const { title, subTitle, content, regDate } = challenge;
         return {
@@ -34,6 +35,22 @@ let ChallengesService = class ChallengesService {
     async getAllChallenges() {
         const challenges = await this.challengesRepository.findChallengeAll();
         return challenges;
+    }
+    async getChallengeDetail({ id, }) {
+        const challengeDTO = await this.challengesRepository.findChallengeById(id);
+        const participantList = await this.challengesRepository.getParticipantList(id);
+        const challengeContentJson = JSON.parse(challengeDTO.content);
+        const subContents = [];
+        if (challengeContentJson.subContents !== undefined) {
+            challengeContentJson.subContents.forEach((_, index) => {
+                const subContent = challengeContentJson.subContents[index];
+                const challengeSubContent = new challenges_dto_1.ChallengeSubContentDTO(subContent.title, subContent.image, subContent.content);
+                subContents[index] = challengeSubContent;
+            });
+        }
+        const challengeContent = new challenges_dto_1.ChallengeContentDTO(challengeContentJson.image, challengeContentJson.title, challengeContentJson.subTitle, challengeContentJson.rule, subContents);
+        const challenge = new challenges_dto_1.GetChallengeDetailResDTO(challengeDTO, participantList, challengeContent);
+        return challenge;
     }
     async getChallengeList() {
         const challengeList = await this.challengesRepository.getChallengeList();
