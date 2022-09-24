@@ -32,6 +32,7 @@ import {
   IGetBlogPostItem,
 } from './interface/blogPost.interface';
 import {convertTimeToStr, isPageNext} from '../../shared/utils';
+import {BlogPost} from '@entities/BlogPost';
 
 @Injectable()
 export class FeedService {
@@ -263,11 +264,15 @@ export class FeedService {
   ): Promise<GetListFeedResDTO> {
     const {feedId: blogPostId, challengeId, page: skip, take} = query;
     // 선택한 데이터 맨상단에 노출 [데이터 고정]
-    const blogPost = await this.blogPostRepository.getBlogPost(blogPostId);
+    let excludeBlogPostId: number;
+    let selectBlogPost: BlogPost;
+    if (+skip === 1) {
+      selectBlogPost = await this.blogPostRepository.getBlogPost(blogPostId);
+      excludeBlogPostId = selectBlogPost.id;
+    }
 
     // 챌린지ID가 있다면, 챌린지ID에 맞는 데이터를 랜덤으로 노출
     let blogPostIds: number[] = [];
-
     if (challengeId) {
       const blogChallenges =
         await this.blogChallengesRepository.getBlogChallengesByChallengeId(
@@ -278,14 +283,16 @@ export class FeedService {
 
     const blogPosts = await this.blogPostRepository.getListBlogPost(
       skip,
-      take,
+      this.getFeedListTake(skip, take),
       blogPostIds,
-      blogPost.id,
+      excludeBlogPostId,
     );
 
-    blogPosts.items.unshift(blogPost);
-    let blogImages: IGetBlogImagesByBlogPost[] = [];
+    if (+skip === 1) {
+      blogPosts.items.unshift(selectBlogPost);
+    }
 
+    let blogImages: IGetBlogImagesByBlogPost[] = [];
     // [추후 개발]피드 이미지 정보, 피드 정보, 유저 정보, 좋아요 정보, 댓글 정보 [Service OR Dao 호출 고민]
     blogPostIds = blogPosts.items.map(bp => bp.id);
     if (blogPostIds.length > 0) {
@@ -303,7 +310,8 @@ export class FeedService {
         return new GetFeedResDTO(
           blogPost.id,
           '녹녹제리다',
-          'https://github.com/hiong04',
+          'https://gihub.com/hiong04',
+          blogPost.content,
           convertTimeToStr(blogPost.regDate),
           '1:1',
           '1,301',
@@ -319,5 +327,16 @@ export class FeedService {
       ),
       total: blogPosts.pagination.total,
     };
+  }
+
+  private getFeedListTake(skip: number, take: number): number {
+    if (+skip === 1) {
+      if (+take < 2) {
+        return 0;
+      }
+      return take - 1;
+    } else {
+      return take;
+    }
   }
 }

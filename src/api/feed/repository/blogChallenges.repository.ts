@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {EntityRepository, getManager, QueryRunner, Repository} from 'typeorm';
 import {CreateBlogChallengesDTO, GetBlogChallengesDTO} from '../dto/feed.dto';
 import {BlogChallenges} from 'src/entities/BlogChallenges';
-import { Challenges } from 'src/entities/Challenges';
+import {Challenges} from 'src/entities/Challenges';
 
 @Injectable()
 @EntityRepository(BlogChallenges)
@@ -32,16 +32,16 @@ export class BlogChallengesRepository extends Repository<BlogChallenges> {
       .getMany();
   }
 
-  async getBlogChallengesByPostId(id: number){
-    const challenges:GetBlogChallengesDTO[] = await getManager()
-    .createQueryBuilder()
-    .select('bc.id', 'id')
-    .addSelect('bc.challenge_id', 'challengeId')
-    .addSelect('c.title', 'title')
-    .from(BlogChallenges, 'bc')
-    .innerJoin(Challenges, 'c', 'bc.challenge_id = c.id')
-    .where("bc.post_id = :id", { id: id })
-    .getRawMany();
+  async getBlogChallengesByPostId(id: number) {
+    const challenges: GetBlogChallengesDTO[] = await getManager()
+      .createQueryBuilder()
+      .select('bc.id', 'id')
+      .addSelect('bc.challenge_id', 'challengeId')
+      .addSelect('c.title', 'title')
+      .from(BlogChallenges, 'bc')
+      .innerJoin(Challenges, 'c', 'bc.challenge_id = c.id')
+      .where('bc.post_id = :id', {id: id})
+      .getRawMany();
 
     return challenges;
   }

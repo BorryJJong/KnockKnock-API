@@ -129,7 +129,7 @@ export class GetFeedImageResDTO {
 
   @ApiProperty({
     description: '피드 이미지 url',
-    example: '[{aws.s3.endpoint}/feed/filename.png]',
+    example: '{aws.s3.endpoint}/feed/filename.png',
   })
   private fileUrl: string;
 
@@ -151,6 +151,12 @@ export class GetFeedResDTO {
     example: 'https://github.com/hiong04',
   })
   private userImage: string;
+
+  @ApiProperty({
+    description: '게시글 내용',
+    example: '패키지 상품을 받았을때의 기쁨 후엔 늘 골치아픈 쓰레기와 분리수거',
+  })
+  private content: string;
 
   @ApiProperty({description: '작성 시간(생성일)', example: '1시간전'})
   private regDateToString: string;
@@ -178,6 +184,7 @@ export class GetFeedResDTO {
     id: number,
     userName: string,
     userImage: string,
+    content: string,
     regDateToString: string,
     scale: string,
     blogLikeCount: string,
@@ -188,6 +195,7 @@ export class GetFeedResDTO {
     this.id = id;
     this.userName = userName;
     this.userImage = userImage;
+    this.content = content;
     this.regDateToString = regDateToString;
     this.scale = scale;
     this.blogLikeCount = blogLikeCount;
