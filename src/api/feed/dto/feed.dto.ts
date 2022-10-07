@@ -6,10 +6,8 @@ import {BlogPromotion} from '../../../entities/BlogPromotion';
 import {BlogImage} from '../../../entities/BlogImage';
 import {BlogPost} from '../../../entities/BlogPost';
 import { BlogComment } from '../../../entities/BlogComment';
-import {
-  PagenationReqDTO,
-  PagenationResDTO,
-} from '../../../shared/dto/pagenation.dto';
+// import {PagenationReqDTO, PagenationResDTO} from '@shared/dto/pagenation.dto';
+import {PagenationReqDTO,PagenationResDTO} from '../../../shared/dto/pagenation.dto';
 import {IGetBlogImagesByBlogPost} from '../interface/blogImage.interface';
 import { convertTime, convertTimeToStr } from 'src/shared/utils';
 
@@ -145,8 +143,17 @@ export class GetFeedResDTO {
   @ApiProperty({description: '글쓴이 닉네임', example: 'sungmin_kim94'})
   private userName: string;
 
+  @ApiProperty({	
+    description: '글쓴이 프로필 이미지',	
+    example: 'https://github.com/hiong04',	
+  })	
+  private userImage: string;
+
   @ApiProperty({description: '작성 시간(생성일)', example: '1시간전'})
   private regDateToString: string;
+
+  @ApiProperty({description: '게시글 내 이미지의 비율', example: '1:1'})	
+  private scale: string;
 
   @ApiProperty({
     description: '피드 이미지 목록',
@@ -164,24 +171,28 @@ export class GetFeedResDTO {
   @ApiProperty({description: '댓글 개수', example: '2,456'})
   private blogCommentCount: string;
 
-  constructor(
-    id: number,
-    userName: string,
-    regDateToString: string,
-    blogLikeCount: string,
-    isLike: boolean,
-    blogCommentCount: string,
-    blogImages: IGetBlogImagesByBlogPost[],
-  ) {
-    this.id = id;
-    this.userName = userName;
-    this.regDateToString = regDateToString;
-    this.blogLikeCount = blogLikeCount;
-    this.isLike = isLike;
-    this.blogCommentCount = blogCommentCount;
-    this.blogImages = blogImages.map(
-      blogImage => new GetFeedImageResDTO(blogImage.id, blogImage.fileUrl),
-    );
+  constructor(	
+    id: number,	
+    userName: string,	
+    userImage: string,	
+    regDateToString: string,	
+    scale: string,	
+    blogLikeCount: string,	
+    isLike: boolean,	
+    blogCommentCount: string,	
+    blogImages: IGetBlogImagesByBlogPost[],	
+  ) {	
+    this.id = id;	
+    this.userName = userName;	
+    this.userImage = userImage;	
+    this.regDateToString = regDateToString;	
+    this.scale = scale;	
+    this.blogLikeCount = blogLikeCount;	
+    this.isLike = isLike;	
+    this.blogCommentCount = blogCommentCount;	
+    this.blogImages = blogImages.map(	
+      blogImage => new GetFeedImageResDTO(blogImage.id, blogImage.fileUrl),	
+    );	
   }
 }
 
@@ -257,14 +268,20 @@ export class GetBlogPostDTO {
     description: '사용자 닉네임',
     example: '홍길동',
   })
-  nickname: string;
+  userName: string;
 
-  @Expose()
-  @ApiProperty({
-    description: '사용자 프로필 이미지',
-    example: '{aws.s3.endpoint}/user/filename.png',
-  })
-  image: string;
+  @Expose()	
+  @ApiProperty({	
+    description: '사용자 프로필 이미지',	
+    example: '{aws.s3.endpoint}/user/filename.png',	
+  })	
+  userImage: string;	
+  @Expose()	
+  @ApiProperty({	
+    description: '게시글 내 이미지의 비율',	
+    example: '1:!',	
+  })	
+  scale: string;
 }
 
 @Exclude()
