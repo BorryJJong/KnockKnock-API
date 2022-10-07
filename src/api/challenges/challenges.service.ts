@@ -2,11 +2,28 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {ChallengesRepository} from './challenges.repository';
 import {
-  GetChallengeListResponseDTO,
-  GetChallengeRequestDTO,
-  GetChallengeResponseDTO,
+  GetListChallengeResDTO,
+  GetChallengeReqDTO,
+  GetChallengeResDTO,
   GetChallengeTitleReqDTO,
+  GetChallengeDetailResDTO,
+  ChallengeContentDTO,
+  ChallengeSubContentDTO,
 } from './dto/challenges.dto';
+
+export type ChallengeSubContentJsonType = {
+  title: string;
+  image: string;
+  content: string;
+};
+
+export type ChallengeContentType = {
+  title: string;
+  image: string;
+  subTitle: string;
+  rule: string[];
+  subContents: ChallengeSubContentJsonType[];
+};
 
 @Injectable()
 export class ChallengesService {
@@ -15,9 +32,7 @@ export class ChallengesService {
     private readonly challengesRepository: ChallengesRepository,
   ) {}
 
-  async getChallenge({
-    id,
-  }: GetChallengeRequestDTO): Promise<GetChallengeResponseDTO> {
+  async getChallenge({id}: GetChallengeReqDTO): Promise<GetChallengeResDTO> {
     const challenge = await this.challengesRepository.findChallengeById(id);
     const {title, subTitle, content, regDate} = challenge;
     return {
@@ -29,12 +44,55 @@ export class ChallengesService {
     };
   }
 
-  async getAllChallenges(): Promise<GetChallengeResponseDTO[]> {
+  async getAllChallenges(): Promise<GetChallengeResDTO[]> {
     const challenges = await this.challengesRepository.findChallengeAll();
     return challenges;
   }
 
-  async getChallengeList(): Promise<GetChallengeListResponseDTO[]> {
+  async getChallengeDetail({
+    id,
+  }: GetChallengeReqDTO): Promise<GetChallengeDetailResDTO> {
+    const challengeDTO = await this.challengesRepository.findChallengeById(id);
+    const participantList = await this.challengesRepository.getParticipantList(
+      id,
+    );
+
+    const challengeContentJson: ChallengeContentType = JSON.parse(
+      challengeDTO.content,
+    ) as ChallengeContentType;
+    const subContents = [];
+
+    if (challengeContentJson.subContents !== undefined) {
+      challengeContentJson.subContents.forEach((_, index) => {
+        const subContent = challengeContentJson.subContents[index];
+
+        const challengeSubContent = new ChallengeSubContentDTO(
+          subContent.title,
+          subContent.image,
+          subContent.content,
+        );
+
+        subContents[index] = challengeSubContent;
+      });
+    }
+
+    const challengeContent = new ChallengeContentDTO(
+      challengeContentJson.image,
+      challengeContentJson.title,
+      challengeContentJson.subTitle,
+      challengeContentJson.rule,
+      subContents,
+    );
+
+    const challenge = new GetChallengeDetailResDTO(
+      challengeDTO,
+      participantList,
+      challengeContent,
+    );
+    return challenge;
+  }
+
+  async getChallengeList(): Promise<GetListChallengeResDTO[]> {
     const challengeList = await this.challengesRepository.getChallengeList();
 
     for (let index = 0; index < (await challengeList).length; index++) {

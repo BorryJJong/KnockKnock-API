@@ -17,7 +17,6 @@ import {
   GetListFeedMainResDTO,
   GetListFeedMainReqDTO,
   GetListFeedReqQueryDTO,
-  GetListFeedReqParamDTO,
   GetListFeedResDTO,
   InsBlogCommentDTO,
   GetFeedViewReqDTO,
@@ -53,7 +52,7 @@ import {
 export class FeedController {
   constructor(private readonly feedService: FeedService) {}
 
-  @Get()
+  @Get('/main')
   @ApiOperation({
     summary: '피드 메인 API',
     externalDocs: {
@@ -65,7 +64,7 @@ export class FeedController {
   @ApiResponse({
     status: 200,
     description: '성공!!!',
-    type: [GetListFeedMainResDTO],
+    type: GetListFeedMainResDTO,
   })
   public async getFeedsByChallengesFilter(
     @Query() query: GetListFeedMainReqDTO,
@@ -73,7 +72,7 @@ export class FeedController {
     return this.feedService.getFeedsByChallengesFilter(query);
   }
 
-  @Get(':feedId')
+  @Get('/blog-post')
   @ApiOperation({
     summary: '피드 게시글 목록 API',
     externalDocs: {
@@ -88,10 +87,9 @@ export class FeedController {
     type: [GetListFeedResDTO],
   })
   public async getListFeed(
-    @Param() param: GetListFeedReqParamDTO,
     @Query() query: GetListFeedReqQueryDTO,
   ): Promise<GetListFeedResDTO> {
-    return this.feedService.getListFeed(param, query);
+    return this.feedService.getListFeed(query);
   }
 
   @Post()
@@ -154,9 +152,9 @@ export class FeedController {
       data: {
         status: true,
       },
-    }
+    };
 
-    try{
+    try {
       await this.feedService.saveBlogComment(insBlogCommentDTO);
     } catch (e) {
       result.code = 500;

@@ -9,7 +9,6 @@ import {
   GetListFeedMainReqDTO,
   GetListFeedMainResDTO,
   GetFeedMainResDTO,
-  GetListFeedReqParamDTO,
   GetListFeedReqQueryDTO,
   GetListFeedResDTO,
   GetFeedResDTO,
@@ -35,6 +34,7 @@ import {
   IBlogPostRepository,
   IGetBlogPostItem,
 } from './interface/blogPost.interface';
+import {convertTimeToStr, isPageNext} from '../../shared/utils';
 
 @Injectable()
 export class FeedService {
@@ -176,10 +176,10 @@ export class FeedService {
     }
   }
 
-
   async saveBlogComment(insBlogCommentDTO: InsBlogCommentDTO) {
-    try{
-      const comment = this.blogCommentRepository.createBlogComment(insBlogCommentDTO);
+    try {
+      const comment =
+        this.blogCommentRepository.createBlogComment(insBlogCommentDTO);
       await this.blogCommentRepository.saveBlogComment(null, comment);
     } catch (e) {
       throw new Error(e.message);
@@ -231,7 +231,7 @@ export class FeedService {
     }
 
     const blogPosts = await this.blogPostRepository.getBlogPosts(
-      query.skip,
+      query.page,
       query.take,
       blogPostIds,
     );
@@ -244,30 +244,31 @@ export class FeedService {
     return {
       feeds: blogPosts.items.map(blogPost => {
         const filterBlogImages = blogImages.filter(
-          blogImage => blogImage.id === blogPost.id,
+          blogImage => blogImage.postId === blogPost.id,
         );
         const isImageMore = filterBlogImages.length > 1 ? true : false;
         const thumbnailUrl = filterBlogImages[0].fileUrl;
 
         return new GetFeedMainResDTO(blogPost.id, thumbnailUrl, isImageMore);
       }),
-      isNext:
-        blogPosts.pagination.total >
-        blogPosts.pagination.skip + blogPosts.pagination.take,
+
+      isNext: isPageNext(
+        blogPosts.pagination.page,
+        blogPosts.pagination.take,
+        blogPosts.pagination.total,
+      ),
       total: blogPosts.pagination.total,
     };
   }
 
   public async getListFeed(
-    param: GetListFeedReqParamDTO,
     query: GetListFeedReqQueryDTO,
   ): Promise<GetListFeedResDTO> {
+    const {feedId: blogPostId, challengeId, page: skip, take} = query;
     // 선택한 데이터 맨상단에 노출 [데이터 고정]
-    const {feedId: blogPostId} = param;
     const blogPost = await this.blogPostRepository.getBlogPost(blogPostId);
 
     // 챌린지ID가 있다면, 챌린지ID에 맞는 데이터를 랜덤으로 노출
-    const {challengeId, skip, take} = query;
     let blogPostIds: number[] = [];
 
     if (challengeId) {
@@ -305,16 +306,20 @@ export class FeedService {
         return new GetFeedResDTO(
           blogPost.id,
           '녹녹제리다',
-          blogPost.regDate.toString(),
+          'https://github.com/hiong04',
+          convertTimeToStr(blogPost.regDate),
+          '1:1',
           '1,301',
           true,
           '2,456',
           blogImages,
         );
       }),
-      isNext:
-        blogPosts.pagination.total >
-        blogPosts.pagination.skip + blogPosts.pagination.take,
+      isNext: isPageNext(
+        blogPosts.pagination.page,
+        blogPosts.pagination.take,
+        blogPosts.pagination.total,
+      ),
       total: blogPosts.pagination.total,
     };
   }

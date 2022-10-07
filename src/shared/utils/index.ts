@@ -1,4 +1,5 @@
 import {hash, compare, genSalt} from 'bcrypt';
+import {multiply} from 'ramda';
 
 export const hashPassword = async (password: string): Promise<string> => {
   const saltRound = 10;
@@ -17,31 +18,33 @@ export const isComparePassword = async (
  * fill zero
  * @param {string} n 0을 붙일 수
  * @param {number} num_length 자릿수
- * @returns 
+ * @returns
  */
-export const zeroFill = (n: number, num_length:number): string => {
-	let s = n.toString();
-	return s.length >= num_length ? s : new Array(num_length - s.length + 1).join('0') + n;
-}
+export const zeroFill = (n: number, num_length: number): string => {
+  const s = n.toString();
+  return s.length >= num_length
+    ? s
+    : new Array(num_length - s.length + 1).join('0') + n;
+};
 
 /**
  * Format Date to String (YYYY.MM.DD HH:MM)
- * @param {Date} date 
+ * @param {Date} date
  * @returns {string} YYYY.MM.DD HH:MM
  */
 export const dateFormat = (date: Date): string => {
-  let month = date.getMonth() + 1;
-  let day = date.getDate();
-  let hour = date.getHours();
-  let minute = date.getMinutes();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hour = date.getHours();
+  const minute = date.getMinutes();
 
-  let monthStr = zeroFill(month, 2);
-  let dayStr = zeroFill(day, 2);
-  let hourStr = zeroFill(hour, 2);
-  let minuteStr = zeroFill(minute, 2);
+  const monthStr = zeroFill(month, 2);
+  const dayStr = zeroFill(day, 2);
+  const hourStr = zeroFill(hour, 2);
+  const minuteStr = zeroFill(minute, 2);
 
-  return `${date.getFullYear()}.${monthStr}.${dayStr} ${hourStr}:${minuteStr}`
-}
+  return `${date.getFullYear()}.${monthStr}.${dayStr} ${hourStr}:${minuteStr}`;
+};
 
 /**
  * Convert UTC to KST (UTC + 9시간)
@@ -49,8 +52,8 @@ export const dateFormat = (date: Date): string => {
  * @returns {Date} KST 시간
  */
 export const convertTime = (utc: Date): Date => {
-  return new Date( Date.parse(utc+'') );
-}
+  return new Date(Date.parse(utc + ''));
+};
 
 /**
  * Convert Time to String
@@ -58,8 +61,8 @@ export const convertTime = (utc: Date): Date => {
  * < 24시간 : n시간 전
  * < 72시간 : n일 전
  * 3일 ~    : YYYY.MM.DD HH:MM
- * @param {Date} t 
- * @returns {string} 
+ * @param {Date} t
+ * @returns {string}
  */
 export const convertTimeToStr = (t: Date): string => {
   const now = new Date();
@@ -77,8 +80,20 @@ export const convertTimeToStr = (t: Date): string => {
 
   const diffDay = Math.floor(diff / 60 / 24);
   if (diffDay < 2) {
-      return `${diffDay}일 전`;
+    return `${diffDay}일 전`;
   }
 
   return dateFormat(t);
-}
+};
+
+export const getCurrentPageCount = (page: number, take: number): number => {
+  return (page - 1) * take;
+};
+
+export const isPageNext = (
+  page: number,
+  take: number,
+  total: number,
+): boolean => {
+  return total > multiply(page, take);
+};

@@ -6,8 +6,7 @@ import {BlogPromotion} from '../../../entities/BlogPromotion';
 import {BlogImage} from '../../../entities/BlogImage';
 import {BlogPost} from '../../../entities/BlogPost';
 import { BlogComment } from '../../../entities/BlogComment';
-// import {PagenationReqDTO, PagenationResDTO} from '@shared/dto/pagenation.dto';
-import {PagenationReqDTO,PagenationResDTO} from '../../../shared/dto/pagenation.dto';
+import {PagenationReqDTO, PagenationResDTO} from '@shared/dto/pagenation.dto';
 import {IGetBlogImagesByBlogPost} from '../interface/blogImage.interface';
 import { convertTime, convertTimeToStr } from 'src/shared/utils';
 
@@ -111,13 +110,11 @@ export class GetListBlogImageByBlogPostResDTO {
 }
 
 export class GetListFeedReqQueryDTO extends PagenationReqDTO {
-  @ApiProperty({required: false, description: '챌린지ID', example: '1'})
-  challengeId?: number;
-}
-
-export class GetListFeedReqParamDTO {
   @ApiProperty({required: true, description: '피드ID', example: '1'})
   feedId: number;
+
+  @ApiProperty({required: false, description: '챌린지ID', example: '1'})
+  challengeId?: number;
 }
 
 export class GetFeedImageResDTO {

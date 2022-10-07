@@ -7,6 +7,7 @@ import {
 import {EntityRepository, getManager, QueryRunner, Repository} from 'typeorm';
 import {CreateBlogPostDTO, GetBlogPostDTO} from '../dto/feed.dto';
 import {User} from '../../../entities/User';
+import {getCurrentPageCount} from '../../../shared/utils';
 
 @Injectable()
 @EntityRepository(BlogPost)
@@ -30,7 +31,7 @@ export class BlogPostRepository
   }
 
   async getBlogPosts(
-    skip: number,
+    page: number,
     take: number,
     blogPostIds: number[],
   ): Promise<IGetBlogPostItems> {
@@ -41,7 +42,7 @@ export class BlogPostRepository
     }
 
     const [blogPosts, total] = await queryBuilder
-      .skip(skip)
+      .skip(getCurrentPageCount(page, take))
       .take(take)
       .orderBy('blogPost.regDate', 'ASC')
       .getManyAndCount();
@@ -50,14 +51,14 @@ export class BlogPostRepository
       items: blogPosts,
       pagination: {
         total,
-        skip,
+        page,
         take,
       },
     };
   }
 
   async getListBlogPost(
-    skip: number,
+    page: number,
     take: number,
     blogPostIds: number[],
     excludeBlogPostId: number,
@@ -74,7 +75,7 @@ export class BlogPostRepository
     }
 
     const [blogPosts, total] = await queryBuilder
-      .skip(skip)
+      .skip(getCurrentPageCount(page, take))
       .take(take)
       .orderBy('RAND()')
       .getManyAndCount();
@@ -83,7 +84,7 @@ export class BlogPostRepository
       items: blogPosts,
       pagination: {
         total: total + 1,
-        skip,
+        page,
         take,
       },
     };
@@ -105,8 +106,9 @@ export class BlogPostRepository
       .addSelect('bp.location_x', 'locationX')
       .addSelect('bp.location_y', 'locationY')
       .addSelect('bp.reg_date', 'regDate')
-      .addSelect('u.nickname', 'nickname')
-      .addSelect('u.image', 'image')
+      .addSelect('bp.scale', 'scale')
+      .addSelect('u.nickname', 'userName')
+      .addSelect('u.image', 'userImage')
       .from(BlogPost, 'bp')
       .innerJoin(User, 'u', 'bp.user_id = u.id')
       .where('bp.id = :id', {id: id})
