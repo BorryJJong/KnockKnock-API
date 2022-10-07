@@ -276,7 +276,7 @@ export class GetBlogPostDTO {
   @Expose()	
   @ApiProperty({	
     description: '게시글 내 이미지의 비율',	
-    example: '1:!',	
+    example: '1:1',	
   })	
   scale: string;
 }
