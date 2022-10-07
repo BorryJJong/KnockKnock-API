@@ -1,13 +1,14 @@
 import {IsNotEmpty, IsString} from 'class-validator';
-import {Exclude, Expose, Type} from 'class-transformer';
+import {Exclude, Expose, Transform, Type} from 'class-transformer';
 import {ApiProperty, OmitType, PartialType} from '@nestjs/swagger';
 import {BlogChallenges} from '../../../entities/BlogChallenges';
 import {BlogPromotion} from '../../../entities/BlogPromotion';
 import {BlogImage} from '../../../entities/BlogImage';
 import {BlogPost} from '../../../entities/BlogPost';
-import {BlogComment} from '../../../entities/BlogComment';
-import {IGetBlogImagesByBlogPost} from '../interface/blogImage.interface';
+import { BlogComment } from '../../../entities/BlogComment';
 import {PagenationReqDTO, PagenationResDTO} from '@shared/dto/pagenation.dto';
+import {IGetBlogImagesByBlogPost} from '../interface/blogImage.interface';
+import { convertTime, convertTimeToStr } from 'src/shared/utils';
 
 export class CreateFeedDTO extends OmitType(BlogPost, [
   'id',
@@ -83,13 +84,13 @@ export class GetFeedMainResDTO {
   }
 }
 
-export class GetListFeedMainResDTO extends PagenationResDTO {
-  @ApiProperty({
-    description: '피드 메인 목록',
-    type: GetFeedMainResDTO,
-    example: GetFeedMainResDTO,
-  })
-  feeds: GetFeedMainResDTO[];
+export class GetListFeedMainResDTO extends PagenationResDTO {	
+  @ApiProperty({	
+    description: '피드 메인 목록',	
+    type: GetFeedMainResDTO,	
+    example: GetFeedMainResDTO,	
+  })	
+  feeds: GetFeedMainResDTO[];	
 }
 
 export class GetListBlogImageByBlogPostResDTO {
@@ -107,13 +108,6 @@ export class GetListBlogImageByBlogPostResDTO {
     this.fileUrl = fileUrl;
   }
 }
-
-export class InsBlogCommentDTO extends OmitType(BlogComment, [
-  'id',
-  'regDate',
-  'delDate',
-  'isDeleted',
-]) {}
 
 export class GetListFeedReqQueryDTO extends PagenationReqDTO {
   @ApiProperty({required: true, description: '피드ID', example: '1'})
@@ -146,16 +140,16 @@ export class GetFeedResDTO {
   @ApiProperty({description: '글쓴이 닉네임', example: 'sungmin_kim94'})
   private userName: string;
 
-  @ApiProperty({
-    description: '글쓴이 프로필 이미지',
-    example: 'https://github.com/hiong04',
-  })
+  @ApiProperty({	
+    description: '글쓴이 프로필 이미지',	
+    example: 'https://github.com/hiong04',	
+  })	
   private userImage: string;
 
   @ApiProperty({description: '작성 시간(생성일)', example: '1시간전'})
   private regDateToString: string;
 
-  @ApiProperty({description: '게시글 내 이미지의 비율', example: '1:1'})
+  @ApiProperty({description: '게시글 내 이미지의 비율', example: '1:1'})	
   private scale: string;
 
   @ApiProperty({
@@ -174,28 +168,28 @@ export class GetFeedResDTO {
   @ApiProperty({description: '댓글 개수', example: '2,456'})
   private blogCommentCount: string;
 
-  constructor(
-    id: number,
-    userName: string,
-    userImage: string,
-    regDateToString: string,
-    scale: string,
-    blogLikeCount: string,
-    isLike: boolean,
-    blogCommentCount: string,
-    blogImages: IGetBlogImagesByBlogPost[],
-  ) {
-    this.id = id;
-    this.userName = userName;
-    this.userImage = userImage;
-    this.regDateToString = regDateToString;
-    this.scale = scale;
-    this.blogLikeCount = blogLikeCount;
-    this.isLike = isLike;
-    this.blogCommentCount = blogCommentCount;
-    this.blogImages = blogImages.map(
-      blogImage => new GetFeedImageResDTO(blogImage.id, blogImage.fileUrl),
-    );
+  constructor(	
+    id: number,	
+    userName: string,	
+    userImage: string,	
+    regDateToString: string,	
+    scale: string,	
+    blogLikeCount: string,	
+    isLike: boolean,	
+    blogCommentCount: string,	
+    blogImages: IGetBlogImagesByBlogPost[],	
+  ) {	
+    this.id = id;	
+    this.userName = userName;	
+    this.userImage = userImage;	
+    this.regDateToString = regDateToString;	
+    this.scale = scale;	
+    this.blogLikeCount = blogLikeCount;	
+    this.isLike = isLike;	
+    this.blogCommentCount = blogCommentCount;	
+    this.blogImages = blogImages.map(	
+      blogImage => new GetFeedImageResDTO(blogImage.id, blogImage.fileUrl),	
+    );	
   }
 }
 
@@ -273,18 +267,17 @@ export class GetBlogPostDTO {
   })
   userName: string;
 
-  @Expose()
-  @ApiProperty({
-    description: '사용자 프로필 이미지',
-    example: '{aws.s3.endpoint}/user/filename.png',
-  })
-  userImage: string;
-
-  @Expose()
-  @ApiProperty({
-    description: '게시글 내 이미지의 비율',
-    example: '1:!',
-  })
+  @Expose()	
+  @ApiProperty({	
+    description: '사용자 프로필 이미지',	
+    example: '{aws.s3.endpoint}/user/filename.png',	
+  })	
+  userImage: string;	
+  @Expose()	
+  @ApiProperty({	
+    description: '게시글 내 이미지의 비율',	
+    example: '1:1',	
+  })	
   scale: string;
 }
 
@@ -382,4 +375,77 @@ export class GetFeedViewResDTO {
   })
   @Type(() => GetBlogImageDTO)
   images: GetBlogImageDTO[];
+}
+
+export class InsBlogCommentDTO extends OmitType(BlogComment, ['id', 'regDate', 'delDate', 'isDeleted',]) {};
+
+@Exclude()
+export class GetBlogCommentDTO {
+  @Expose()
+  @ApiProperty({
+    description: '댓글 아이디',
+    example: 1,
+  })
+  id: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '사용자 아이디',
+    example: 1,
+  })
+  userId: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '사용자 닉네임',
+    example: '홍길동',
+  })
+  nickname: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '사용자 프로필 이미지',
+    example: '{aws.s3.endpoint}/user/filename.png',
+  })
+  image: string;
+  
+  @Expose()
+  @ApiProperty({
+    description: '내용',
+    example: '잘 봤습니다.',
+  })
+  content: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '등록 날짜',
+    example: '1일 전',
+  })
+  @Transform(r => convertTimeToStr(convertTime(r.value)))
+  regDate: Date;
+
+  @Expose()
+  @ApiProperty({
+    description: '삭제 여부',
+    example: 'false'
+  })
+  isDeleted: boolean;
+};
+
+@Exclude()
+export class GetListFeedCommentResDTO extends GetBlogCommentDTO {
+  @Expose()
+  @Type(() => Number)
+  @ApiProperty({description: '리댓글 개수', example: 5})
+  replyCnt?: number;
+
+  @Expose()
+  @ApiProperty({description: '리댓글 목록', example: GetBlogCommentDTO, type: [GetBlogCommentDTO]})
+  @Type(() => GetBlogCommentDTO)
+  reply?: GetBlogCommentDTO[];
+}
+
+export class GetListFeedCommentReqDTO {
+  @ApiProperty({description: '피드 id', example: '1'})
+  id: number;
 }
