@@ -40,6 +40,22 @@ let FeedController = class FeedController {
         };
         return result;
     }
+    async getFeed(param) {
+        const result = {
+            code: 200,
+            message: 'success',
+            data: null,
+        };
+        try {
+            const feed = await this.feedService.getFeed(param);
+            result.data = feed;
+        }
+        catch (e) {
+            result.code = 500;
+            result.message = e.message;
+        }
+        return result;
+    }
     async insertBlogComment(insBlogCommentDTO) {
         const result = {
             code: 201,
@@ -58,15 +74,15 @@ let FeedController = class FeedController {
         }
         return result;
     }
-    async getFeed(param) {
+    async getListFeedComment(param) {
         const result = {
             code: 200,
             message: 'success',
             data: null,
         };
         try {
-            const feed = await this.feedService.getFeed(param);
-            result.data = feed;
+            const comments = await this.feedService.getListFeedComment(param);
+            result.data = comments;
         }
         catch (e) {
             result.code = 500;
@@ -136,6 +152,18 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "create", null);
 __decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '피드 상세 조회' }),
+    (0, swagger_1.ApiResponse)({
+        description: '',
+        type: temp_response_1.GetFeedViewResponse,
+    }),
+    __param(0, (0, common_1.Param)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [feed_dto_1.GetFeedViewReqDTO]),
+    __metadata("design:returntype", Promise)
+], FeedController.prototype, "getFeed", null);
+__decorate([
     (0, common_1.Post)('/comment'),
     (0, swagger_1.ApiOperation)({ summary: '댓글 등록' }),
     (0, swagger_1.ApiCreatedResponse)({
@@ -148,17 +176,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "insertBlogComment", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: '피드 상세 조회' }),
-    (0, swagger_1.ApiResponse)({
-        description: '',
-        type: temp_response_1.GetFeedViewResponse,
+    (0, common_1.Get)(':id/comment'),
+    (0, swagger_1.ApiOperation)({ summary: '댓글 목록 조회' }),
+    (0, swagger_1.ApiCreatedResponse)({
+        description: '성공',
+        type: temp_response_1.GetFeedCommentResponse,
     }),
     __param(0, (0, common_1.Param)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [feed_dto_1.GetFeedViewReqDTO]),
+    __metadata("design:paramtypes", [feed_dto_1.GetListFeedCommentReqDTO]),
     __metadata("design:returntype", Promise)
-], FeedController.prototype, "getFeed", null);
+], FeedController.prototype, "getListFeedComment", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),

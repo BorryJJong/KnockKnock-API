@@ -4,8 +4,8 @@ import { BlogPromotion } from '../../../entities/BlogPromotion';
 import { BlogImage } from '../../../entities/BlogImage';
 import { BlogPost } from '../../../entities/BlogPost';
 import { BlogComment } from '../../../entities/BlogComment';
-import { IGetBlogImagesByBlogPost } from '../interface/blogImage.interface';
 import { PagenationReqDTO, PagenationResDTO } from '@shared/dto/pagenation.dto';
+import { IGetBlogImagesByBlogPost } from '../interface/blogImage.interface';
 declare const CreateFeedDTO_base: import("@nestjs/common").Type<Omit<BlogPost, "id" | "delDate" | "regDate" | "hits" | "modDate" | "isDeleted">>;
 export declare class CreateFeedDTO extends CreateFeedDTO_base {
     promotions: string;
@@ -47,9 +47,6 @@ export declare class GetListBlogImageByBlogPostResDTO {
     private fileUrl;
     constructor(id: number, fileUrl: string);
 }
-declare const InsBlogCommentDTO_base: import("@nestjs/common").Type<Omit<BlogComment, "id" | "delDate" | "regDate" | "isDeleted">>;
-export declare class InsBlogCommentDTO extends InsBlogCommentDTO_base {
-}
 export declare class GetListFeedReqQueryDTO extends PagenationReqDTO {
     feedId: number;
     challengeId?: number;
@@ -63,13 +60,14 @@ export declare class GetFeedResDTO {
     private id;
     private userName;
     private userImage;
+    private content;
     private regDateToString;
     private scale;
     private blogImages;
     private blogLikeCount;
     private isLike;
     private blogCommentCount;
-    constructor(id: number, userName: string, userImage: string, regDateToString: string, scale: string, blogLikeCount: string, isLike: boolean, blogCommentCount: string, blogImages: IGetBlogImagesByBlogPost[]);
+    constructor(id: number, userName: string, userImage: string, content: string, regDateToString: string, scale: string, blogLikeCount: string, isLike: boolean, blogCommentCount: string, blogImages: IGetBlogImagesByBlogPost[]);
 }
 export declare class GetListFeedResDTO extends PagenationResDTO {
     feeds: GetFeedResDTO[];
@@ -108,5 +106,24 @@ export declare class GetFeedViewResDTO {
     promotions: GetBlogPromotionDTO[];
     challenges: GetBlogChallengesDTO[];
     images: GetBlogImageDTO[];
+}
+declare const InsBlogCommentDTO_base: import("@nestjs/common").Type<Omit<BlogComment, "id" | "delDate" | "regDate" | "isDeleted">>;
+export declare class InsBlogCommentDTO extends InsBlogCommentDTO_base {
+}
+export declare class GetBlogCommentDTO {
+    id: number;
+    userId: number;
+    nickname: string;
+    image: string;
+    content: string;
+    regDate: Date;
+    isDeleted: boolean;
+}
+export declare class GetListFeedCommentResDTO extends GetBlogCommentDTO {
+    replyCnt?: number;
+    reply?: GetBlogCommentDTO[];
+}
+export declare class GetListFeedCommentReqDTO {
+    id: number;
 }
 export {};
