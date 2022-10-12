@@ -19,6 +19,9 @@ import {
   GetBlogPromotionDTO,
   GetBlogPostDTO,
   GetBlogImageDTO,
+  GetListFeedCommentReqDTO,
+  GetListFeedCommentResDTO,
+  GetBlogCommentDTO,
 } from './dto/feed.dto';
 import {ImageService} from 'src/api/image/image.service';
 import {BlogChallengesRepository} from './repository/blogChallenges.repository';
@@ -337,6 +340,31 @@ export class FeedService {
       return take - 1;
     } else {
       return take;
+    }
+  }
+
+  async getListFeedComment({
+    id,
+  }: GetListFeedCommentReqDTO): Promise<GetListFeedCommentResDTO[]> {
+    try {
+      let comment = await this.blogCommentRepository.getBlogCommentByPostId(id);
+      comment = plainToInstance(GetListFeedCommentResDTO, comment);
+
+      const result: GetListFeedCommentResDTO[] = await Promise.all(
+        comment.map(async c => {
+          if (c.replyCnt != 0) {
+            const reply: GetBlogCommentDTO[] =
+              await this.blogCommentRepository.getBlogCommentByCommentId(c.id);
+            c.reply = plainToInstance(GetBlogCommentDTO, reply);
+          }
+          return c;
+        }),
+      );
+
+      return result;
+    } catch (e) {
+      this.logger.error(e);
+      throw new Error(e);
     }
   }
 }

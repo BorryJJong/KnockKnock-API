@@ -1,5 +1,6 @@
 import {ApiProperty} from '@nestjs/swagger';
 import {GetFeedViewResDTO} from 'src/api/feed/dto/feed.dto';
+import {GetListFeedCommentResDTO} from 'src/api/feed/dto/feed.dto';
 import {BaseResponse} from '../base.response';
 
 export abstract class FeedCreateResponseData {
@@ -23,4 +24,13 @@ export abstract class GetFeedViewResponse extends BaseResponse {
 
   @ApiProperty()
   data: GetFeedViewResDTO;
+}
+
+export abstract class GetFeedCommentResponse extends BaseResponse {
+  constructor() {
+    super();
+  }
+
+  @ApiProperty({type: [GetListFeedCommentResDTO]})
+  data: GetListFeedCommentResDTO[];
 }

@@ -1,13 +1,14 @@
 import {IsNotEmpty, IsString} from 'class-validator';
-import {Exclude, Expose, Type} from 'class-transformer';
+import {Exclude, Expose, Transform, Type} from 'class-transformer';
 import {ApiProperty, OmitType, PartialType} from '@nestjs/swagger';
 import {BlogChallenges} from '../../../entities/BlogChallenges';
 import {BlogPromotion} from '../../../entities/BlogPromotion';
 import {BlogImage} from '../../../entities/BlogImage';
 import {BlogPost} from '../../../entities/BlogPost';
 import {BlogComment} from '../../../entities/BlogComment';
-import {IGetBlogImagesByBlogPost} from '../interface/blogImage.interface';
 import {PagenationReqDTO, PagenationResDTO} from '@shared/dto/pagenation.dto';
+import {IGetBlogImagesByBlogPost} from '../interface/blogImage.interface';
+import {convertTime, convertTimeToStr} from 'src/shared/utils';
 
 export class CreateFeedDTO extends OmitType(BlogPost, [
   'id',
@@ -107,13 +108,6 @@ export class GetListBlogImageByBlogPostResDTO {
     this.fileUrl = fileUrl;
   }
 }
-
-export class InsBlogCommentDTO extends OmitType(BlogComment, [
-  'id',
-  'regDate',
-  'delDate',
-  'isDeleted',
-]) {}
 
 export class GetListFeedReqQueryDTO extends PagenationReqDTO {
   @ApiProperty({required: true, description: '피드ID', example: '1'})
@@ -287,11 +281,10 @@ export class GetBlogPostDTO {
     example: '{aws.s3.endpoint}/user/filename.png',
   })
   userImage: string;
-
   @Expose()
   @ApiProperty({
     description: '게시글 내 이미지의 비율',
-    example: '1:!',
+    example: '1:1',
   })
   scale: string;
 }
@@ -390,4 +383,86 @@ export class GetFeedViewResDTO {
   })
   @Type(() => GetBlogImageDTO)
   images: GetBlogImageDTO[];
+}
+
+export class InsBlogCommentDTO extends OmitType(BlogComment, [
+  'id',
+  'regDate',
+  'delDate',
+  'isDeleted',
+]) {}
+
+@Exclude()
+export class GetBlogCommentDTO {
+  @Expose()
+  @ApiProperty({
+    description: '댓글 아이디',
+    example: 1,
+  })
+  id: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '사용자 아이디',
+    example: 1,
+  })
+  userId: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '사용자 닉네임',
+    example: '홍길동',
+  })
+  nickname: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '사용자 프로필 이미지',
+    example: '{aws.s3.endpoint}/user/filename.png',
+  })
+  image: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '내용',
+    example: '잘 봤습니다.',
+  })
+  content: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '등록 날짜',
+    example: '1일 전',
+  })
+  @Transform(r => convertTimeToStr(convertTime(r.value)))
+  regDate: Date;
+
+  @Expose()
+  @ApiProperty({
+    description: '삭제 여부',
+    example: 'false',
+  })
+  isDeleted: boolean;
+}
+
+@Exclude()
+export class GetListFeedCommentResDTO extends GetBlogCommentDTO {
+  @Expose()
+  @Type(() => Number)
+  @ApiProperty({description: '리댓글 개수', example: 5})
+  replyCnt?: number;
+
+  @Expose()
+  @ApiProperty({
+    description: '리댓글 목록',
+    example: GetBlogCommentDTO,
+    type: [GetBlogCommentDTO],
+  })
+  @Type(() => GetBlogCommentDTO)
+  reply?: GetBlogCommentDTO[];
+}
+
+export class GetListFeedCommentReqDTO {
+  @ApiProperty({description: '피드 id', example: '1'})
+  id: number;
 }
