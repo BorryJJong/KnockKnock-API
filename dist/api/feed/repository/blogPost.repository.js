@@ -44,9 +44,12 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
         };
     }
     async getListBlogPost(page, take, blogPostIds, excludeBlogPostId) {
-        let queryBuilder = await this.createQueryBuilder('blogPost').where('blogPost.id != :id', {
-            id: excludeBlogPostId,
-        });
+        let queryBuilder = await this.createQueryBuilder('blogPost');
+        if (excludeBlogPostId) {
+            queryBuilder = queryBuilder.where('blogPost.id != :id', {
+                id: excludeBlogPostId,
+            });
+        }
         if (blogPostIds.length > 0) {
             queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
         }

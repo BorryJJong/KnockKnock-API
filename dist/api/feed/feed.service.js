@@ -160,14 +160,21 @@ let FeedService = FeedService_1 = class FeedService {
     }
     async getListFeed(query) {
         const { feedId: blogPostId, challengeId, page: skip, take } = query;
-        const blogPost = await this.blogPostRepository.getBlogPost(blogPostId);
+        let excludeBlogPostId;
+        let selectBlogPost;
+        if (+skip === 1) {
+            selectBlogPost = await this.blogPostRepository.getBlogPost(blogPostId);
+            excludeBlogPostId = selectBlogPost.id;
+        }
         let blogPostIds = [];
         if (challengeId) {
             const blogChallenges = await this.blogChallengesRepository.getBlogChallengesByChallengeId(challengeId);
             blogPostIds = blogChallenges.map(bc => bc.postId);
         }
-        const blogPosts = await this.blogPostRepository.getListBlogPost(skip, take, blogPostIds, blogPost.id);
-        blogPosts.items.unshift(blogPost);
+        const blogPosts = await this.blogPostRepository.getListBlogPost(skip, this.getFeedListTake(skip, take), blogPostIds, excludeBlogPostId);
+        if (+skip === 1) {
+            blogPosts.items.unshift(selectBlogPost);
+        }
         let blogImages = [];
         blogPostIds = blogPosts.items.map(bp => bp.id);
         if (blogPostIds.length > 0) {
@@ -175,11 +182,40 @@ let FeedService = FeedService_1 = class FeedService {
         }
         return {
             feeds: blogPosts.items.map((blogPost) => {
-                return new feed_dto_1.GetFeedResDTO(blogPost.id, '녹녹제리다', 'https://github.com/hiong04', (0, utils_1.convertTimeToStr)(blogPost.regDate), '1:1', '1,301', true, '2,456', blogImages);
+                return new feed_dto_1.GetFeedResDTO(blogPost.id, '녹녹제리다', 'https://gihub.com/hiong04', blogPost.content, (0, utils_1.convertTimeToStr)(blogPost.regDate), '1:1', '1,301', true, '2,456', blogImages);
             }),
             isNext: (0, utils_1.isPageNext)(blogPosts.pagination.page, blogPosts.pagination.take, blogPosts.pagination.total),
             total: blogPosts.pagination.total,
         };
+    }
+    getFeedListTake(skip, take) {
+        if (+skip === 1) {
+            if (+take < 2) {
+                return 0;
+            }
+            return take - 1;
+        }
+        else {
+            return take;
+        }
+    }
+    async getListFeedComment({ id, }) {
+        try {
+            let comment = await this.blogCommentRepository.getBlogCommentByPostId(id);
+            comment = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetListFeedCommentResDTO, comment);
+            const result = await Promise.all(comment.map(async (c) => {
+                if (c.replyCnt != 0) {
+                    const reply = await this.blogCommentRepository.getBlogCommentByCommentId(c.id);
+                    c.reply = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetBlogCommentDTO, reply);
+                }
+                return c;
+            }));
+            return result;
+        }
+        catch (e) {
+            this.logger.error(e);
+            throw new Error(e);
+        }
     }
 };
 FeedService = FeedService_1 = __decorate([
