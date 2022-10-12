@@ -61,14 +61,15 @@ export class BlogPostRepository
     page: number,
     take: number,
     blogPostIds: number[],
-    excludeBlogPostId: number,
+    excludeBlogPostId?: number,
   ): Promise<IGetBlogPostItems> {
-    let queryBuilder = await this.createQueryBuilder('blogPost').where(
-      'blogPost.id != :id',
-      {
+    let queryBuilder = await this.createQueryBuilder('blogPost');
+
+    if (excludeBlogPostId) {
+      queryBuilder = queryBuilder.where('blogPost.id != :id', {
         id: excludeBlogPostId,
-      },
-    );
+      });
+    }
 
     if (blogPostIds.length > 0) {
       queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
