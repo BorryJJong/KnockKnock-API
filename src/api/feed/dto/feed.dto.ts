@@ -466,3 +466,37 @@ export class GetListFeedCommentReqDTO {
   @ApiProperty({description: '피드 id', example: '1'})
   id: number;
 }
+
+@Exclude()
+export class GetFeedLikeDTO {
+  @Expose()
+  @ApiProperty({description: '좋아요 id', example: '1'})
+  id: number;
+
+  @Expose()
+  @ApiProperty({description: '사용자 id', example: '1'})
+  userId: number;
+
+  @Expose()
+  @ApiProperty({description: '유저 닉네임', example: '홍길동'})
+  private userName: string;
+
+  @Expose()
+  @ApiProperty({
+    description: '유저 프로필 이미지',
+    example: 'https://github.com/hiong04',
+  })
+  private userImage: string;
+}
+
+export class GetListFeedLikeResDTO {
+  @ApiProperty({description: '게시글 id', example: '1'})
+  postId: number;
+
+  @ApiProperty({
+    description: '피드 좋아요 목록',
+    type: GetFeedLikeDTO,
+    example: GetFeedLikeDTO,
+  })
+  likes: GetFeedLikeDTO[];
+}
