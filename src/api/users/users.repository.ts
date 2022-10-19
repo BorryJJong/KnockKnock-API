@@ -1,23 +1,47 @@
+import {User} from '@entities/User';
 import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {SOCIAL_TYPE} from '@shared/enums/enum';
 import {EntityRepository, Repository} from 'typeorm';
-import {CreateUserRequestDTO} from './dto/users.dto';
-import {User} from './users.entity';
+
+export interface ICreateUser {
+  socialType: SOCIAL_TYPE;
+  socialUuid: string;
+}
+export interface IUpdateUser {
+  id: number;
+  nickName: string;
+  image: string;
+}
 
 @Injectable()
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  public async checkExistEmail({email}) {
-    const user = await this.findOne({select: ['email'], where: {email}});
-    if (user) {
-      throw new UnauthorizedException('이미 존재하는 이메일입니다.');
-    }
+  public async insertUser(request: ICreateUser): Promise<void> {
+    await this.createQueryBuilder()
+      .insert()
+      .into(User)
+      .values(request)
+      .execute();
   }
 
-  public async createUser(
-    createUserRequestDTO: CreateUserRequestDTO,
-  ): Promise<User> {
-    const user = this.create({...createUserRequestDTO});
-    return await this.save(user);
+  public async updateUser(request: IUpdateUser): Promise<void> {
+    await this.createQueryBuilder()
+      .update(User)
+      .set({
+        nickname: request.nickName,
+      })
+      .where('id = :id', {id: request.id})
+      .execute();
+  }
+
+  public async selectSocialUser(
+    socialUuid: string,
+    socialType: SOCIAL_TYPE,
+  ): Promise<User | undefined> {
+    return await this.createQueryBuilder('users')
+      .where('users.socialUuid = :socialUuid', {socialUuid})
+      .andWhere('users.socialType = :socialType', {socialType})
+      .getOne();
   }
 
   public async findUserByEmail(email: string): Promise<User> {
@@ -34,11 +58,6 @@ export class UserRepository extends Repository<User> {
 
   public async findUserByIdWithoutPassword(id: string): Promise<User> {
     const user = await this.findOne(id);
-    delete user.password;
     return user;
-  }
-
-  public getUser(id: number): Promise<User> {
-    return this.findOne(id);
   }
 }

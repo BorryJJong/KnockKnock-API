@@ -1,20 +1,26 @@
-import {forwardRef, Module} from '@nestjs/common';
+import {Module} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
 import {JwtModule} from '@nestjs/jwt';
 import {PassportModule} from '@nestjs/passport';
-import {UsersModule} from '../api/users/users.module';
+import {TypeOrmModule} from '@nestjs/typeorm';
+import {UserRepository} from 'src/api/users/users.repository';
+import {KakaoService} from 'src/auth/kakao.service';
 import {AuthService} from './auth.service';
-import {JwtStrategy} from './jwt/jwt.strategy';
+import {JwtAccessTokenStrategy} from './jwt/jwtAccessToken.strategy';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([UserRepository]),
     PassportModule.register({defaultStrategy: 'jwt', session: false}),
-    JwtModule.register({
-      secret: process.env.JWT_ACCESS_KEY,
-      signOptions: {expiresIn: process.env.JWT_ACCESS_EXPIRED},
-    }),
-    forwardRef(() => UsersModule),
+    JwtModule.register({}),
   ],
-  providers: [AuthService, JwtStrategy],
-  exports: [AuthService],
+  providers: [
+    AuthService,
+    JwtAccessTokenStrategy,
+    JwtAccessTokenStrategy,
+    KakaoService,
+    ConfigService,
+  ],
+  exports: [AuthService, KakaoService],
 })
 export class AuthModule {}

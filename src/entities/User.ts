@@ -1,3 +1,4 @@
+import {SOCIAL_TYPE} from '@shared/enums/enum';
 import {
   BeforeInsert,
   Column,
@@ -20,14 +21,6 @@ export class User {
   })
   nickname: string;
 
-  // @Column({
-  //   name: 'provider_id',
-  //   type: 'int',
-  //   comment: '제공자',
-  //   nullable: false,
-  // })
-  // providerId: number;
-
   @Column({
     name: 'social_uuid',
     type: 'varchar',
@@ -35,7 +28,17 @@ export class User {
     comment: '소셜uuid',
     length: 255,
   })
-  social_uuid: string;
+  socialUuid: string;
+
+  @Column({
+    name: 'social_type',
+    type: 'enum',
+    nullable: false,
+    comment: '소셜 종류',
+    enum: SOCIAL_TYPE,
+    default: SOCIAL_TYPE.KAKAO,
+  })
+  socialType: SOCIAL_TYPE;
 
   @Column({
     name: 'image',
@@ -44,6 +47,22 @@ export class User {
     type: 'text',
   })
   image: string;
+
+  @Column({
+    name: 'email',
+    nullable: true,
+    comment: '카카오 또는 애플 이메일',
+    type: 'varchar',
+  })
+  email?: string;
+
+  @Column({
+    name: 'service_connection_date',
+    nullable: true,
+    comment: '서비스 접속 시간',
+    type: 'timestamp',
+  })
+  serviceConnectionDate?: Date;
 
   @CreateDateColumn({
     name: 'reg_date',

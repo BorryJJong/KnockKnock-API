@@ -1,12 +1,9 @@
+import {User} from '@entities/User';
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {hashPassword} from '../../shared/utils';
-import {
-  CreateUserRequestDTO,
-  GetUserRequestDTO,
-  GetUserResponseDTO,
-} from './dto/users.dto';
-import {UserRepository} from './users.repository';
+import {SocialLoginRequestDTO} from 'src/auth/dto/auth.dto';
+import {GetUserRequestDTO, GetUserResponseDTO} from './dto/users.dto';
+import {ICreateUser, IUpdateUser, UserRepository} from './users.repository';
 
 @Injectable()
 export class UsersService {
@@ -15,23 +12,29 @@ export class UsersService {
     private readonly userRepository: UserRepository,
   ) {}
 
-  async create({email, nickName, password}: CreateUserRequestDTO) {
-    await this.userRepository.checkExistEmail({email});
-    await this.userRepository.createUser({
-      email,
-      nickName,
-      password: await hashPassword(password),
-    });
+  async saveUser(request: ICreateUser): Promise<void> {
+    return await this.userRepository.insertUser(request);
   }
 
-  async getUser({id}: GetUserRequestDTO): Promise<GetUserResponseDTO> {
+  async updateUser(request: IUpdateUser): Promise<void> {
+    return await this.userRepository.updateUser(request);
+  }
+
+  async getSocialUser({
+    socialUuid,
+    socialType,
+  }: SocialLoginRequestDTO): Promise<User | undefined> {
+    return await this.userRepository.selectSocialUser(socialUuid, socialType);
+  }
+
+  async getUserV2({id}: GetUserRequestDTO): Promise<GetUserResponseDTO> {
     const user = await this.userRepository.findUserById(id);
-    const {email, nickName, createdAt} = user;
+    const {email} = user;
     return {
       id,
       email,
-      nickName,
-      createdAt,
+      nickName: 'asdf',
+      createdAt: new Date(),
     };
   }
 }
