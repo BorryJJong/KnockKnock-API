@@ -1,9 +1,9 @@
 import {User} from '@entities/User';
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
+import {ICreateUser, IUpdateUser} from 'src/api/users/users.interface';
 import {SocialLoginRequestDTO} from 'src/auth/dto/auth.dto';
-import {GetUserRequestDTO, GetUserResponseDTO} from './dto/users.dto';
-import {ICreateUser, IUpdateUser, UserRepository} from './users.repository';
+import {UserRepository} from './users.repository';
 
 @Injectable()
 export class UsersService {
@@ -12,7 +12,7 @@ export class UsersService {
     private readonly userRepository: UserRepository,
   ) {}
 
-  async saveUser(request: ICreateUser): Promise<void> {
+  async saveUser(request: ICreateUser): Promise<User> {
     return await this.userRepository.insertUser(request);
   }
 
@@ -25,16 +25,5 @@ export class UsersService {
     socialType,
   }: SocialLoginRequestDTO): Promise<User | undefined> {
     return await this.userRepository.selectSocialUser(socialUuid, socialType);
-  }
-
-  async getUserV2({id}: GetUserRequestDTO): Promise<GetUserResponseDTO> {
-    const user = await this.userRepository.findUserById(id);
-    const {email} = user;
-    return {
-      id,
-      email,
-      nickName: 'asdf',
-      createdAt: new Date(),
-    };
   }
 }

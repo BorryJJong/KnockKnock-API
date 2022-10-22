@@ -1,17 +1,15 @@
-import {Body, Controller, Get, Param, Post} from '@nestjs/common';
+import {Body, Controller, Post} from '@nestjs/common';
 import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
 import {SOCIAL_TYPE} from '@shared/enums/enum';
-import {IUpdateUser} from 'src/api/users/users.repository';
+import {UserValidator} from 'src/api/users/users.validator';
 import {AuthService} from 'src/auth/auth.service';
 import {KakaoService} from 'src/auth/kakao.service';
 import {
   AuthInfoResponseDTO,
   SignUpRequestDTO,
-  SignUpResponseDTO,
   SocialLoginRequestDTO,
   SocialLoginResponseDTO,
 } from '../../auth/dto/auth.dto';
-import {GetUserRequestDTO, GetUserResponseDTO} from './dto/users.dto';
 import {UsersService} from './users.service';
 
 @ApiTags('users')
@@ -21,6 +19,7 @@ export class UsersController {
     private readonly userService: UsersService,
     private readonly authService: AuthService,
     private readonly kakaoService: KakaoService,
+    private readonly userValidator: UserValidator,
   ) {}
 
   @Post('/social-login')
@@ -65,30 +64,31 @@ export class UsersController {
     status: 200,
     description: '성공',
   })
-  async signUp(@Body() body: SignUpRequestDTO): Promise<SignUpResponseDTO> {
-    const {nickName, image} = body;
-    const id = 1;
-    const user = await this.userService.getUserV2({id: id});
-    const request: IUpdateUser = {
-      nickName,
-      image,
-      id: user.id,
-    };
+  async signUp(
+    @Body() body: SignUpRequestDTO,
+  ): Promise<SocialLoginResponseDTO> {
+    const {socialUuid, socialType, nickname} = body;
+    const kakaoSocialUid = await this.kakaoService.getUserProperties(
+      socialUuid,
+    );
 
-    await this.userService.updateUser(request);
+    await this.userValidator.checkExistSocialUser(
+      kakaoSocialUid.id.toString(),
+      socialType,
+    );
 
-    return new SignUpResponseDTO(new AuthInfoResponseDTO('', ''));
-  }
+    const newUser = await this.userService.saveUser({
+      socialType,
+      socialUuid: kakaoSocialUid.id.toString(),
+      nickname,
+    });
+    const {accessToken, refreshToken} = await this.authService.makeJwtToken(
+      newUser.id,
+    );
 
-  @Get('/:id')
-  // @UseGuards(JwtAuthGuard)
-  @ApiOperation({summary: '유저정보 조회'})
-  @ApiResponse({
-    status: 200,
-    description: '성공',
-    type: GetUserResponseDTO,
-  })
-  getUser(@Param() param: GetUserRequestDTO): Promise<GetUserResponseDTO> {
-    return this.userService.getUserV2(param);
+    return new SocialLoginResponseDTO(
+      false,
+      new AuthInfoResponseDTO(accessToken, refreshToken),
+    );
   }
 }

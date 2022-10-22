@@ -1,34 +1,32 @@
 import {User} from '@entities/User';
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {SOCIAL_TYPE} from '@shared/enums/enum';
+import {
+  ICreateUser,
+  IUpdateUser,
+  IUserRepository,
+} from 'src/api/users/users.interface';
 import {EntityRepository, Repository} from 'typeorm';
-
-export interface ICreateUser {
-  socialType: SOCIAL_TYPE;
-  socialUuid: string;
-}
-export interface IUpdateUser {
-  id: number;
-  nickName: string;
-  image: string;
-}
 
 @Injectable()
 @EntityRepository(User)
-export class UserRepository extends Repository<User> {
-  public async insertUser(request: ICreateUser): Promise<void> {
-    await this.createQueryBuilder()
-      .insert()
-      .into(User)
-      .values(request)
-      .execute();
+export class UserRepository
+  extends Repository<User>
+  implements IUserRepository
+{
+  public async insertUser(request: ICreateUser): Promise<User> {
+    return await this.save(
+      this.create({
+        ...request,
+      }),
+    );
   }
 
   public async updateUser(request: IUpdateUser): Promise<void> {
     await this.createQueryBuilder()
       .update(User)
       .set({
-        nickname: request.nickName,
+        nickname: request.nickname,
       })
       .where('id = :id', {id: request.id})
       .execute();
@@ -59,5 +57,15 @@ export class UserRepository extends Repository<User> {
   public async findUserByIdWithoutPassword(id: string): Promise<User> {
     const user = await this.findOne(id);
     return user;
+  }
+
+  public async isExistSocialUser(
+    socialUuid: string,
+    socialType: SOCIAL_TYPE,
+  ): Promise<number> {
+    return await this.createQueryBuilder('users')
+      .where('users.socialUuid = :socialUuid', {socialUuid})
+      .andWhere('users.socialType = :socialType', {socialType})
+      .getCount();
   }
 }
