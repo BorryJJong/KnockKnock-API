@@ -61,14 +61,15 @@ export class BlogPostRepository
     page: number,
     take: number,
     blogPostIds: number[],
-    excludeBlogPostId: number,
+    excludeBlogPostId?: number,
   ): Promise<IGetBlogPostItems> {
-    let queryBuilder = await this.createQueryBuilder('blogPost').where(
-      'blogPost.id != :id',
-      {
+    let queryBuilder = await this.createQueryBuilder('blogPost');
+
+    if (excludeBlogPostId) {
+      queryBuilder = queryBuilder.where('blogPost.id != :id', {
         id: excludeBlogPostId,
-      },
-    );
+      });
+    }
 
     if (blogPostIds.length > 0) {
       queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
@@ -106,8 +107,9 @@ export class BlogPostRepository
       .addSelect('bp.location_x', 'locationX')
       .addSelect('bp.location_y', 'locationY')
       .addSelect('bp.reg_date', 'regDate')
-      .addSelect('u.nickname', 'nickname')
-      .addSelect('u.image', 'image')
+      .addSelect('bp.scale', 'scale')
+      .addSelect('u.nickname', 'userName')
+      .addSelect('u.image', 'userImage')
       .from(BlogPost, 'bp')
       .innerJoin(User, 'u', 'bp.user_id = u.id')
       .where('bp.id = :id', {id: id})

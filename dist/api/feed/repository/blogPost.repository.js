@@ -44,9 +44,12 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
         };
     }
     async getListBlogPost(page, take, blogPostIds, excludeBlogPostId) {
-        let queryBuilder = await this.createQueryBuilder('blogPost').where('blogPost.id != :id', {
-            id: excludeBlogPostId,
-        });
+        let queryBuilder = await this.createQueryBuilder('blogPost');
+        if (excludeBlogPostId) {
+            queryBuilder = queryBuilder.where('blogPost.id != :id', {
+                id: excludeBlogPostId,
+            });
+        }
         if (blogPostIds.length > 0) {
             queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
         }
@@ -79,8 +82,9 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             .addSelect('bp.location_x', 'locationX')
             .addSelect('bp.location_y', 'locationY')
             .addSelect('bp.reg_date', 'regDate')
-            .addSelect('u.nickname', 'nickname')
-            .addSelect('u.image', 'image')
+            .addSelect('bp.scale', 'scale')
+            .addSelect('u.nickname', 'userName')
+            .addSelect('u.image', 'userImage')
             .from(BlogPost_1.BlogPost, 'bp')
             .innerJoin(User_1.User, 'u', 'bp.user_id = u.id')
             .where('bp.id = :id', { id: id })

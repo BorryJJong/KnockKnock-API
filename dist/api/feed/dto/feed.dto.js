@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetFeedViewResDTO = exports.GetBlogImageDTO = exports.GetBlogChallengesDTO = exports.GetBlogPromotionDTO = exports.GetBlogPostDTO = exports.GetFeedViewReqDTO = exports.GetListFeedResDTO = exports.GetFeedResDTO = exports.GetFeedImageResDTO = exports.GetListFeedReqQueryDTO = exports.InsBlogCommentDTO = exports.GetListBlogImageByBlogPostResDTO = exports.GetListFeedMainResDTO = exports.GetFeedMainResDTO = exports.GetListFeedMainReqDTO = exports.UpdateFeedDto = exports.CreateBlogImageDTO = exports.CreateBlogPromotionDTO = exports.CreateBlogChallengesDTO = exports.CreateBlogPostDTO = exports.UpdateFeedDTO = exports.CreateFeedDTO = void 0;
+exports.GetListFeedCommentReqDTO = exports.GetListFeedCommentResDTO = exports.GetBlogCommentDTO = exports.InsBlogCommentDTO = exports.GetFeedViewResDTO = exports.GetBlogImageDTO = exports.GetBlogChallengesDTO = exports.GetBlogPromotionDTO = exports.GetBlogPostDTO = exports.GetFeedViewReqDTO = exports.GetListFeedResDTO = exports.GetFeedResDTO = exports.GetFeedImageResDTO = exports.GetListFeedReqQueryDTO = exports.GetListBlogImageByBlogPostResDTO = exports.GetListFeedMainResDTO = exports.GetFeedMainResDTO = exports.GetListFeedMainReqDTO = exports.UpdateFeedDto = exports.CreateBlogImageDTO = exports.CreateBlogPromotionDTO = exports.CreateBlogChallengesDTO = exports.CreateBlogPostDTO = exports.UpdateFeedDTO = exports.CreateFeedDTO = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 const swagger_1 = require("@nestjs/swagger");
@@ -19,6 +19,7 @@ const BlogImage_1 = require("../../../entities/BlogImage");
 const BlogPost_1 = require("../../../entities/BlogPost");
 const BlogComment_1 = require("../../../entities/BlogComment");
 const pagenation_dto_1 = require("../../../shared/dto/pagenation.dto");
+const utils_1 = require("../../../shared/utils");
 class CreateFeedDTO extends (0, swagger_1.OmitType)(BlogPost_1.BlogPost, [
     'id',
     'hits',
@@ -129,14 +130,6 @@ __decorate([
     __metadata("design:type", String)
 ], GetListBlogImageByBlogPostResDTO.prototype, "fileUrl", void 0);
 exports.GetListBlogImageByBlogPostResDTO = GetListBlogImageByBlogPostResDTO;
-class InsBlogCommentDTO extends (0, swagger_1.OmitType)(BlogComment_1.BlogComment, [
-    'id',
-    'regDate',
-    'delDate',
-    'isDeleted',
-]) {
-}
-exports.InsBlogCommentDTO = InsBlogCommentDTO;
 class GetListFeedReqQueryDTO extends pagenation_dto_1.PagenationReqDTO {
 }
 __decorate([
@@ -161,17 +154,19 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '피드 이미지 url',
-        example: '[{aws.s3.endpoint}/feed/filename.png]',
+        example: '{aws.s3.endpoint}/feed/filename.png',
     }),
     __metadata("design:type", String)
 ], GetFeedImageResDTO.prototype, "fileUrl", void 0);
 exports.GetFeedImageResDTO = GetFeedImageResDTO;
 class GetFeedResDTO {
-    constructor(id, userName, userImage, regDateToString, blogLikeCount, isLike, blogCommentCount, blogImages) {
+    constructor(id, userName, userImage, content, regDateToString, scale, blogLikeCount, isLike, blogCommentCount, blogImages) {
         this.id = id;
         this.userName = userName;
         this.userImage = userImage;
+        this.content = content;
         this.regDateToString = regDateToString;
+        this.scale = scale;
         this.blogLikeCount = blogLikeCount;
         this.isLike = isLike;
         this.blogCommentCount = blogCommentCount;
@@ -194,9 +189,20 @@ __decorate([
     __metadata("design:type", String)
 ], GetFeedResDTO.prototype, "userImage", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '게시글 내용',
+        example: '패키지 상품을 받았을때의 기쁨 후엔 늘 골치아픈 쓰레기와 분리수거',
+    }),
+    __metadata("design:type", String)
+], GetFeedResDTO.prototype, "content", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ description: '작성 시간(생성일)', example: '1시간전' }),
     __metadata("design:type", String)
 ], GetFeedResDTO.prototype, "regDateToString", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '게시글 내 이미지의 비율', example: '1:1' }),
+    __metadata("design:type", String)
+], GetFeedResDTO.prototype, "scale", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '피드 이미지 목록',
@@ -301,7 +307,7 @@ __decorate([
         example: '홍길동',
     }),
     __metadata("design:type", String)
-], GetBlogPostDTO.prototype, "nickname", void 0);
+], GetBlogPostDTO.prototype, "userName", void 0);
 __decorate([
     (0, class_transformer_1.Expose)(),
     (0, swagger_1.ApiProperty)({
@@ -309,7 +315,15 @@ __decorate([
         example: '{aws.s3.endpoint}/user/filename.png',
     }),
     __metadata("design:type", String)
-], GetBlogPostDTO.prototype, "image", void 0);
+], GetBlogPostDTO.prototype, "userImage", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, swagger_1.ApiProperty)({
+        description: '게시글 내 이미지의 비율',
+        example: '1:1',
+    }),
+    __metadata("design:type", String)
+], GetBlogPostDTO.prototype, "scale", void 0);
 GetBlogPostDTO = __decorate([
     (0, class_transformer_1.Exclude)()
 ], GetBlogPostDTO);
@@ -431,4 +445,104 @@ __decorate([
     __metadata("design:type", Array)
 ], GetFeedViewResDTO.prototype, "images", void 0);
 exports.GetFeedViewResDTO = GetFeedViewResDTO;
+class InsBlogCommentDTO extends (0, swagger_1.OmitType)(BlogComment_1.BlogComment, [
+    'id',
+    'regDate',
+    'delDate',
+    'isDeleted',
+]) {
+}
+exports.InsBlogCommentDTO = InsBlogCommentDTO;
+let GetBlogCommentDTO = class GetBlogCommentDTO {
+};
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, swagger_1.ApiProperty)({
+        description: '댓글 아이디',
+        example: 1,
+    }),
+    __metadata("design:type", Number)
+], GetBlogCommentDTO.prototype, "id", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, swagger_1.ApiProperty)({
+        description: '사용자 아이디',
+        example: 1,
+    }),
+    __metadata("design:type", Number)
+], GetBlogCommentDTO.prototype, "userId", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, swagger_1.ApiProperty)({
+        description: '사용자 닉네임',
+        example: '홍길동',
+    }),
+    __metadata("design:type", String)
+], GetBlogCommentDTO.prototype, "nickname", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, swagger_1.ApiProperty)({
+        description: '사용자 프로필 이미지',
+        example: '{aws.s3.endpoint}/user/filename.png',
+    }),
+    __metadata("design:type", String)
+], GetBlogCommentDTO.prototype, "image", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, swagger_1.ApiProperty)({
+        description: '내용',
+        example: '잘 봤습니다.',
+    }),
+    __metadata("design:type", String)
+], GetBlogCommentDTO.prototype, "content", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, swagger_1.ApiProperty)({
+        description: '등록 날짜',
+        example: '1일 전',
+    }),
+    (0, class_transformer_1.Transform)(r => (0, utils_1.convertTimeToStr)((0, utils_1.convertTime)(r.value))),
+    __metadata("design:type", Date)
+], GetBlogCommentDTO.prototype, "regDate", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, swagger_1.ApiProperty)({
+        description: '삭제 여부',
+        example: 'false',
+    }),
+    __metadata("design:type", Boolean)
+], GetBlogCommentDTO.prototype, "isDeleted", void 0);
+GetBlogCommentDTO = __decorate([
+    (0, class_transformer_1.Exclude)()
+], GetBlogCommentDTO);
+exports.GetBlogCommentDTO = GetBlogCommentDTO;
+let GetListFeedCommentResDTO = class GetListFeedCommentResDTO extends GetBlogCommentDTO {
+};
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, swagger_1.ApiProperty)({ description: '리댓글 개수', example: 5 }),
+    __metadata("design:type", Number)
+], GetListFeedCommentResDTO.prototype, "replyCnt", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, swagger_1.ApiProperty)({
+        description: '리댓글 목록',
+        example: GetBlogCommentDTO,
+        type: [GetBlogCommentDTO],
+    }),
+    (0, class_transformer_1.Type)(() => GetBlogCommentDTO),
+    __metadata("design:type", Array)
+], GetListFeedCommentResDTO.prototype, "reply", void 0);
+GetListFeedCommentResDTO = __decorate([
+    (0, class_transformer_1.Exclude)()
+], GetListFeedCommentResDTO);
+exports.GetListFeedCommentResDTO = GetListFeedCommentResDTO;
+class GetListFeedCommentReqDTO {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '피드 id', example: '1' }),
+    __metadata("design:type", Number)
+], GetListFeedCommentReqDTO.prototype, "id", void 0);
+exports.GetListFeedCommentReqDTO = GetListFeedCommentReqDTO;
 //# sourceMappingURL=feed.dto.js.map

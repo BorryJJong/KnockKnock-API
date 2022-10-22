@@ -88,6 +88,19 @@ export class BlogPost {
   locationY?: string;
 
   @ApiProperty({
+    description: '게시글 내 이미지의 비율',
+    example: '1:1',
+  })
+  @Column({
+    name: 'scale',
+    type: 'varchar',
+    length: 30,
+    nullable: false,
+    comment: '게시글 내 이미지의 비율',
+  })
+  scale: string;
+
+  @ApiProperty({
     description: '조회수',
     example: '73',
   })

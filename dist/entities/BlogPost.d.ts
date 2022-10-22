@@ -5,6 +5,7 @@ export declare class BlogPost {
     storeAddress?: string;
     locationX?: string;
     locationY?: string;
+    scale: string;
     hits: number;
     modDate?: Date;
     regDate: Date;

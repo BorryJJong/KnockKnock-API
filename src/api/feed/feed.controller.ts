@@ -21,6 +21,8 @@ import {
   InsBlogCommentDTO,
   GetFeedViewReqDTO,
   GetFeedViewResDTO,
+  GetListFeedCommentReqDTO,
+  GetListFeedCommentResDTO,
 } from './dto/feed.dto';
 import {
   ApiCreatedResponse,
@@ -32,6 +34,7 @@ import {FilesInterceptor} from '@nestjs/platform-express';
 import {
   FeedCreateResponse,
   GetFeedViewResponse,
+  GetFeedCommentResponse
 } from 'src/shared/response_entities/feed/temp.response';
 
 // TODO: 400,401,403,404등 공통 사용 응답코드는 컨트롤러에 붙이기
@@ -112,6 +115,30 @@ export class FeedController {
     return result;
   }
 
+  @Get(':id')
+  @ApiOperation({summary: '피드 상세 조회'})
+  @ApiResponse({
+    description: '',
+    type: GetFeedViewResponse,
+  })
+  async getFeed(@Param() param: GetFeedViewReqDTO) {
+    const result: GetFeedViewResponse = {
+      code: 200,
+      message: 'success',
+      data: null,
+    };
+
+    try {
+      const feed: GetFeedViewResDTO = await this.feedService.getFeed(param);
+      result.data = feed;
+    } catch (e) {
+      result.code = 500;
+      result.message = e.message;
+    }
+
+    return result;
+  }
+
   @Post('/comment')
   @ApiOperation({summary: '댓글 등록'})
   @ApiCreatedResponse({
@@ -138,22 +165,22 @@ export class FeedController {
     return result;
   }
 
-  @Get(':id')
-  @ApiOperation({summary: '피드 상세 조회'})
-  @ApiResponse({
-    description: '',
-    type: GetFeedViewResponse,
+  @Get(':id/comment')
+  @ApiOperation({summary: '댓글 목록 조회'})
+  @ApiCreatedResponse({
+    description: '성공',
+    type: GetFeedCommentResponse,
   })
-  async getFeed(@Param() param: GetFeedViewReqDTO) {
-    const result: GetFeedViewResponse = {
+  async getListFeedComment(@Param() param: GetListFeedCommentReqDTO) {
+    const result: GetFeedCommentResponse = {
       code: 200,
       message: 'success',
       data: null,
     };
-
-    try {
-      const feed: GetFeedViewResDTO = await this.feedService.getFeed(param);
-      result.data = feed;
+    
+    try{
+      const comments:GetListFeedCommentResDTO[] = await this.feedService.getListFeedComment(param);
+      result.data = comments;
     } catch (e) {
       result.code = 500;
       result.message = e.message;

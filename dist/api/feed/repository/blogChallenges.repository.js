@@ -36,7 +36,7 @@ let BlogChallengesRepository = class BlogChallengesRepository extends typeorm_1.
             .addSelect('c.title', 'title')
             .from(BlogChallenges_1.BlogChallenges, 'bc')
             .innerJoin(Challenges_1.Challenges, 'c', 'bc.challenge_id = c.id')
-            .where("bc.post_id = :id", { id: id })
+            .where('bc.post_id = :id', { id: id })
             .getRawMany();
         return challenges;
     }
