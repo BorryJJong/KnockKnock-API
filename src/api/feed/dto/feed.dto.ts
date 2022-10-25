@@ -479,14 +479,14 @@ export class GetFeedLikeDTO {
 
   @Expose()
   @ApiProperty({description: '유저 닉네임', example: '홍길동'})
-  private userName: string;
+  userName: string;
 
   @Expose()
   @ApiProperty({
     description: '유저 프로필 이미지',
     example: 'https://github.com/hiong04',
   })
-  private userImage: string;
+  userImage: string;
 }
 
 export class GetListFeedLikeResDTO {

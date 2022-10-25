@@ -39,6 +39,6 @@ export abstract class GetListFeedLikeResponse extends BaseResponse {
     super();
   }
 
-  @ApiProperty({type: [GetListFeedLikeResDTO]})
+  @ApiProperty({type: GetListFeedLikeResDTO})
   data: GetListFeedLikeResDTO;
 }
