@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
+const enum_1 = require("../shared/enums/enum");
 const typeorm_1 = require("typeorm");
 let User = class User {
     beforeInsert() {
@@ -39,7 +40,18 @@ __decorate([
         length: 255,
     }),
     __metadata("design:type", String)
-], User.prototype, "social_uuid", void 0);
+], User.prototype, "socialUuid", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'social_type',
+        type: 'enum',
+        nullable: false,
+        comment: '소셜 종류',
+        enum: enum_1.SOCIAL_TYPE,
+        default: enum_1.SOCIAL_TYPE.KAKAO,
+    }),
+    __metadata("design:type", String)
+], User.prototype, "socialType", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         name: 'image',
@@ -49,6 +61,24 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], User.prototype, "image", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'email',
+        nullable: true,
+        comment: '카카오 또는 애플 이메일',
+        type: 'varchar',
+    }),
+    __metadata("design:type", String)
+], User.prototype, "email", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'service_connection_date',
+        nullable: true,
+        comment: '서비스 접속 시간',
+        type: 'timestamp',
+    }),
+    __metadata("design:type", Date)
+], User.prototype, "serviceConnectionDate", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({
         name: 'reg_date',

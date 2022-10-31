@@ -6,7 +6,7 @@ import { BlogPost } from '../../../entities/BlogPost';
 import { BlogComment } from '../../../entities/BlogComment';
 import { PagenationReqDTO, PagenationResDTO } from '@shared/dto/pagenation.dto';
 import { IGetBlogImagesByBlogPost } from '../interface/blogImage.interface';
-declare const CreateFeedDTO_base: import("@nestjs/common").Type<Omit<BlogPost, "id" | "delDate" | "regDate" | "hits" | "modDate" | "isDeleted">>;
+declare const CreateFeedDTO_base: import("@nestjs/common").Type<Omit<BlogPost, "id" | "regDate" | "hits" | "modDate" | "delDate" | "isDeleted">>;
 export declare class CreateFeedDTO extends CreateFeedDTO_base {
     promotions: string;
     challenges: string;
@@ -15,7 +15,7 @@ export declare class CreateFeedDTO extends CreateFeedDTO_base {
 declare const UpdateFeedDTO_base: import("@nestjs/common").Type<Partial<CreateFeedDTO>>;
 export declare class UpdateFeedDTO extends UpdateFeedDTO_base {
 }
-declare const CreateBlogPostDTO_base: import("@nestjs/common").Type<Omit<BlogPost, "id" | "delDate" | "regDate" | "hits" | "modDate" | "isDeleted">>;
+declare const CreateBlogPostDTO_base: import("@nestjs/common").Type<Omit<BlogPost, "id" | "regDate" | "hits" | "modDate" | "delDate" | "isDeleted">>;
 export declare class CreateBlogPostDTO extends CreateBlogPostDTO_base {
 }
 declare const CreateBlogChallengesDTO_base: import("@nestjs/common").Type<Omit<BlogChallenges, "id">>;
@@ -107,7 +107,7 @@ export declare class GetFeedViewResDTO {
     challenges: GetBlogChallengesDTO[];
     images: GetBlogImageDTO[];
 }
-declare const InsBlogCommentDTO_base: import("@nestjs/common").Type<Omit<BlogComment, "id" | "delDate" | "regDate" | "isDeleted">>;
+declare const InsBlogCommentDTO_base: import("@nestjs/common").Type<Omit<BlogComment, "id" | "regDate" | "delDate" | "isDeleted">>;
 export declare class InsBlogCommentDTO extends InsBlogCommentDTO_base {
 }
 export declare class GetBlogCommentDTO {
