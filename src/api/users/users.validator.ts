@@ -1,4 +1,4 @@
-import {Inject, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {SOCIAL_TYPE} from '@shared/enums/enum';
 import {IUserRepository} from 'src/api/users/users.interface';
@@ -8,13 +8,13 @@ import {UserRepository} from 'src/api/users/users.repository';
 export class UserValidator {
   constructor(
     @InjectRepository(UserRepository)
-    private readonly userRepository: IUserRepository,
+    private userRepository: IUserRepository,
   ) {}
 
   public async checkExistSocialUser(
     socialUuid: string,
     socialType: SOCIAL_TYPE,
-  ) {
+  ): Promise<void> {
     const user = await this.userRepository.isExistSocialUser(
       socialUuid,
       socialType,

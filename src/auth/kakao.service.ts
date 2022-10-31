@@ -7,7 +7,7 @@ export interface IUserPropertiesResponse {
 
 @Injectable()
 export class KakaoService {
-  private readonly adminKey = '159e55e782a3dc22b69c18658c2114c2';
+  private readonly adminKey = process.env.KAKAO_ADMIN_KEY;
 
   private readonly endPointV1 = 'https://kapi.kakao.com/v1';
   private readonly endPointV2 = 'https://kapi.kakao.com/v2';

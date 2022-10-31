@@ -1,12 +1,6 @@
-import {ApiProperty, PickType} from '@nestjs/swagger';
+import {ApiProperty} from '@nestjs/swagger';
 import {SOCIAL_TYPE} from '@shared/enums/enum';
 import {IsBoolean, IsString} from 'class-validator';
-import {User} from '../../api/users/users.entity';
-
-export class LoginRequestDTO extends PickType(User, [
-  'email',
-  'password',
-] as const) {}
 
 export class AuthInfoResponseDTO {
   @ApiProperty({example: 'access_token', type: String})
@@ -59,10 +53,10 @@ export class SocialLoginRequestDTO {
   socialType: SOCIAL_TYPE;
 }
 
-export class SignUpRequestDTO {
+export class SignUpRequestDTO extends SocialLoginRequestDTO {
   @IsString()
   @ApiProperty({description: '닉네임', example: 'hiYong94'})
-  nickName: string;
+  nickname: string;
 
   //이미지 추가
   @ApiProperty({description: '이미지 파일 업로드', example: ''})
