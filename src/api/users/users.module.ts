@@ -4,6 +4,7 @@ import {UsersService} from './users.service';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {UserRepository} from './users.repository';
 import {AuthModule} from '../../auth/auth.module';
+import {UserValidator} from 'src/api/users/users.validator';
 
 @Module({
   imports: [
@@ -11,7 +12,7 @@ import {AuthModule} from '../../auth/auth.module';
     forwardRef(() => AuthModule),
   ],
   controllers: [UsersController],
-  providers: [UsersService],
-  exports: [TypeOrmModule],
+  providers: [UsersService, UserValidator],
+  exports: [UsersService],
 })
 export class UsersModule {}
