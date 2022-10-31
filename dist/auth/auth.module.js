@@ -8,25 +8,31 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthModule = void 0;
 const common_1 = require("@nestjs/common");
+const config_1 = require("@nestjs/config");
 const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
-const users_module_1 = require("../api/users/users.module");
+const typeorm_1 = require("@nestjs/typeorm");
+const users_repository_1 = require("../api/users/users.repository");
+const kakao_service_1 = require("./kakao.service");
 const auth_service_1 = require("./auth.service");
-const jwt_strategy_1 = require("./jwt/jwt.strategy");
+const jwtAccessToken_strategy_1 = require("./jwt/jwtAccessToken.strategy");
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            typeorm_1.TypeOrmModule.forFeature([users_repository_1.UserRepository]),
             passport_1.PassportModule.register({ defaultStrategy: 'jwt', session: false }),
-            jwt_1.JwtModule.register({
-                secret: process.env.JWT_ACCESS_KEY,
-                signOptions: { expiresIn: process.env.JWT_ACCESS_EXPIRED },
-            }),
-            (0, common_1.forwardRef)(() => users_module_1.UsersModule),
+            jwt_1.JwtModule.register({}),
         ],
-        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],
-        exports: [auth_service_1.AuthService],
+        providers: [
+            auth_service_1.AuthService,
+            jwtAccessToken_strategy_1.JwtAccessTokenStrategy,
+            jwtAccessToken_strategy_1.JwtAccessTokenStrategy,
+            kakao_service_1.KakaoService,
+            config_1.ConfigService,
+        ],
+        exports: [auth_service_1.AuthService, kakao_service_1.KakaoService],
     })
 ], AuthModule);
 exports.AuthModule = AuthModule;

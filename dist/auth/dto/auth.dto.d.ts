@@ -1,9 +1,23 @@
-import { User } from '../../api/users/users.entity';
-declare const LoginRequestDTO_base: import("@nestjs/common").Type<Pick<User, "email" | "password">>;
-export declare class LoginRequestDTO extends LoginRequestDTO_base {
+import { SOCIAL_TYPE } from '@shared/enums/enum';
+export declare class AuthInfoResponseDTO {
+    private accessToken;
+    private refreashToken;
+    constructor(accessToken: string, refreashToken: string);
 }
-declare const LoginResponseDTO_base: import("@nestjs/common").Type<Pick<User, "id">>;
-export declare class LoginResponseDTO extends LoginResponseDTO_base {
-    accessToken: string;
+export declare class SocialLoginResponseDTO {
+    private isExistUser;
+    private authInfo?;
+    constructor(isExistUser: boolean, authInfo?: AuthInfoResponseDTO);
 }
-export {};
+export declare class SocialLoginRequestDTO {
+    socialUuid: string;
+    socialType: SOCIAL_TYPE;
+}
+export declare class SignUpRequestDTO extends SocialLoginRequestDTO {
+    nickname: string;
+    image: string;
+}
+export declare class SignUpResponseDTO {
+    private authInfo;
+    constructor(authInfo: AuthInfoResponseDTO);
+}

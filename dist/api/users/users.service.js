@@ -15,29 +15,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const utils_1 = require("../../shared/utils");
 const users_repository_1 = require("./users.repository");
 let UsersService = class UsersService {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
-    async create({ email, nickName, password }) {
-        await this.userRepository.checkExistEmail({ email });
-        await this.userRepository.createUser({
-            email,
-            nickName,
-            password: await (0, utils_1.hashPassword)(password),
-        });
+    async saveUser(request) {
+        return await this.userRepository.insertUser(request);
     }
-    async getUser({ id }) {
-        const user = await this.userRepository.findUserById(id);
-        const { email, nickName, createdAt } = user;
-        return {
-            id,
-            email,
-            nickName,
-            createdAt,
-        };
+    async updateUser(request) {
+        return await this.userRepository.updateUser(request);
+    }
+    async getSocialUser({ socialUuid, socialType, }) {
+        return await this.userRepository.selectSocialUser(socialUuid, socialType);
     }
 };
 UsersService = __decorate([

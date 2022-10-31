@@ -13,12 +13,6 @@ let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
     canActivate(context) {
         return super.canActivate(context);
     }
-    handleRequest(err, user, info) {
-        if (err || !user) {
-            throw err || new common_1.UnauthorizedException(`Error: ${info.message}`);
-        }
-        return user;
-    }
 };
 JwtAuthGuard = __decorate([
     (0, common_1.Injectable)()
