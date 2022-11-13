@@ -9,12 +9,12 @@ export interface IUserRepository {
     socialType: SOCIAL_TYPE,
   ): Promise<User | undefined>;
   findUserByEmail(email: string): Promise<User>;
-  findUserById(id: number): Promise<User>;
   findUserByIdWithoutPassword(id: string): Promise<User>;
   isExistSocialUser(
     socialUuid: string,
     socialType: SOCIAL_TYPE,
   ): Promise<number>;
+  selectUser(userId: number): Promise<User | undefined>;
 }
 
 export interface ICreateUser {

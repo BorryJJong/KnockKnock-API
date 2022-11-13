@@ -76,4 +76,13 @@ export class User {
   beforeInsert() {
     this.regDate = new Date();
   }
+
+  @Column({
+    name: 'refresh_token',
+    nullable: true,
+    comment: '리프래쉬 토큰',
+    type: 'varchar',
+    length: 255,
+  })
+  refreshToken?: string;
 }

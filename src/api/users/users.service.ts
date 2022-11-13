@@ -26,4 +26,12 @@ export class UsersService {
   }: SocialLoginRequestDTO): Promise<User | undefined> {
     return await this.userRepository.selectSocialUser(socialUuid, socialType);
   }
+
+  async getUser(userId: number): Promise<User | undefined> {
+    return await this.userRepository.selectUser(userId);
+  }
+
+  async logout(userId: number): Promise<void> {
+    await this.userRepository.updateRefreshToken(userId);
+  }
 }
