@@ -11,8 +11,11 @@ import {JwtAccessTokenStrategy} from './jwt/jwtAccessToken.strategy';
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserRepository]),
-    PassportModule.register({defaultStrategy: 'jwt', session: false}),
-    JwtModule.register({}),
+    PassportModule,
+    JwtModule.register({
+      secretOrPrivateKey: process.env.JWT_ACCESS_SECRET,
+      signOptions: {expiresIn: '60d'},
+    }),
   ],
   providers: [
     AuthService,
