@@ -28,7 +28,7 @@ localhost:3000/api-docs
 # orm.ts에 Synchronize 옵션이 true일 경우
 1. 데이터베이스 knockknock 생성 
 2. run server
-3. 데이터베이스 refreash
+3. 데이터베이스 refresh
 ```
 
 ## Project Directory

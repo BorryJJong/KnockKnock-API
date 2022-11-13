@@ -78,7 +78,6 @@ export class ChallengesRepository extends Repository<Challenges> {
 
     //Convert raws to our appropriate objects
     const challenges = challengeListRaws.map((s: any) => {
-      console.log(s);
       const item: GetListChallengeResDTO = {
         id: s.id,
         title: s.title,

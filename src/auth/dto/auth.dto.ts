@@ -9,11 +9,11 @@ export class AuthInfoResponseDTO {
 
   @ApiProperty({example: 'refreash_token', type: String})
   @IsString()
-  private refreashToken: string;
+  private refreshToken: string;
 
-  constructor(accessToken: string, refreashToken: string) {
+  constructor(accessToken: string, refreshToken: string) {
     this.accessToken = accessToken;
-    this.refreashToken = refreashToken;
+    this.refreshToken = refreshToken;
   }
 }
 

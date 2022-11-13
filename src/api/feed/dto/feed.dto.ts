@@ -442,7 +442,7 @@ export class GetBlogCommentDTO {
     description: '삭제 여부',
     example: 'false',
   })
-  @Transform(({ value }) => value === "true" || value === true || value === 1)
+  @Transform(({value}) => value === 'true' || value === true || value === 1)
   isDeleted: boolean;
 }
 

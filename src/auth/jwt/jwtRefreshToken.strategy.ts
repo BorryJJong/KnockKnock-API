@@ -1,10 +1,9 @@
 import {ExtractJwt, Strategy} from 'passport-jwt';
 import {PassportStrategy} from '@nestjs/passport';
 import {Injectable} from '@nestjs/common';
-import {IPayload} from './jwt.payload';
 
 @Injectable()
-export class JwtRefreahTokenStrategy extends PassportStrategy(
+export class JwtRefreshTokenStrategy extends PassportStrategy(
   Strategy,
   'jwt-refresh-token',
 ) {
@@ -15,16 +14,8 @@ export class JwtRefreahTokenStrategy extends PassportStrategy(
     });
   }
 
-  async validate(payload: IPayload) {
-    console.log('JWT strategy validate() payload:', payload);
-    // const user = await this.userRepository.findUserByIdWithoutPassword(
-    //   payload.sub,
-    // );
-
-    // if (!user) {
-    //   throw new UnauthorizedException('접근 오류');
-    // }
-
-    // return user;
+  validate(request: Request, payload: any) {
+    console.log('request', request);
+    return {...payload};
   }
 }

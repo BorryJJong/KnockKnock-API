@@ -1,5 +1,5 @@
 import {User} from '@entities/User';
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {SOCIAL_TYPE} from '@shared/enums/enum';
 import {
   ICreateUser,
@@ -46,14 +46,6 @@ export class UserRepository
     return await this.findOne({email});
   }
 
-  public async findUserById(id: number): Promise<User> {
-    const user = await this.findOne(id);
-    if (!user) {
-      throw new UnauthorizedException('존재하지 않는 유저입니다.');
-    }
-    return user;
-  }
-
   public async findUserByIdWithoutPassword(id: string): Promise<User> {
     const user = await this.findOne(id);
     return user;
@@ -67,5 +59,20 @@ export class UserRepository
       .where('users.socialUuid = :socialUuid', {socialUuid})
       .andWhere('users.socialType = :socialType', {socialType})
       .getCount();
+  }
+
+  public async updateRefreshToken(
+    userId: number,
+    refreshToken?: string,
+  ): Promise<void> {
+    await this.createQueryBuilder('users')
+      .update()
+      .set({refreshToken})
+      .where('id = :id', {id: userId})
+      .execute();
+  }
+
+  public async selectUser(userId: number): Promise<User | undefined> {
+    return await this.findOne(userId);
   }
 }

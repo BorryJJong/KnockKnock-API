@@ -1,5 +1,11 @@
-import {Controller, Get, Param} from '@nestjs/common';
-import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
+import {Controller, Get, Param, UseGuards} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import {JwtAuthGuard} from 'src/auth/jwt/jwt.guard';
 import {ChallengesService} from './challenges.service';
 import {
   GetListChallengeResDTO,
@@ -11,6 +17,8 @@ import {
 
 @ApiTags('challenges')
 @Controller('challenges')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class ChallengesController {
   constructor(private readonly challengesService: ChallengesService) {}
 
@@ -34,7 +42,6 @@ export class ChallengesController {
   }
 
   @Get('/:id')
-  //@UseGuards(JwtAuthGuard)
   @ApiOperation({summary: '챌린지 상세조회'})
   @ApiResponse({
     status: 200,
