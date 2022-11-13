@@ -1,4 +1,9 @@
-import {DocumentBuilder, OpenAPIObject, SwaggerModule} from '@nestjs/swagger';
+import {
+  DocumentBuilder,
+  OpenAPIObject,
+  SwaggerCustomOptions,
+  SwaggerModule,
+} from '@nestjs/swagger';
 
 export function swaggerBuilder(app) {
   const config = new DocumentBuilder()
@@ -7,11 +12,18 @@ export function swaggerBuilder(app) {
     .setVersion('beta')
     .addBearerAuth({
       type: 'http',
-      scheme: 'bearer',
+      scheme: 'Bearer',
       bearerFormat: 'JWT',
+      in: 'header',
     })
     .build();
 
+  const swaggerCustomOptions: SwaggerCustomOptions = {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  };
+
   const document: OpenAPIObject = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api-docs', app, document);
+  SwaggerModule.setup('api-docs', app, document, swaggerCustomOptions);
 }
