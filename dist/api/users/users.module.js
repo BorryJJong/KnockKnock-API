@@ -13,6 +13,7 @@ const users_service_1 = require("./users.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const users_repository_1 = require("./users.repository");
 const auth_module_1 = require("../../auth/auth.module");
+const users_validator_1 = require("./users.validator");
 let UsersModule = class UsersModule {
 };
 UsersModule = __decorate([
@@ -22,8 +23,8 @@ UsersModule = __decorate([
             (0, common_1.forwardRef)(() => auth_module_1.AuthModule),
         ],
         controllers: [users_controller_1.UsersController],
-        providers: [users_service_1.UsersService],
-        exports: [typeorm_1.TypeOrmModule],
+        providers: [users_service_1.UsersService, users_validator_1.UserValidator],
+        exports: [users_service_1.UsersService],
     })
 ], UsersModule);
 exports.UsersModule = UsersModule;

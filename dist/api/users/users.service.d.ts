@@ -1,8 +1,11 @@
-import { CreateUserRequestDTO, GetUserRequestDTO, GetUserResponseDTO } from './dto/users.dto';
+import { User } from '@entities/User';
+import { ICreateUser, IUpdateUser } from 'src/api/users/users.interface';
+import { SocialLoginRequestDTO } from 'src/auth/dto/auth.dto';
 import { UserRepository } from './users.repository';
 export declare class UsersService {
     private readonly userRepository;
     constructor(userRepository: UserRepository);
-    create({ email, nickName, password }: CreateUserRequestDTO): Promise<void>;
-    getUser({ id }: GetUserRequestDTO): Promise<GetUserResponseDTO>;
+    saveUser(request: ICreateUser): Promise<User>;
+    updateUser(request: IUpdateUser): Promise<void>;
+    getSocialUser({ socialUuid, socialType, }: SocialLoginRequestDTO): Promise<User | undefined>;
 }

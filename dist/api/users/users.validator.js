@@ -8,31 +8,29 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JwtStrategy = void 0;
-const passport_jwt_1 = require("passport-jwt");
-const passport_1 = require("@nestjs/passport");
+exports.UserValidator = void 0;
 const common_1 = require("@nestjs/common");
-const users_repository_1 = require("../../api/users/users.repository");
-let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
+const typeorm_1 = require("@nestjs/typeorm");
+const users_repository_1 = require("./users.repository");
+let UserValidator = class UserValidator {
     constructor(userRepository) {
-        super({
-            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: process.env.JWT_ACCESS_KEY,
-            ignoreExpiration: false,
-        });
         this.userRepository = userRepository;
     }
-    async validate(payload) {
-        const user = await this.userRepository.findUserByIdWithoutPassword(payload.sub);
-        if (!user)
-            throw new common_1.UnauthorizedException('접근 오류');
-        return user;
+    async checkExistSocialUser(socialUuid, socialType) {
+        const user = await this.userRepository.isExistSocialUser(socialUuid, socialType);
+        if (user) {
+            throw new Error('이미 회원이 존재합니다');
+        }
     }
 };
-JwtStrategy = __decorate([
+UserValidator = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_repository_1.UserRepository])
-], JwtStrategy);
-exports.JwtStrategy = JwtStrategy;
-//# sourceMappingURL=jwt.strategy.js.map
+    __param(0, (0, typeorm_1.InjectRepository)(users_repository_1.UserRepository)),
+    __metadata("design:paramtypes", [Object])
+], UserValidator);
+exports.UserValidator = UserValidator;
+//# sourceMappingURL=users.validator.js.map

@@ -6,6 +6,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  Get,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -15,6 +16,8 @@ import {
 } from '@nestjs/swagger';
 import {UsersService} from 'src/api/users/users.service';
 import {JwtAuthGuard} from 'src/auth/jwt/jwt.guard';
+import {GetListFeedLikeResponse} from '@shared/response_entities/feed/temp.response';
+import {GetListFeedLikeResDTO} from '../feed/dto/feed.dto';
 import {LikeService} from './like.service';
 
 @ApiTags('like')
@@ -54,5 +57,30 @@ export class LikeController {
     const user = await this.userService.getUser(requestUser.id);
     await this.likeService.feedUnLike(id, user.id);
     return true;
+  }
+
+  @Get('/feed/:id')
+  @ApiOperation({summary: '피드 좋아요 목록'})
+  @ApiCreatedResponse({
+    description: '성공',
+    type: GetListFeedLikeResponse,
+  })
+  async getListFeedLike(@Param('id') id: number) {
+    const result: GetListFeedLikeResponse = {
+      code: 200,
+      message: 'success',
+      data: null,
+    };
+
+    try {
+      const likes: GetListFeedLikeResDTO =
+        await this.likeService.getListFeedLike(id);
+      result.data = likes;
+    } catch (e) {
+      result.code = 500;
+      result.message = e.message;
+    }
+
+    return result;
   }
 }

@@ -1,8 +1,6 @@
 import { User } from '@entities/User';
 import { SOCIAL_TYPE } from '@shared/enums/enum';
-import { ICreateUser, IUpdateUser, IUserRepository } from 'src/api/users/users.interface';
-import { Repository } from 'typeorm';
-export declare class UserRepository extends Repository<User> implements IUserRepository {
+export interface IUserRepository {
     insertUser(request: ICreateUser): Promise<User>;
     updateUser(request: IUpdateUser): Promise<void>;
     selectSocialUser(socialUuid: string, socialType: SOCIAL_TYPE): Promise<User | undefined>;
@@ -10,4 +8,14 @@ export declare class UserRepository extends Repository<User> implements IUserRep
     findUserById(id: number): Promise<User>;
     findUserByIdWithoutPassword(id: string): Promise<User>;
     isExistSocialUser(socialUuid: string, socialType: SOCIAL_TYPE): Promise<number>;
+}
+export interface ICreateUser {
+    socialType: SOCIAL_TYPE;
+    socialUuid: string;
+    nickname: string;
+}
+export interface IUpdateUser {
+    id: number;
+    nickname: string;
+    image: string;
 }

@@ -7,19 +7,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserRepository = void 0;
+const User_1 = require("../../entities/User");
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
-const users_entity_1 = require("./users.entity");
 let UserRepository = class UserRepository extends typeorm_1.Repository {
-    async checkExistEmail({ email }) {
-        const user = await this.findOne({ select: ['email'], where: { email } });
-        if (user) {
-            throw new common_1.UnauthorizedException('이미 존재하는 이메일입니다.');
-        }
+    async insertUser(request) {
+        return await this.save(this.create(Object.assign({}, request)));
     }
-    async createUser(createUserRequestDTO) {
-        const user = this.create(Object.assign({}, createUserRequestDTO));
-        return await this.save(user);
+    async updateUser(request) {
+        await this.createQueryBuilder()
+            .update(User_1.User)
+            .set({
+            nickname: request.nickname,
+        })
+            .where('id = :id', { id: request.id })
+            .execute();
+    }
+    async selectSocialUser(socialUuid, socialType) {
+        return await this.createQueryBuilder('users')
+            .where('users.socialUuid = :socialUuid', { socialUuid })
+            .andWhere('users.socialType = :socialType', { socialType })
+            .getOne();
     }
     async findUserByEmail(email) {
         return await this.findOne({ email });
@@ -33,16 +41,18 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
     }
     async findUserByIdWithoutPassword(id) {
         const user = await this.findOne(id);
-        delete user.password;
         return user;
     }
-    getUser(id) {
-        return this.findOne(id);
+    async isExistSocialUser(socialUuid, socialType) {
+        return await this.createQueryBuilder('users')
+            .where('users.socialUuid = :socialUuid', { socialUuid })
+            .andWhere('users.socialType = :socialType', { socialType })
+            .getCount();
     }
 };
 UserRepository = __decorate([
     (0, common_1.Injectable)(),
-    (0, typeorm_1.EntityRepository)(users_entity_1.User)
+    (0, typeorm_1.EntityRepository)(User_1.User)
 ], UserRepository);
 exports.UserRepository = UserRepository;
 //# sourceMappingURL=users.repository.js.map

@@ -11,39 +11,38 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
+const config_1 = require("@nestjs/config");
 const jwt_1 = require("@nestjs/jwt");
-const users_repository_1 = require("../api/users/users.repository");
-const utils_1 = require("../shared/utils");
 let AuthService = class AuthService {
-    constructor(userRepository, jwtService) {
-        this.userRepository = userRepository;
+    constructor(jwtService, configService) {
         this.jwtService = jwtService;
+        this.configService = configService;
     }
-    async validateUser(user) {
-        if (!user) {
-            throw new common_1.UnauthorizedException('존재하지 않는 유저입니다.');
-        }
-    }
-    async validatePassword(password, hash) {
-        if (await !(0, utils_1.isComparePassword)(password, hash)) {
-            throw new common_1.UnauthorizedException('올바른 비밀번호가 아닙니다.');
-        }
-    }
-    async jwtLogin({ email, password }) {
-        const user = await this.userRepository.findUserByEmail(email);
-        await this.validateUser(user);
-        await this.validatePassword(password, user.password);
-        const payload = { email, sub: user.id.toString() };
+    async makeJwtToken(userId) {
+        const [accessToken, refreshToken] = await Promise.all([
+            this.jwtService.signAsync({
+                sub: userId,
+            }, {
+                secret: this.configService.get('JWT_ACCESS_SECRET'),
+                expiresIn: '15m',
+            }),
+            this.jwtService.signAsync({
+                sub: userId,
+            }, {
+                secret: this.configService.get('JWT_REFRESH_SECRET'),
+                expiresIn: '7d',
+            }),
+        ]);
         return {
-            id: user.id,
-            accessToken: this.jwtService.sign(payload),
+            accessToken,
+            refreshToken,
         };
     }
 };
 AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_repository_1.UserRepository,
-        jwt_1.JwtService])
+    __metadata("design:paramtypes", [jwt_1.JwtService,
+        config_1.ConfigService])
 ], AuthService);
 exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map
