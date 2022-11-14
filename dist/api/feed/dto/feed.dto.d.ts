@@ -126,4 +126,14 @@ export declare class GetListFeedCommentResDTO extends GetBlogCommentDTO {
 export declare class GetListFeedCommentReqDTO {
     id: number;
 }
+export declare class GetFeedLikeDTO {
+    id: number;
+    userId: number;
+    userName: string;
+    userImage: string;
+}
+export declare class GetListFeedLikeResDTO {
+    postId: number;
+    likes: GetFeedLikeDTO[];
+}
 export {};

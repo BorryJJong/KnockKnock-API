@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetListFeedCommentReqDTO = exports.GetListFeedCommentResDTO = exports.GetBlogCommentDTO = exports.InsBlogCommentDTO = exports.GetFeedViewResDTO = exports.GetBlogImageDTO = exports.GetBlogChallengesDTO = exports.GetBlogPromotionDTO = exports.GetBlogPostDTO = exports.GetFeedViewReqDTO = exports.GetListFeedResDTO = exports.GetFeedResDTO = exports.GetFeedImageResDTO = exports.GetListFeedReqQueryDTO = exports.GetListBlogImageByBlogPostResDTO = exports.GetListFeedMainResDTO = exports.GetFeedMainResDTO = exports.GetListFeedMainReqDTO = exports.UpdateFeedDto = exports.CreateBlogImageDTO = exports.CreateBlogPromotionDTO = exports.CreateBlogChallengesDTO = exports.CreateBlogPostDTO = exports.UpdateFeedDTO = exports.CreateFeedDTO = void 0;
+exports.GetListFeedLikeResDTO = exports.GetFeedLikeDTO = exports.GetListFeedCommentReqDTO = exports.GetListFeedCommentResDTO = exports.GetBlogCommentDTO = exports.InsBlogCommentDTO = exports.GetFeedViewResDTO = exports.GetBlogImageDTO = exports.GetBlogChallengesDTO = exports.GetBlogPromotionDTO = exports.GetBlogPostDTO = exports.GetFeedViewReqDTO = exports.GetListFeedResDTO = exports.GetFeedResDTO = exports.GetFeedImageResDTO = exports.GetListFeedReqQueryDTO = exports.GetListBlogImageByBlogPostResDTO = exports.GetListFeedMainResDTO = exports.GetFeedMainResDTO = exports.GetListFeedMainReqDTO = exports.UpdateFeedDto = exports.CreateBlogImageDTO = exports.CreateBlogPromotionDTO = exports.CreateBlogChallengesDTO = exports.CreateBlogPostDTO = exports.UpdateFeedDTO = exports.CreateFeedDTO = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 const swagger_1 = require("@nestjs/swagger");
@@ -510,6 +510,7 @@ __decorate([
         description: '삭제 여부',
         example: 'false',
     }),
+    (0, class_transformer_1.Transform)(({ value }) => value === 'true' || value === true || value === 1),
     __metadata("design:type", Boolean)
 ], GetBlogCommentDTO.prototype, "isDeleted", void 0);
 GetBlogCommentDTO = __decorate([
@@ -545,4 +546,48 @@ __decorate([
     __metadata("design:type", Number)
 ], GetListFeedCommentReqDTO.prototype, "id", void 0);
 exports.GetListFeedCommentReqDTO = GetListFeedCommentReqDTO;
+let GetFeedLikeDTO = class GetFeedLikeDTO {
+};
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, swagger_1.ApiProperty)({ description: '좋아요 id', example: '1' }),
+    __metadata("design:type", Number)
+], GetFeedLikeDTO.prototype, "id", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, swagger_1.ApiProperty)({ description: '사용자 id', example: '1' }),
+    __metadata("design:type", Number)
+], GetFeedLikeDTO.prototype, "userId", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, swagger_1.ApiProperty)({ description: '유저 닉네임', example: '홍길동' }),
+    __metadata("design:type", String)
+], GetFeedLikeDTO.prototype, "userName", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, swagger_1.ApiProperty)({
+        description: '유저 프로필 이미지',
+        example: 'https://github.com/hiong04',
+    }),
+    __metadata("design:type", String)
+], GetFeedLikeDTO.prototype, "userImage", void 0);
+GetFeedLikeDTO = __decorate([
+    (0, class_transformer_1.Exclude)()
+], GetFeedLikeDTO);
+exports.GetFeedLikeDTO = GetFeedLikeDTO;
+class GetListFeedLikeResDTO {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '게시글 id', example: '1' }),
+    __metadata("design:type", Number)
+], GetListFeedLikeResDTO.prototype, "postId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '피드 좋아요 목록',
+        type: GetFeedLikeDTO,
+        example: GetFeedLikeDTO,
+    }),
+    __metadata("design:type", Array)
+], GetListFeedLikeResDTO.prototype, "likes", void 0);
+exports.GetListFeedLikeResDTO = GetListFeedLikeResDTO;
 //# sourceMappingURL=feed.dto.js.map

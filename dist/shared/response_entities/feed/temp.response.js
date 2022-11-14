@@ -9,10 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetFeedCommentResponse = exports.GetFeedViewResponse = exports.FeedCreateResponse = exports.FeedCreateResponseData = void 0;
+exports.GetListFeedLikeResponse = exports.GetFeedCommentResponse = exports.GetFeedViewResponse = exports.FeedCreateResponse = exports.FeedCreateResponseData = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const feed_dto_1 = require("../../../api/feed/dto/feed.dto");
-const feed_dto_2 = require("../../../api/feed/dto/feed.dto");
 const base_response_1 = require("../base.response");
 class FeedCreateResponseData {
 }
@@ -47,8 +46,18 @@ class GetFeedCommentResponse extends base_response_1.BaseResponse {
     }
 }
 __decorate([
-    (0, swagger_1.ApiProperty)({ type: [feed_dto_2.GetListFeedCommentResDTO] }),
+    (0, swagger_1.ApiProperty)({ type: [feed_dto_1.GetListFeedCommentResDTO] }),
     __metadata("design:type", Array)
 ], GetFeedCommentResponse.prototype, "data", void 0);
 exports.GetFeedCommentResponse = GetFeedCommentResponse;
+class GetListFeedLikeResponse extends base_response_1.BaseResponse {
+    constructor() {
+        super();
+    }
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: feed_dto_1.GetListFeedLikeResDTO }),
+    __metadata("design:type", feed_dto_1.GetListFeedLikeResDTO)
+], GetListFeedLikeResponse.prototype, "data", void 0);
+exports.GetListFeedLikeResponse = GetListFeedLikeResponse;
 //# sourceMappingURL=temp.response.js.map

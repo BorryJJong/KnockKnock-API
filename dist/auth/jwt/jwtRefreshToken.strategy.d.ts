@@ -1,7 +1,6 @@
-import { IPayload } from './jwt.payload';
-declare const JwtRefreahTokenStrategy_base: new (...args: any[]) => any;
-export declare class JwtRefreahTokenStrategy extends JwtRefreahTokenStrategy_base {
+declare const JwtRefreshTokenStrategy_base: new (...args: any[]) => any;
+export declare class JwtRefreshTokenStrategy extends JwtRefreshTokenStrategy_base {
     constructor();
-    validate(payload: IPayload): Promise<void>;
+    validate(request: Request, payload: any): any;
 }
 export {};

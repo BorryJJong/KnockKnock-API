@@ -13,20 +13,27 @@ exports.JwtAccessTokenStrategy = void 0;
 const passport_jwt_1 = require("passport-jwt");
 const passport_1 = require("@nestjs/passport");
 const common_1 = require("@nestjs/common");
+const auth_service_1 = require("../auth.service");
 let JwtAccessTokenStrategy = class JwtAccessTokenStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, 'jwt-access-token') {
-    constructor() {
+    constructor(authService) {
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             secretOrKey: process.env.JWT_ACCESS_SECRET,
+            ignoreExpiration: true,
         });
+        this.authService = authService;
     }
-    async validate(payload) {
-        console.log('JWT strategy validate() payload:', payload);
+    async validate(payload, done) {
+        const user = await this.authService.tokenValidateUser(payload.sub);
+        if (!user) {
+            return done(new common_1.HttpException('존재하지 않는 유저입니다.', common_1.HttpStatus.UNAUTHORIZED), false);
+        }
+        return done(null, user);
     }
 };
 JwtAccessTokenStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], JwtAccessTokenStrategy);
 exports.JwtAccessTokenStrategy = JwtAccessTokenStrategy;
 //# sourceMappingURL=jwtAccessToken.strategy.js.map

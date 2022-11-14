@@ -13,20 +13,22 @@ exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const jwt_1 = require("@nestjs/jwt");
+const users_repository_1 = require("../api/users/users.repository");
 let AuthService = class AuthService {
-    constructor(jwtService, configService) {
+    constructor(jwtService, configService, userRepository) {
         this.jwtService = jwtService;
         this.configService = configService;
+        this.userRepository = userRepository;
     }
     async makeJwtToken(userId) {
         const [accessToken, refreshToken] = await Promise.all([
-            this.jwtService.signAsync({
+            this.jwtService.sign({
                 sub: userId,
             }, {
                 secret: this.configService.get('JWT_ACCESS_SECRET'),
-                expiresIn: '15m',
+                expiresIn: '15d',
             }),
-            this.jwtService.signAsync({
+            this.jwtService.sign({
                 sub: userId,
             }, {
                 secret: this.configService.get('JWT_REFRESH_SECRET'),
@@ -38,11 +40,27 @@ let AuthService = class AuthService {
             refreshToken,
         };
     }
+    async tokenValidateUser(userId) {
+        const user = await this.userRepository.findOne({
+            id: userId,
+        });
+        return user;
+    }
+    async verifyToken(token) {
+        const result = this.jwtService.verify(token, {
+            secret: this.configService.get('JWT_ACCESS_SECRET'),
+        });
+        return result;
+    }
+    async updateRefreshToken(userId, refreshToken) {
+        await this.userRepository.updateRefreshToken(userId, refreshToken);
+    }
 };
 AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [jwt_1.JwtService,
-        config_1.ConfigService])
+        config_1.ConfigService,
+        users_repository_1.UserRepository])
 ], AuthService);
 exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map

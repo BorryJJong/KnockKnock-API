@@ -9,24 +9,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JwtRefreahTokenStrategy = void 0;
+exports.JwtRefreshTokenStrategy = void 0;
 const passport_jwt_1 = require("passport-jwt");
 const passport_1 = require("@nestjs/passport");
 const common_1 = require("@nestjs/common");
-let JwtRefreahTokenStrategy = class JwtRefreahTokenStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, 'jwt-refresh-token') {
+let JwtRefreshTokenStrategy = class JwtRefreshTokenStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, 'jwt-refresh-token') {
     constructor() {
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             secretOrKey: process.env.JWT_REFRESH_SECRET,
         });
     }
-    async validate(payload) {
-        console.log('JWT strategy validate() payload:', payload);
+    validate(request, payload) {
+        console.log('request', request);
+        return Object.assign({}, payload);
     }
 };
-JwtRefreahTokenStrategy = __decorate([
+JwtRefreshTokenStrategy = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [])
-], JwtRefreahTokenStrategy);
-exports.JwtRefreahTokenStrategy = JwtRefreahTokenStrategy;
+], JwtRefreshTokenStrategy);
+exports.JwtRefreshTokenStrategy = JwtRefreshTokenStrategy;
 //# sourceMappingURL=jwtRefreshToken.strategy.js.map

@@ -66,7 +66,6 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
             .leftJoin('(' + challengePostCnt.getQuery() + ')', 'mb', 'ma.id = mb.id');
         const challengeListRaws = await challengeList.getRawMany();
         const challenges = challengeListRaws.map((s) => {
-            console.log(s);
             const item = {
                 id: s.id,
                 title: s.title,

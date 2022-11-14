@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LikeService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const class_transformer_1 = require("class-transformer");
+const feed_dto_1 = require("../feed/dto/feed.dto");
 const feed_repository_1 = require("./repository/feed.repository");
 let LikeService = class LikeService {
     constructor(blogLikeRepository) {
@@ -27,6 +29,19 @@ let LikeService = class LikeService {
     async feedUnLike(id, userId) {
         await this.blogLikeRepository.deleteFeedLike(id, userId);
         return true;
+    }
+    async getListFeedLike(id) {
+        try {
+            const likes = await this.blogLikeRepository.getListFeedLike(id);
+            const result = {
+                postId: id,
+                likes: (0, class_transformer_1.plainToInstance)(feed_dto_1.GetFeedLikeDTO, likes),
+            };
+            return result;
+        }
+        catch (e) {
+            throw new Error(e);
+        }
     }
 };
 LikeService = __decorate([

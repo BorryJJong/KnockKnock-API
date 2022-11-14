@@ -32,13 +32,6 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
     async findUserByEmail(email) {
         return await this.findOne({ email });
     }
-    async findUserById(id) {
-        const user = await this.findOne(id);
-        if (!user) {
-            throw new common_1.UnauthorizedException('존재하지 않는 유저입니다.');
-        }
-        return user;
-    }
     async findUserByIdWithoutPassword(id) {
         const user = await this.findOne(id);
         return user;
@@ -48,6 +41,19 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
             .where('users.socialUuid = :socialUuid', { socialUuid })
             .andWhere('users.socialType = :socialType', { socialType })
             .getCount();
+    }
+    async updateRefreshToken(userId, refreshToken, queryRunner) {
+        await this.createQueryBuilder('users', queryRunner)
+            .update()
+            .set({ refreshToken })
+            .where('id = :id', { id: userId })
+            .execute();
+    }
+    async selectUser(userId) {
+        return await this.findOne(userId);
+    }
+    async updateUserDeletedAt(userId, queryRunner) {
+        await queryRunner.manager.softDelete(User_1.User, userId);
     }
 };
 UserRepository = __decorate([

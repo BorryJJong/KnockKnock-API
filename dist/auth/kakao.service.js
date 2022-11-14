@@ -18,7 +18,6 @@ let KakaoService = class KakaoService {
         this.endPointV1 = 'https://kapi.kakao.com/v1';
         this.endPointV2 = 'https://kapi.kakao.com/v2';
         this.userMePath = '/user/me';
-        this.logoutPath = '/user/logout';
         this.unlinkPath = '/user/unlink';
     }
     async getUserProperties(kakaoToken) {
@@ -30,45 +29,29 @@ let KakaoService = class KakaoService {
         });
         return response.body;
     }
-    async logout(targetId, kakaoAdminKey) {
-        kakaoAdminKey = this.adminKey;
-        const response = await got_1.default.post(`${this.endPointV1}${this.logoutPath}`, {
-            headers: {
-                Authorization: `KakaoAK ${kakaoAdminKey}`,
-            },
-            searchParams: {
-                target_id_type: 'user_id',
-                target_id: Number(targetId),
-            },
-            responseType: 'json',
-            allowGetBody: true,
-        });
-        const statusCode = response.statusCode;
-        const { id } = response.body;
-        return {
-            statusCode,
-            id,
-        };
-    }
-    async unlink(targetId, kakaoAdminKey) {
-        kakaoAdminKey = this.adminKey;
-        const response = await got_1.default.post(`${this.endPointV1}${this.unlinkPath}`, {
-            headers: {
-                Authorization: `KakaoAK ${kakaoAdminKey}`,
-            },
-            searchParams: {
-                target_id_type: 'user_id',
-                target_id: Number(targetId),
-            },
-            responseType: 'json',
-            allowGetBody: true,
-        });
-        const statusCode = response.statusCode;
-        const { id } = response.body;
-        return {
-            statusCode,
-            id,
-        };
+    async unlink(socialUuid) {
+        try {
+            const response = await got_1.default.post(`${this.endPointV1}${this.unlinkPath}`, {
+                headers: {
+                    Authorization: `KakaoAK ${this.adminKey}`,
+                },
+                searchParams: {
+                    target_id_type: 'user_id',
+                    target_id: Number(socialUuid),
+                },
+                responseType: 'json',
+                allowGetBody: true,
+            });
+            const statusCode = response.statusCode;
+            const { id } = response.body;
+            return {
+                statusCode,
+                id,
+            };
+        }
+        catch (error) {
+            throw new Error(error.response.body);
+        }
     }
 };
 KakaoService = __decorate([

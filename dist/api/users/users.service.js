@@ -15,10 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const kakao_service_1 = require("../../auth/kakao.service");
+const typeorm_2 = require("typeorm");
 const users_repository_1 = require("./users.repository");
 let UsersService = class UsersService {
-    constructor(userRepository) {
+    constructor(userRepository, kakaoService, connection) {
         this.userRepository = userRepository;
+        this.kakaoService = kakaoService;
+        this.connection = connection;
     }
     async saveUser(request) {
         return await this.userRepository.insertUser(request);
@@ -29,11 +33,38 @@ let UsersService = class UsersService {
     async getSocialUser({ socialUuid, socialType, }) {
         return await this.userRepository.selectSocialUser(socialUuid, socialType);
     }
+    async getUser(userId) {
+        return await this.userRepository.selectUser(userId);
+    }
+    async logout(userId) {
+        await this.userRepository.updateRefreshToken(userId, null);
+    }
+    async deleteUser(userId, socialUuid) {
+        const queryRunner = this.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            await this.kakaoService.unlink(socialUuid);
+            await this.userRepository.updateUserDeletedAt(userId, queryRunner);
+            await this.userRepository.updateRefreshToken(userId, null, queryRunner);
+            await queryRunner.commitTransaction();
+        }
+        catch (err) {
+            await queryRunner.rollbackTransaction();
+        }
+        finally {
+            if (!queryRunner.isReleased) {
+                await queryRunner.release();
+            }
+        }
+    }
 };
 UsersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(users_repository_1.UserRepository)),
-    __metadata("design:paramtypes", [users_repository_1.UserRepository])
+    __metadata("design:paramtypes", [users_repository_1.UserRepository,
+        kakao_service_1.KakaoService,
+        typeorm_2.Connection])
 ], UsersService);
 exports.UsersService = UsersService;
 //# sourceMappingURL=users.service.js.map

@@ -14,9 +14,9 @@ const swagger_1 = require("@nestjs/swagger");
 const enum_1 = require("../../shared/enums/enum");
 const class_validator_1 = require("class-validator");
 class AuthInfoResponseDTO {
-    constructor(accessToken, refreashToken) {
+    constructor(accessToken, refreshToken) {
         this.accessToken = accessToken;
-        this.refreashToken = refreashToken;
+        this.refreshToken = refreshToken;
     }
 }
 __decorate([
@@ -28,7 +28,7 @@ __decorate([
     (0, swagger_1.ApiProperty)({ example: 'refreash_token', type: String }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], AuthInfoResponseDTO.prototype, "refreashToken", void 0);
+], AuthInfoResponseDTO.prototype, "refreshToken", void 0);
 exports.AuthInfoResponseDTO = AuthInfoResponseDTO;
 class SocialLoginResponseDTO {
     constructor(isExistUser, authInfo) {
