@@ -5,6 +5,7 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import {UserRepository} from './users.repository';
 import {AuthModule} from '../../auth/auth.module';
 import {UserValidator} from 'src/api/users/users.validator';
+import {KakaoService} from 'src/auth/kakao.service';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import {UserValidator} from 'src/api/users/users.validator';
     forwardRef(() => AuthModule),
   ],
   controllers: [UsersController],
-  providers: [UsersService, UserValidator],
+  providers: [UsersService, UserValidator, KakaoService],
   exports: [UsersService],
 })
 export class UsersModule {}

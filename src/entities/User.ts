@@ -3,6 +3,7 @@ import {
   BeforeInsert,
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -85,4 +86,13 @@ export class User {
     length: 255,
   })
   refreshToken?: string;
+
+  @DeleteDateColumn({
+    name: 'deleted_at',
+    type: 'timestamp',
+    precision: 0,
+    nullable: true,
+    comment: '회원탈퇴 날짜',
+  })
+  deletedAt: Date | null;
 }

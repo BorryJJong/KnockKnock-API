@@ -1,5 +1,6 @@
 import {User} from '@entities/User';
 import {SOCIAL_TYPE} from '@shared/enums/enum';
+import {QueryRunner} from 'typeorm';
 
 export interface IUserRepository {
   insertUser(request: ICreateUser): Promise<User>;
@@ -14,7 +15,13 @@ export interface IUserRepository {
     socialUuid: string,
     socialType: SOCIAL_TYPE,
   ): Promise<number>;
+  updateRefreshToken(
+    userId: number,
+    refreshToken: string,
+    queryRunner?: QueryRunner,
+  ): Promise<void>;
   selectUser(userId: number): Promise<User | undefined>;
+  updateUserDeletedAt(userId: number, queryRunner?: QueryRunner);
 }
 
 export interface ICreateUser {

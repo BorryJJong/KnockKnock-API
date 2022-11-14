@@ -3,6 +3,8 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {ICreateUser, IUpdateUser} from 'src/api/users/users.interface';
 import {SocialLoginRequestDTO} from 'src/auth/dto/auth.dto';
+import {KakaoService} from 'src/auth/kakao.service';
+import {Connection, QueryRunner} from 'typeorm';
 import {UserRepository} from './users.repository';
 
 @Injectable()
@@ -10,6 +12,8 @@ export class UsersService {
   constructor(
     @InjectRepository(UserRepository)
     private readonly userRepository: UserRepository,
+    private readonly kakaoService: KakaoService,
+    private connection: Connection,
   ) {}
 
   async saveUser(request: ICreateUser): Promise<User> {
@@ -32,6 +36,27 @@ export class UsersService {
   }
 
   async logout(userId: number): Promise<void> {
-    await this.userRepository.updateRefreshToken(userId);
+    await this.userRepository.updateRefreshToken(userId, null);
+  }
+
+  async deleteUser(userId: number, socialUuid: string): Promise<void> {
+    const queryRunner: QueryRunner = this.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await this.kakaoService.unlink(socialUuid);
+
+      await this.userRepository.updateUserDeletedAt(userId, queryRunner);
+      await this.userRepository.updateRefreshToken(userId, null, queryRunner);
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      if (!queryRunner.isReleased) {
+        await queryRunner.release();
+      }
+    }
   }
 }

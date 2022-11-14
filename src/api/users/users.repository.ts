@@ -6,7 +6,7 @@ import {
   IUpdateUser,
   IUserRepository,
 } from 'src/api/users/users.interface';
-import {EntityRepository, Repository} from 'typeorm';
+import {EntityRepository, QueryRunner, Repository} from 'typeorm';
 
 @Injectable()
 @EntityRepository(User)
@@ -63,9 +63,10 @@ export class UserRepository
 
   public async updateRefreshToken(
     userId: number,
-    refreshToken?: string,
+    refreshToken: string,
+    queryRunner?: QueryRunner,
   ): Promise<void> {
-    await this.createQueryBuilder('users')
+    await this.createQueryBuilder('users', queryRunner)
       .update()
       .set({refreshToken})
       .where('id = :id', {id: userId})
@@ -74,5 +75,12 @@ export class UserRepository
 
   public async selectUser(userId: number): Promise<User | undefined> {
     return await this.findOne(userId);
+  }
+
+  public async updateUserDeletedAt(
+    userId: number,
+    queryRunner?: QueryRunner,
+  ): Promise<void> {
+    await queryRunner.manager.softDelete(User, userId);
   }
 }

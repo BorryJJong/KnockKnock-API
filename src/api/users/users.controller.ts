@@ -1,5 +1,12 @@
 import {User} from '@entities/User';
-import {Body, Controller, Post, Request, UseGuards} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -117,6 +124,25 @@ export class UsersController {
     const requestUser: User = req.user;
     const user = await this.userService.getUser(requestUser.id);
     await this.userService.logout(user.id);
+
+    return true;
+  }
+
+  @Delete('/')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '회원탈퇴',
+    description: 'access_token을 활용해 회원 탈퇴',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '회원탈퇴 성공',
+  })
+  async deleteUser(@Request() req): Promise<boolean> {
+    const requestUser: User = req.user;
+    const user = await this.userService.getUser(requestUser.id);
+    await this.userService.deleteUser(user.id, user.socialUuid);
 
     return true;
   }

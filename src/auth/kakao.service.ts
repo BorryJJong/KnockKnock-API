@@ -12,7 +12,6 @@ export class KakaoService {
   private readonly endPointV1 = 'https://kapi.kakao.com/v1';
   private readonly endPointV2 = 'https://kapi.kakao.com/v2';
   private readonly userMePath = '/user/me';
-  private readonly logoutPath = '/user/logout';
   private readonly unlinkPath = '/user/unlink';
 
   public async getUserProperties(
@@ -30,55 +29,33 @@ export class KakaoService {
     return response.body;
   }
 
-  public async logout(targetId: string, kakaoAdminKey: string) {
-    kakaoAdminKey = this.adminKey;
-
-    const response = await got.post<{id: number}>(
-      `${this.endPointV1}${this.logoutPath}`,
-      {
-        headers: {
-          Authorization: `KakaoAK ${kakaoAdminKey}`,
+  public async unlink(
+    socialUuid: string,
+  ): Promise<{statusCode: number; id: number}> {
+    try {
+      const response = await got.post<{id: number}>(
+        `${this.endPointV1}${this.unlinkPath}`,
+        {
+          headers: {
+            Authorization: `KakaoAK ${this.adminKey}`,
+          },
+          searchParams: {
+            target_id_type: 'user_id',
+            target_id: Number(socialUuid),
+          },
+          responseType: 'json',
+          allowGetBody: true,
         },
-        searchParams: {
-          target_id_type: 'user_id',
-          target_id: Number(targetId),
-        },
-        responseType: 'json',
-        allowGetBody: true,
-      },
-    );
+      );
 
-    const statusCode = response.statusCode;
-    const {id} = response.body;
-    return {
-      statusCode,
-      id,
-    };
-  }
-
-  public async unlink(targetId: string, kakaoAdminKey: string) {
-    kakaoAdminKey = this.adminKey;
-
-    const response = await got.post<{id: number}>(
-      `${this.endPointV1}${this.unlinkPath}`,
-      {
-        headers: {
-          Authorization: `KakaoAK ${kakaoAdminKey}`,
-        },
-        searchParams: {
-          target_id_type: 'user_id',
-          target_id: Number(targetId),
-        },
-        responseType: 'json',
-        allowGetBody: true,
-      },
-    );
-
-    const statusCode = response.statusCode;
-    const {id} = response.body;
-    return {
-      statusCode,
-      id,
-    };
+      const statusCode = response.statusCode;
+      const {id} = response.body;
+      return {
+        statusCode,
+        id,
+      };
+    } catch (error) {
+      throw new Error(error.response.body);
+    }
   }
 }
