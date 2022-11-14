@@ -6,10 +6,11 @@ import {BlogLikeRepository} from './repository/feed.repository';
 import {JwtAuthGuard} from 'src/auth/jwt/jwt.guard';
 import {UsersService} from 'src/api/users/users.service';
 import {UserRepository} from 'src/api/users/users.repository';
+import {KakaoService} from 'src/auth/kakao.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([BlogLikeRepository, UserRepository])],
   controllers: [LikeController],
-  providers: [LikeService, JwtAuthGuard, UsersService],
+  providers: [LikeService, JwtAuthGuard, UsersService, KakaoService],
 })
 export class LikeModule {}
