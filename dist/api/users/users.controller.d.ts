@@ -11,4 +11,6 @@ export declare class UsersController {
     constructor(userService: UsersService, authService: AuthService, kakaoService: KakaoService, userValidator: UserValidator);
     socialLogin(body: SocialLoginRequestDTO): Promise<SocialLoginResponseDTO>;
     signUp(body: SignUpRequestDTO): Promise<SocialLoginResponseDTO>;
+    logout(req: any): Promise<boolean>;
+    deleteUser(req: any): Promise<boolean>;
 }

@@ -1,8 +1,8 @@
 import { SOCIAL_TYPE } from '@shared/enums/enum';
 export declare class AuthInfoResponseDTO {
     private accessToken;
-    private refreashToken;
-    constructor(accessToken: string, refreashToken: string);
+    private refreshToken;
+    constructor(accessToken: string, refreshToken: string);
 }
 export declare class SocialLoginResponseDTO {
     private isExistUser;

@@ -18,6 +18,7 @@ const swagger_1 = require("@nestjs/swagger");
 const enum_1 = require("../../shared/enums/enum");
 const users_validator_1 = require("./users.validator");
 const auth_service_1 = require("../../auth/auth.service");
+const jwt_guard_1 = require("../../auth/jwt/jwt.guard");
 const kakao_service_1 = require("../../auth/kakao.service");
 const auth_dto_1 = require("../../auth/dto/auth.dto");
 const users_service_1 = require("./users.service");
@@ -36,6 +37,7 @@ let UsersController = class UsersController {
         });
         if (user) {
             const { accessToken, refreshToken } = await this.authService.makeJwtToken(user.id);
+            await this.authService.updateRefreshToken(user.id, refreshToken);
             return new auth_dto_1.SocialLoginResponseDTO(true, new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
         }
         else {
@@ -52,7 +54,20 @@ let UsersController = class UsersController {
             nickname,
         });
         const { accessToken, refreshToken } = await this.authService.makeJwtToken(newUser.id);
+        await this.authService.updateRefreshToken(newUser.id, refreshToken);
         return new auth_dto_1.SocialLoginResponseDTO(false, new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
+    }
+    async logout(req) {
+        const requestUser = req.user;
+        const user = await this.userService.getUser(requestUser.id);
+        await this.userService.logout(user.id);
+        return true;
+    }
+    async deleteUser(req) {
+        const requestUser = req.user;
+        const user = await this.userService.getUser(requestUser.id);
+        await this.userService.deleteUser(user.id, user.socialUuid);
+        return true;
     }
 };
 __decorate([
@@ -83,6 +98,40 @@ __decorate([
     __metadata("design:paramtypes", [auth_dto_1.SignUpRequestDTO]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "signUp", null);
+__decorate([
+    (0, common_1.Post)('/logout'),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({
+        summary: '로그아웃',
+        description: 'access_token을 활용해 회원 로그아웃',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '로그아웃 성공',
+    }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "logout", null);
+__decorate([
+    (0, common_1.Delete)('/'),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({
+        summary: '회원탈퇴',
+        description: 'access_token을 활용해 회원 탈퇴',
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '회원탈퇴 성공',
+    }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "deleteUser", null);
 UsersController = __decorate([
     (0, swagger_1.ApiTags)('users'),
     (0, common_1.Controller)('users'),

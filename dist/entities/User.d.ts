@@ -9,4 +9,6 @@ export declare class User {
     serviceConnectionDate?: Date;
     regDate: Date;
     beforeInsert(): void;
+    refreshToken?: string;
+    deletedAt: Date | null;
 }

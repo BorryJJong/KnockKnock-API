@@ -94,6 +94,26 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], User.prototype, "beforeInsert", null);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'refresh_token',
+        nullable: true,
+        comment: '리프래쉬 토큰',
+        type: 'varchar',
+        length: 255,
+    }),
+    __metadata("design:type", String)
+], User.prototype, "refreshToken", void 0);
+__decorate([
+    (0, typeorm_1.DeleteDateColumn)({
+        name: 'deleted_at',
+        type: 'timestamp',
+        precision: 0,
+        nullable: true,
+        comment: '회원탈퇴 날짜',
+    }),
+    __metadata("design:type", Date)
+], User.prototype, "deletedAt", void 0);
 User = __decorate([
     (0, typeorm_1.Entity)('user', { schema: 'knockknock' })
 ], User);
