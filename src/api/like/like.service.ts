@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {plainToInstance} from 'class-transformer';
 import {GetFeedLikeDTO, GetListFeedLikeResDTO} from '../feed/dto/feed.dto';
@@ -21,7 +21,7 @@ export class LikeService {
     return true;
   }
 
-  async getListFeedLike(id: number): Promise<GetListFeedLikeResDTO>{
+  async getListFeedLike(id: number): Promise<GetListFeedLikeResDTO> {
     try {
       const likes = await this.blogLikeRepository.getListFeedLike(id);
       const result: GetListFeedLikeResDTO = {
@@ -30,8 +30,14 @@ export class LikeService {
       };
 
       return result;
-    } catch (e) {
-      throw new Error(e);
+    } catch (error) {
+      throw new HttpException(
+        {
+          error: error.message,
+          message: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

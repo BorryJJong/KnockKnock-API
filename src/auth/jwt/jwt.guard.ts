@@ -17,7 +17,12 @@ export class JwtAuthGuard extends AuthGuard('jwt-access-token') {
     const {authorization} = request.headers;
 
     if (!authorization) {
-      throw new HttpException('AccessToken 미전송', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        {
+          error: 'AccessToken 미전송',
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     return super.canActivate(context);
