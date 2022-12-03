@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChallengesController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
-const jwt_guard_1 = require("../../auth/jwt/jwt.guard");
 const challenges_service_1 = require("./challenges.service");
 const challenges_dto_1 = require("./dto/challenges.dto");
 let ChallengesController = class ChallengesController {
@@ -80,8 +79,6 @@ __decorate([
 ChallengesController = __decorate([
     (0, swagger_1.ApiTags)('challenges'),
     (0, common_1.Controller)('challenges'),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
     __metadata("design:paramtypes", [challenges_service_1.ChallengesService])
 ], ChallengesController);
 exports.ChallengesController = ChallengesController;

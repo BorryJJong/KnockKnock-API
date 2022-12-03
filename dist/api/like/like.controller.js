@@ -25,13 +25,13 @@ let LikeController = class LikeController {
         this.userService = userService;
     }
     async feedLike(id, req) {
-        const requestUser = req.User;
+        const requestUser = req.user;
         const user = await this.userService.getUser(requestUser.id);
         await this.likeService.feedLike(id, user.id);
         return true;
     }
     async feedUnLike(id, req) {
-        const requestUser = req.User;
+        const requestUser = req.user;
         const user = await this.userService.getUser(requestUser.id);
         await this.likeService.feedUnLike(id, user.id);
         return true;
