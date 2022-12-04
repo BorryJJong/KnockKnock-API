@@ -7,6 +7,10 @@ import { User } from 'src/entities/User';
 @Injectable()
 @EntityRepository(BlogComment)
 export class BlogCommentRepository extends Repository<BlogComment> {
+  createBlogComment(insBlogCommentDTO: InsBlogCommentDTO): BlogComment {
+    return this.create({...insBlogCommentDTO});
+  }
+  
   async saveBlogComment(
     queryRunner: QueryRunner | null,
     BlogComment: BlogComment,
