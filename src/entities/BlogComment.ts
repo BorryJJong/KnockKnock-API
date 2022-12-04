@@ -73,7 +73,7 @@ export class BlogComment {
   })
   regDate: Date;
 
-  @DeleteDateColumn({
+  @Column({
     name: 'del_date',
     type: 'timestamp',
     precision: 0,
