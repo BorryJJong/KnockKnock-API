@@ -7,15 +7,14 @@ import { User } from 'src/entities/User';
 @Injectable()
 @EntityRepository(BlogComment)
 export class BlogCommentRepository extends Repository<BlogComment> {
-  createBlogComment(insBlogCommentDTO: InsBlogCommentDTO): BlogComment {
-    return this.create({...insBlogCommentDTO});
-  }
-
-  async saveBlogComment(queryRunner: QueryRunner | null, BlogComment: BlogComment): Promise<BlogComment> {
-    if(queryRunner === null){
-        return await this.save(BlogComment);
+  async saveBlogComment(
+    queryRunner: QueryRunner | null,
+    BlogComment: BlogComment,
+  ): Promise<BlogComment> {
+    if (queryRunner === null) {
+      return await this.save(BlogComment);
     } else {
-        return await queryRunner.manager.save(BlogComment);
+      return await queryRunner.manager.save(BlogComment);
     }
   }
 
@@ -26,7 +25,7 @@ export class BlogCommentRepository extends Repository<BlogComment> {
    * @param id postId
    * @returns GetFeedCommentResDTO
    */
-  async getBlogCommentByPostId(id: number){
+  async getBlogCommentByPostId(id: number) {
     const cntQb = getManager()
       .createQueryBuilder()
       .select('comment_id', 'reply_id')
@@ -35,22 +34,29 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       .where('b.comment_id IS NOT NULL')
       .groupBy('b.comment_id');
 
-    const comment:GetListFeedCommentResDTO[] = await getManager()
+    const comment: GetListFeedCommentResDTO[] = await getManager()
       .createQueryBuilder()
       .select('bc.id', 'id')
       .addSelect('bc.user_id', 'userId')
       .addSelect('u.nickname', 'nickname')
       .addSelect('u.image', 'image')
       .addSelect('bc.is_deleted', 'isDeleted')
-      .addSelect('IF( bc.is_deleted = 1, "삭제된 댓글입니다.", bc.content )', 'content')
+      .addSelect(
+        'IF( bc.is_deleted = 1, "삭제된 댓글입니다.", bc.content )',
+        'content',
+      )
       .addSelect('bc.reg_date', 'regDate')
       .addSelect('IFNULL(bcnt.cnt, 0)', 'replyCnt')
       .from(BlogComment, 'bc')
       .innerJoin(User, 'u', 'bc.user_id = u.id')
-      .leftJoinAndSelect('(' + cntQb.getQuery() + ')', 'bcnt', 'bc.id = bcnt.reply_id')
+      .leftJoinAndSelect(
+        '(' + cntQb.getQuery() + ')',
+        'bcnt',
+        'bc.id = bcnt.reply_id',
+      )
       .where('(bcnt.cnt != 0 OR is_deleted = 0)')
       .andWhere('bc.comment_id IS NULL')
-      .andWhere('bc.post_id = :id', { id: id })
+      .andWhere('bc.post_id = :id', {id: id})
       .orderBy('bc.id', 'ASC')
       .getRawMany();
 
@@ -62,7 +68,7 @@ export class BlogCommentRepository extends Repository<BlogComment> {
    * @param id 부모 댓글 id
    * @returns GetBlogCommentDTO
    */
-  async getBlogCommentByCommentId(id: number){
+  async getBlogCommentByCommentId(id: number) {
     const comment: GetBlogCommentDTO[] = await getManager()
       .createQueryBuilder()
       .select('bc.id', 'id')
@@ -75,10 +81,14 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       .from(BlogComment, 'bc')
       .innerJoin(User, 'u', 'bc.user_id = u.id')
       .where('bc.is_deleted = 0')
-      .andWhere('bc.comment_id = :id', { id: id })
+      .andWhere('bc.comment_id = :id', {id: id})
       .orderBy('bc.id', 'ASC')
       .getRawMany();
 
-      return comment;
+    return comment;
+  }
+
+  async getBlogComment(id: number): Promise<BlogComment> {
+    return await this.findOne(id);
   }
 }

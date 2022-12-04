@@ -22,6 +22,7 @@ import {
   GetListFeedCommentReqDTO,
   GetListFeedCommentResDTO,
   GetBlogCommentDTO,
+  DelBlogCommentReqDTO,
 } from './dto/feed.dto';
 import {ImageService} from 'src/api/image/image.service';
 import {BlogChallengesRepository} from './repository/blogChallenges.repository';
@@ -36,6 +37,7 @@ import {
 } from './interface/blogPost.interface';
 import {convertTimeToStr, isPageNext} from '../../shared/utils';
 import {BlogPost} from '@entities/BlogPost';
+import { BlogComment } from '@entities/BlogComment';
 
 @Injectable()
 export class FeedService {
@@ -365,6 +367,17 @@ export class FeedService {
     } catch (e) {
       this.logger.error(e);
       throw new Error(e);
+    }
+  }
+
+  async deleteBlogComment({id}: DelBlogCommentReqDTO) {
+    try {
+      const comment: BlogComment = await this.blogCommentRepository.getBlogComment(id);
+      comment.isDeleted = true;
+      comment.delDate = new Date();
+      await this.blogCommentRepository.saveBlogComment(null, comment);
+    } catch (e) {
+      throw new Error(e.message);
     }
   }
 }

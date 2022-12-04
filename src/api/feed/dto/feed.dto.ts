@@ -392,6 +392,16 @@ export class InsBlogCommentDTO extends OmitType(BlogComment, [
   'isDeleted',
 ]) {}
 
+export class DelBlogCommentReqDTO {
+  @IsNotEmpty()
+  @ApiProperty({description: '댓글 id', example: '1'})
+  id: number;
+
+  // @IsNotEmpty()
+  // @ApiProperty({description: '게시글 id', example: '1'})
+  // post_id: number;
+}
+
 @Exclude()
 export class GetBlogCommentDTO {
   @Expose()

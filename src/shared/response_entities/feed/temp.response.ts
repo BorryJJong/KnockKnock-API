@@ -6,7 +6,7 @@ import {
 } from 'src/api/feed/dto/feed.dto';
 import {BaseResponse} from '../base.response';
 
-export abstract class FeedCreateResponseData {
+export abstract class FeedResponseData {
   @ApiProperty()
   status: true | false;
 }
@@ -17,7 +17,7 @@ export abstract class FeedCreateResponse extends BaseResponse {
   }
 
   @ApiProperty()
-  data: FeedCreateResponseData;
+  data: FeedResponseData;
 }
 
 export abstract class GetFeedViewResponse extends BaseResponse {
@@ -45,4 +45,13 @@ export abstract class GetListFeedLikeResponse extends BaseResponse {
 
   @ApiProperty({type: GetListFeedLikeResDTO})
   data: GetListFeedLikeResDTO;
+}
+
+export abstract class DeleteBlogCommentResponse extends BaseResponse {
+  constructor() {
+    super();
+  }
+
+  @ApiProperty()
+  data: FeedResponseData;
 }
