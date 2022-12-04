@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {SOCIAL_TYPE} from '@shared/enums/enum';
 import {IUserRepository} from 'src/api/users/users.interface';
@@ -21,7 +21,12 @@ export class UserValidator {
     );
 
     if (user) {
-      throw new Error('이미 회원이 존재합니다');
+      throw new HttpException(
+        {
+          error: '존재하지 않는 회원입니다.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

@@ -8,3 +8,10 @@ export enum SOCIAL_TYPE {
   KAKAO = 'KAKAO',
   APPLE = 'APPLE',
 }
+
+export enum ERRPR_CODE {
+  DEFAULT = 'DEFAULT',
+  VALIDATION_ERROR = 'VALIDATION_ERROR', // 예외처리 에러
+  UNAUTHENTICATED = 'UNAUTHENTICATED', // 토큰 만료
+  UNAUTHORIZED = 'UNAUTHORIZED', // 권한 없음
+}

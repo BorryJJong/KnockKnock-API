@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import got from 'got';
 
 export interface IUserPropertiesResponse {
@@ -55,7 +55,12 @@ export class KakaoService {
         id,
       };
     } catch (error) {
-      throw new Error(error.response.body);
+      throw new HttpException(
+        {
+          message: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

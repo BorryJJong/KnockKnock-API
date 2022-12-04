@@ -1,4 +1,4 @@
-import {Injectable, Logger} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable, Logger} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Connection, QueryRunner} from 'typeorm';
 import {plainToInstance} from 'class-transformer';
@@ -161,7 +161,12 @@ export class FeedService {
       resultS3 = await this.imageService.uploadS3(file, 'feed');
 
       if (!resultS3.ok) {
-        throw new Error('S3 image upload failed');
+        throw new HttpException(
+          {
+            error: 'S3 image upload failed',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       }
 
       // 2. save db
@@ -175,7 +180,13 @@ export class FeedService {
       if (resultS3.ok) {
         this.imageService.deleteS3(resultS3.Key);
       }
-      throw new Error(e);
+      throw new HttpException(
+        {
+          error: e.meesage,
+          message: e.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -185,7 +196,13 @@ export class FeedService {
         this.blogCommentRepository.createBlogComment(insBlogCommentDTO);
       await this.blogCommentRepository.saveBlogComment(null, comment);
     } catch (e) {
-      throw new Error(e.message);
+      throw new HttpException(
+        {
+          error: e.meesage,
+          message: e.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -208,7 +225,13 @@ export class FeedService {
       return result;
     } catch (e) {
       this.logger.error(e);
-      throw new Error(e);
+      throw new HttpException(
+        {
+          error: e.meesage,
+          message: e.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -366,7 +389,13 @@ export class FeedService {
       return result;
     } catch (e) {
       this.logger.error(e);
-      throw new Error(e);
+      throw new HttpException(
+        {
+          error: e.meesage,
+          message: e.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 

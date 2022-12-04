@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {EntityRepository, getManager, Repository} from 'typeorm';
 import {GetListChallengeResDTO, ParticipantUserDTO} from './dto/challenges.dto';
 import {BlogChallenges} from '../../entities/BlogChallenges';
@@ -14,7 +14,12 @@ export class ChallengesRepository extends Repository<Challenges> {
   public async checkExistChallenge({id}) {
     const challenge = await this.findOne({select: ['id'], where: {id}});
     if (challenge) {
-      throw new Error('이미 존재하는 챌린지입니다.');
+      throw new HttpException(
+        {
+          error: '이미 존재하는 챌린지입니다.',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -24,7 +29,12 @@ export class ChallengesRepository extends Repository<Challenges> {
       where: {id},
     });
     if (!challenge) {
-      throw new Error('존재하지 않는 챌린지입니다.');
+      throw new HttpException(
+        {
+          error: '존재하지 않는 챌린지입니다.',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return challenge;
   }
