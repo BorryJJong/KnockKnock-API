@@ -249,6 +249,13 @@ export class GetBlogPostDTO {
 
   @Expose()
   @ApiProperty({
+    description: '매장명',
+    example: '스타벅스 리버사이드팔당DTR점',
+  })
+  storeName?: string;
+
+  @Expose()
+  @ApiProperty({
     description: '매장 주소 x좌표',
     example: '127.102269186127',
   })
@@ -391,6 +398,16 @@ export class InsBlogCommentDTO extends OmitType(BlogComment, [
   'delDate',
   'isDeleted',
 ]) {}
+
+export class DelBlogCommentReqDTO {
+  @IsNotEmpty()
+  @ApiProperty({description: '댓글 id', example: '1'})
+  id: number;
+
+  // @IsNotEmpty()
+  // @ApiProperty({description: '게시글 id', example: '1'})
+  // post_id: number;
+}
 
 @Exclude()
 export class GetBlogCommentDTO {

@@ -23,6 +23,7 @@ import {
   GetFeedViewResDTO,
   GetListFeedCommentReqDTO,
   GetListFeedCommentResDTO,
+  DelBlogCommentReqDTO,
 } from './dto/feed.dto';
 import {
   ApiCreatedResponse,
@@ -34,7 +35,8 @@ import {FilesInterceptor} from '@nestjs/platform-express';
 import {
   FeedCreateResponse,
   GetFeedViewResponse,
-  GetFeedCommentResponse
+  GetFeedCommentResponse,
+  DeleteBlogCommentResponse,
 } from 'src/shared/response_entities/feed/temp.response';
 
 // TODO: 400,401,403,404등 공통 사용 응답코드는 컨트롤러에 붙이기
@@ -167,7 +169,7 @@ export class FeedController {
 
   @Get(':id/comment')
   @ApiOperation({summary: '댓글 목록 조회'})
-  @ApiCreatedResponse({
+  @ApiResponse({
     description: '성공',
     type: GetFeedCommentResponse,
   })
@@ -177,13 +179,40 @@ export class FeedController {
       message: 'success',
       data: null,
     };
-    
-    try{
-      const comments:GetListFeedCommentResDTO[] = await this.feedService.getListFeedComment(param);
+
+    try {
+      const comments: GetListFeedCommentResDTO[] =
+        await this.feedService.getListFeedComment(param);
       result.data = comments;
     } catch (e) {
       result.code = 500;
       result.message = e.message;
+    }
+
+    return result;
+  }
+
+  @Delete('/comment')
+  @ApiOperation({summary: '댓글 삭제'})
+  @ApiResponse({
+    description: '성공',
+    type: DeleteBlogCommentResponse,
+  })
+  async deleteBlogComment(@Body() delBlogCommentReqDTO: DelBlogCommentReqDTO) {
+    const result: DeleteBlogCommentResponse = {
+      code: 200,
+      message: 'success',
+      data: {
+        status: true,
+      },
+    };
+
+    try {
+      await this.feedService.deleteBlogComment(delBlogCommentReqDTO);
+    } catch (e) {
+      result.code = 500;
+      result.message = e.message;
+      result.data.status = false;
     }
 
     return result;
