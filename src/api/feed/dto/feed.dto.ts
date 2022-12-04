@@ -249,6 +249,13 @@ export class GetBlogPostDTO {
 
   @Expose()
   @ApiProperty({
+    description: '매장명',
+    example: '스타벅스 리버사이드팔당DTR점',
+  })
+  storeName?: string;
+
+  @Expose()
+  @ApiProperty({
     description: '매장 주소 x좌표',
     example: '127.102269186127',
   })

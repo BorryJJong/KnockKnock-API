@@ -60,6 +60,19 @@ export class BlogPost {
   storeAddress?: string;
 
   @ApiProperty({
+    description: '매장명',
+    example: '스타벅스 리버사이드팔당DTR점',
+  })
+  @Column({
+    name: 'store_name',
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+    comment: '매장 주소',
+  })
+  storeName?: string;
+
+  @ApiProperty({
     description: '매장 주소 x좌표',
     example: '127.102269186127',
   })
