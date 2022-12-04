@@ -104,6 +104,7 @@ export class BlogPostRepository
       .addSelect('bp.user_id', 'userId')
       .addSelect('bp.content', 'content')
       .addSelect('bp.store_address', 'storeAddress')
+      .addSelect('bp.store_name', 'storeName')
       .addSelect('bp.location_x', 'locationX')
       .addSelect('bp.location_y', 'locationY')
       .addSelect('bp.reg_date', 'regDate')
