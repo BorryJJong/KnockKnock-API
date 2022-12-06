@@ -37,7 +37,27 @@ export class CreateFeedDTO extends OmitType(BlogPost, [
   images: Express.Multer.File[];
 }
 
-export class UpdateFeedDTO extends PartialType(CreateFeedDTO) {}
+export class UpdateFeedDTO extends OmitType(BlogPost, [
+  'userId',
+  'hits',
+  'modDate',
+  'regDate',
+  'delDate',
+  'isDeleted',
+] as const) {
+  @ApiProperty({description: '게시글 id', example: '1'})
+  id: number;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({description: '프로모션 id', example: '1 or 1,2'})
+  promotions: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({description: '챌린지 id', example: '1 or 1,2,3'})
+  challenges: string;
+}
 
 // BlogPost
 export class CreateBlogPostDTO extends OmitType(BlogPost, [
@@ -49,15 +69,10 @@ export class CreateBlogPostDTO extends OmitType(BlogPost, [
   'isDeleted',
 ] as const) {}
 
-// BlogChallenges
 export class CreateBlogChallengesDTO extends OmitType(BlogChallenges, ['id']) {}
-
-// BlogPromotion
 export class CreateBlogPromotionDTO extends OmitType(BlogPromotion, ['id']) {}
-
-// BlogImage
 export class CreateBlogImageDTO extends OmitType(BlogImage, ['id']) {}
-export class UpdateFeedDto extends PartialType(CreateFeedDTO) {}
+export class UpdateBlogPostDTO extends PartialType(OmitType(CreateBlogPostDTO, ['userId'])) {}
 
 export class GetListFeedMainReqDTO extends PagenationReqDTO {
   @ApiProperty({required: true, description: '챌린지ID', example: '1'})

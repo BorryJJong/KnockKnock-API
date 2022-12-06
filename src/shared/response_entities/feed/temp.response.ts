@@ -55,3 +55,12 @@ export abstract class DeleteBlogCommentResponse extends BaseResponse {
   @ApiProperty()
   data: FeedResponseData;
 }
+
+export abstract class UpdateFeedResponse extends BaseResponse {
+  constructor() {
+    super();
+  }
+
+  @ApiProperty()
+  data: FeedResponseData;
+}
