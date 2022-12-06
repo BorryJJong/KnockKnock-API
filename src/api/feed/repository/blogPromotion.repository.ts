@@ -24,17 +24,28 @@ export class BlogPromotionRepository extends Repository<BlogPromotion> {
     }
   }
 
-  async getBlogPromotionByPostId(id: number): Promise<GetBlogPromotionDTO[]>{
-    const promotions:GetBlogPromotionDTO[] = await getManager()
-    .createQueryBuilder()
-    .select('bp.id', 'id')
-    .addSelect('bp.promotion_id', 'promotionId')
-    .addSelect('p.type', 'title')
-    .from(BlogPromotion, 'bp')
-    .innerJoin(Promotions, 'p', 'bp.promotion_id = p.id')
-    .where("bp.post_id = :id", { id: id })
-    .getRawMany();
+  async getBlogPromotionByPostId(id: number): Promise<GetBlogPromotionDTO[]> {
+    const promotions: GetBlogPromotionDTO[] = await getManager()
+      .createQueryBuilder()
+      .select('bp.id', 'id')
+      .addSelect('bp.promotion_id', 'promotionId')
+      .addSelect('p.type', 'title')
+      .from(BlogPromotion, 'bp')
+      .innerJoin(Promotions, 'p', 'bp.promotion_id = p.id')
+      .where('bp.post_id = :id', {id: id})
+      .getRawMany();
 
     return promotions;
+  }
+
+  async deleteBlogPromotionByPostId(
+    queryRunner: QueryRunner | null,
+    postId: number,
+  ) {
+    if (queryRunner === null) {
+      return await this.delete({postId: postId});
+    } else {
+      return await queryRunner.manager.delete(BlogPromotion, {postId: postId});
+    }
   }
 }

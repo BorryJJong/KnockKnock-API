@@ -37,6 +37,7 @@ import {
   GetFeedViewResponse,
   GetFeedCommentResponse,
   DeleteBlogCommentResponse,
+  UpdateFeedResponse,
 } from 'src/shared/response_entities/feed/temp.response';
 
 // TODO: 400,401,403,404등 공통 사용 응답코드는 컨트롤러에 붙이기
@@ -218,13 +219,22 @@ export class FeedController {
     return result;
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFeedDTO: UpdateFeedDTO) {
-    return this.feedService.update(+id, updateFeedDTO);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.feedService.remove(+id);
+  @Post('/update')
+  @ApiOperation({summary: '피드 수정'})
+  @ApiCreatedResponse({
+    description: '성공',
+    type: UpdateFeedResponse,
+  })
+  async update(@Body() updateFeedDTO: UpdateFeedDTO) {
+    //return;
+    const status = await this.feedService.update(updateFeedDTO);
+    const result: UpdateFeedResponse = {
+      code: status ? 201 : 500,
+      message: status ? '성공' : '실패',
+      data: {
+        status: status,
+      },
+    };
+    return result;
   }
 }

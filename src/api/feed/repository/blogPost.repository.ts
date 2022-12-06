@@ -5,7 +5,7 @@ import {
   IGetBlogPostItems,
 } from '../interface/blogPost.interface';
 import {EntityRepository, getManager, QueryRunner, Repository} from 'typeorm';
-import {CreateBlogPostDTO, GetBlogPostDTO} from '../dto/feed.dto';
+import {CreateBlogPostDTO, GetBlogPostDTO, UpdateBlogPostDTO} from '../dto/feed.dto';
 import {User} from '../../../entities/User';
 import {getCurrentPageCount} from '../../../shared/utils';
 
@@ -15,7 +15,9 @@ export class BlogPostRepository
   extends Repository<BlogPost>
   implements IBlogPostRepository
 {
-  createBlogPost(createBlogPostDTO: CreateBlogPostDTO): BlogPost {
+  createBlogPost(
+    createBlogPostDTO: CreateBlogPostDTO | UpdateBlogPostDTO,
+  ): BlogPost {
     return this.create({...createBlogPostDTO});
   }
 
@@ -27,6 +29,18 @@ export class BlogPostRepository
       return await this.save(blogPost);
     } else {
       return await queryRunner.manager.save(blogPost);
+    }
+  }
+
+  async updateBlogPost(
+    queryRunner: QueryRunner | null,
+    postId: number,
+    blogPost: BlogPost,
+  ) {
+    if (queryRunner === null) {
+      return await this.update(postId, blogPost);
+    } else {
+      return await queryRunner.manager.update(BlogPost, postId, blogPost);
     }
   }
 

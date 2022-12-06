@@ -23,6 +23,7 @@ import {
   GetListFeedCommentResDTO,
   GetBlogCommentDTO,
   DelBlogCommentReqDTO,
+  UpdateBlogPostDTO,
 } from './dto/feed.dto';
 import {ImageService} from 'src/api/image/image.service';
 import {BlogChallengesRepository} from './repository/blogChallenges.repository';
@@ -235,12 +236,107 @@ export class FeedService {
     }
   }
 
-  update(id: number, updateFeedDTO: UpdateFeedDTO) {
-    return `This action updates a #${id} feed`;
+  async update(updateFeedDTO: UpdateFeedDTO) {
+    const queryRunner = this.connection.createQueryRunner();
+    let result = false;
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      // 1. 포스트 저장
+      const postId: number = updateFeedDTO.id;
+      const post = await this.updatePost(queryRunner, postId, updateFeedDTO);
+
+      // 2. 챌린지 저장
+      await this.updateChallenges(
+        queryRunner,
+        postId,
+        updateFeedDTO.challenges,
+      );
+
+      // // 3. 프로모션 저장
+      await this.updatePromotion(queryRunner, postId, updateFeedDTO.promotions);
+
+      await queryRunner.commitTransaction();
+      result = true;
+    } catch (e) {
+      this.logger.error(e);
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+
+    return result;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} feed`;
+  async updatePost(
+    queryRunner: QueryRunner,
+    postId: number,
+    updateBlogPostDTO: UpdateBlogPostDTO,
+  ) {
+    const post = this.blogPostRepository.createBlogPost(updateBlogPostDTO);
+    post.modDate = new Date();
+
+    const returned = await this.blogPostRepository.updateBlogPost(
+      queryRunner,
+      postId,
+      post,
+    );
+    return returned;
+  }
+
+  async updateChallenges(
+    queryRunner: QueryRunner,
+    postId: number,
+    challenges: string,
+  ) {
+    // 1. 모든 챌린지 삭제
+    await this.blogChallengesRepository.deleteBlogChallengesByPostId(
+      queryRunner,
+      postId,
+    );
+
+    // 2. 재저장
+    await Promise.all(
+      challenges.split(',').map(async id => {
+        const challenge = this.blogChallengesRepository.createBlogChallenges({
+          postId: postId,
+          challengeId: Number(id),
+        });
+        await this.blogChallengesRepository.saveBlogChallenges(
+          queryRunner,
+          challenge,
+        );
+      }),
+    );
+  }
+
+  async updatePromotion(
+    queryRunner: QueryRunner,
+    postId: number,
+    promotions: string,
+  ) {
+
+    // 1. 모든 프로모션 삭제
+    await this.blogPromotionRepository.deleteBlogPromotionByPostId(
+      queryRunner,
+      postId,
+    );
+    
+    // 2. 재저장
+    await Promise.all(
+      promotions.split(',').map(async id => {
+        const promotion = this.blogPromotionRepository.createBlogPromotion({
+          postId: postId,
+          promotionId: Number(id),
+        });
+        await this.blogPromotionRepository.saveBlogPromotion(
+          queryRunner,
+          promotion,
+        );
+      }),
+    );
   }
 
   public async getFeedsByChallengesFilter(
@@ -401,7 +497,8 @@ export class FeedService {
 
   async deleteBlogComment({id}: DelBlogCommentReqDTO) {
     try {
-      const comment: BlogComment = await this.blogCommentRepository.getBlogComment(id);
+      const comment: BlogComment =
+        await this.blogCommentRepository.getBlogComment(id);
       comment.isDeleted = true;
       comment.delDate = new Date();
       await this.blogCommentRepository.saveBlogComment(null, comment);

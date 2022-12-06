@@ -45,4 +45,12 @@ export class BlogChallengesRepository extends Repository<BlogChallenges> {
 
     return challenges;
   }
+
+  async deleteBlogChallengesByPostId(queryRunner: QueryRunner | null, postId: number) {
+    if (queryRunner === null) {
+      return await this.delete({ postId: postId });
+    } else {
+      return await queryRunner.manager.delete(BlogChallenges, {postId: postId});
+    }
+  }
 }

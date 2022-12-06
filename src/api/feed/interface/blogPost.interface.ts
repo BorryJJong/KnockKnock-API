@@ -1,9 +1,16 @@
 import {QueryRunner} from 'typeorm';
 import {BlogPost} from '../../../entities/BlogPost';
-import {CreateBlogPostDTO, GetBlogPostDTO} from '../dto/feed.dto';
+import {CreateBlogPostDTO, GetBlogPostDTO, UpdateBlogPostDTO} from '../dto/feed.dto';
 
 export interface IBlogPostRepository {
-  createBlogPost(createBlogPostDTO: CreateBlogPostDTO): BlogPost;
+  createBlogPost(
+    createBlogPostDTO: CreateBlogPostDTO | UpdateBlogPostDTO,
+  ): BlogPost;
+  updateBlogPost(
+    queryRunner: QueryRunner | null,
+    postId: number,
+    updateBlogPostDTO: UpdateBlogPostDTO,
+  );
   saveBlogPost(
     queryRunner: QueryRunner | null,
     blogPost: BlogPost,
