@@ -29,13 +29,6 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
             .andWhere('users.socialType = :socialType', { socialType })
             .getOne();
     }
-    async findUserByEmail(email) {
-        return await this.findOne({ email });
-    }
-    async findUserByIdWithoutPassword(id) {
-        const user = await this.findOne(id);
-        return user;
-    }
     async isExistSocialUser(socialUuid, socialType) {
         return await this.createQueryBuilder('users')
             .where('users.socialUuid = :socialUuid', { socialUuid })
@@ -51,6 +44,9 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
     }
     async selectUser(userId) {
         return await this.findOne(userId);
+    }
+    async selectUsers(userIds) {
+        return await this.findByIds(userIds);
     }
     async updateUserDeletedAt(userId, queryRunner) {
         await queryRunner.manager.softDelete(User_1.User, userId);

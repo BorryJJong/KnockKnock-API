@@ -18,7 +18,9 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
     async checkExistChallenge({ id }) {
         const challenge = await this.findOne({ select: ['id'], where: { id } });
         if (challenge) {
-            throw new Error('이미 존재하는 챌린지입니다.');
+            throw new common_1.HttpException({
+                error: '이미 존재하는 챌린지입니다.',
+            }, common_1.HttpStatus.BAD_REQUEST);
         }
     }
     async findChallengeById(id) {
@@ -27,7 +29,9 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
             where: { id },
         });
         if (!challenge) {
-            throw new Error('존재하지 않는 챌린지입니다.');
+            throw new common_1.HttpException({
+                error: '존재하지 않는 챌린지입니다.',
+            }, common_1.HttpStatus.BAD_REQUEST);
         }
         return challenge;
     }

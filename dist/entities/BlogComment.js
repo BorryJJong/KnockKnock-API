@@ -87,7 +87,7 @@ __decorate([
     __metadata("design:type", Date)
 ], BlogComment.prototype, "regDate", void 0);
 __decorate([
-    (0, typeorm_1.DeleteDateColumn)({
+    (0, typeorm_1.Column)({
         name: 'del_date',
         type: 'timestamp',
         precision: 0,

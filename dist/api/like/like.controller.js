@@ -96,7 +96,7 @@ __decorate([
 LikeController = __decorate([
     (0, swagger_1.ApiTags)('like'),
     (0, common_1.Controller)('like'),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, swagger_1.ApiBearerAuth)(),
     __metadata("design:paramtypes", [like_service_1.LikeService,
         users_service_1.UsersService])

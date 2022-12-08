@@ -17,6 +17,9 @@ const blogImage_repository_1 = require("./repository/blogImage.repository");
 const blogPost_repository_1 = require("./repository/blogPost.repository");
 const blogPromotion_repository_1 = require("./repository/blogPromotion.repository");
 const blogComment_repository_1 = require("./repository/blogComment.repository");
+const jwtNoneRequired_guard_1 = require("../../auth/jwt/jwtNoneRequired.guard");
+const like_repository_1 = require("../like/repository/like.repository");
+const users_repository_1 = require("../users/users.repository");
 let FeedModule = class FeedModule {
 };
 FeedModule = __decorate([
@@ -28,11 +31,13 @@ FeedModule = __decorate([
                 blogImage_repository_1.BlogImageRepository,
                 blogPost_repository_1.BlogPostRepository,
                 blogPromotion_repository_1.BlogPromotionRepository,
-                blogComment_repository_1.BlogCommentRepository
+                blogComment_repository_1.BlogCommentRepository,
+                like_repository_1.BlogLikeRepository,
+                users_repository_1.UserRepository,
             ]),
         ],
         controllers: [feed_controller_1.FeedController],
-        providers: [feed_service_1.FeedService],
+        providers: [feed_service_1.FeedService, jwtNoneRequired_guard_1.JwtOptionalGuard],
     })
 ], FeedModule);
 exports.FeedModule = FeedModule;

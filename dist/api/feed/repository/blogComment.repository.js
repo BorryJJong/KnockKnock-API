@@ -69,6 +69,19 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             .getRawMany();
         return comment;
     }
+    async getBlogComment(id) {
+        return await this.findOne(id);
+    }
+    async selectFeedsByCommentCount(postIds) {
+        return await this.createQueryBuilder('blogComment')
+            .select('blogComment.postId', 'postId')
+            .addSelect('count(*)', 'commentCount')
+            .where('blogComment.postId IN (:...postIds)', {
+            postIds,
+        })
+            .groupBy('blogComment.postId')
+            .getRawMany();
+    }
 };
 BlogCommentRepository = __decorate([
     (0, common_1.Injectable)(),

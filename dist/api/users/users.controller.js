@@ -100,7 +100,7 @@ __decorate([
 ], UsersController.prototype, "signUp", null);
 __decorate([
     (0, common_1.Post)('/logout'),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({
         summary: '로그아웃',
@@ -117,7 +117,7 @@ __decorate([
 ], UsersController.prototype, "logout", null);
 __decorate([
     (0, common_1.Delete)('/'),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({
         summary: '회원탈퇴',

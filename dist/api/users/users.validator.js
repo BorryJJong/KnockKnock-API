@@ -23,7 +23,9 @@ let UserValidator = class UserValidator {
     async checkExistSocialUser(socialUuid, socialType) {
         const user = await this.userRepository.isExistSocialUser(socialUuid, socialType);
         if (user) {
-            throw new Error('이미 회원이 존재합니다');
+            throw new common_1.HttpException({
+                error: '존재하지 않는 회원입니다.',
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 };

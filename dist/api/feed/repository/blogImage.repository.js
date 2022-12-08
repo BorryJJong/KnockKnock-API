@@ -33,7 +33,7 @@ let BlogImageRepository = class BlogImageRepository extends typeorm_1.Repository
     async getBlogImageByPostId(id) {
         const images = await this.find({
             select: ['id', 'fileUrl'],
-            where: { postId: id }
+            where: { postId: id },
         });
         return images;
     }

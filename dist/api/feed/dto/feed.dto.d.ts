@@ -12,8 +12,11 @@ export declare class CreateFeedDTO extends CreateFeedDTO_base {
     challenges: string;
     images: Express.Multer.File[];
 }
-declare const UpdateFeedDTO_base: import("@nestjs/common").Type<Partial<CreateFeedDTO>>;
+declare const UpdateFeedDTO_base: import("@nestjs/common").Type<Omit<BlogPost, "regDate" | "userId" | "hits" | "modDate" | "delDate" | "isDeleted">>;
 export declare class UpdateFeedDTO extends UpdateFeedDTO_base {
+    id: number;
+    promotions: string;
+    challenges: string;
 }
 declare const CreateBlogPostDTO_base: import("@nestjs/common").Type<Omit<BlogPost, "id" | "regDate" | "hits" | "modDate" | "delDate" | "isDeleted">>;
 export declare class CreateBlogPostDTO extends CreateBlogPostDTO_base {
@@ -27,8 +30,8 @@ export declare class CreateBlogPromotionDTO extends CreateBlogPromotionDTO_base 
 declare const CreateBlogImageDTO_base: import("@nestjs/common").Type<Omit<BlogImage, "id">>;
 export declare class CreateBlogImageDTO extends CreateBlogImageDTO_base {
 }
-declare const UpdateFeedDto_base: import("@nestjs/common").Type<Partial<CreateFeedDTO>>;
-export declare class UpdateFeedDto extends UpdateFeedDto_base {
+declare const UpdateBlogPostDTO_base: import("@nestjs/common").Type<Partial<Omit<CreateBlogPostDTO, "userId">>>;
+export declare class UpdateBlogPostDTO extends UpdateBlogPostDTO_base {
 }
 export declare class GetListFeedMainReqDTO extends PagenationReqDTO {
     challengeId: number;
@@ -80,6 +83,7 @@ export declare class GetBlogPostDTO {
     userId: number;
     content: string;
     storeAddress?: string;
+    storeName?: string;
     locationX?: string;
     locationY?: string;
     regDate: Date;
@@ -109,6 +113,9 @@ export declare class GetFeedViewResDTO {
 }
 declare const InsBlogCommentDTO_base: import("@nestjs/common").Type<Omit<BlogComment, "id" | "regDate" | "delDate" | "isDeleted">>;
 export declare class InsBlogCommentDTO extends InsBlogCommentDTO_base {
+}
+export declare class DelBlogCommentReqDTO {
+    id: number;
 }
 export declare class GetBlogCommentDTO {
     id: number;

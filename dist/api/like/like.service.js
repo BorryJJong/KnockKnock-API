@@ -17,7 +17,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const class_transformer_1 = require("class-transformer");
 const feed_dto_1 = require("../feed/dto/feed.dto");
-const feed_repository_1 = require("./repository/feed.repository");
+const like_repository_1 = require("./repository/like.repository");
 let LikeService = class LikeService {
     constructor(blogLikeRepository) {
         this.blogLikeRepository = blogLikeRepository;
@@ -39,15 +39,18 @@ let LikeService = class LikeService {
             };
             return result;
         }
-        catch (e) {
-            throw new Error(e);
+        catch (error) {
+            throw new common_1.HttpException({
+                error: error.message,
+                message: error.message,
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 };
 LikeService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(feed_repository_1.BlogLikeRepository)),
-    __metadata("design:paramtypes", [feed_repository_1.BlogLikeRepository])
+    __param(0, (0, typeorm_1.InjectRepository)(like_repository_1.BlogLikeRepository)),
+    __metadata("design:paramtypes", [like_repository_1.BlogLikeRepository])
 ], LikeService);
 exports.LikeService = LikeService;
 //# sourceMappingURL=like.service.js.map
