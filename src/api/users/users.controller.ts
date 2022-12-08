@@ -16,7 +16,7 @@ import {
 import {SOCIAL_TYPE} from '@shared/enums/enum';
 import {UserValidator} from 'src/api/users/users.validator';
 import {AuthService} from 'src/auth/auth.service';
-import {JwtAuthGuard} from 'src/auth/jwt/jwt.guard';
+import {JwtGuard} from 'src/auth/jwt/jwt.guard';
 import {KakaoService} from 'src/auth/kakao.service';
 import {
   AuthInfoResponseDTO,
@@ -110,7 +110,7 @@ export class UsersController {
   }
 
   @Post('/logout')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: '로그아웃',
@@ -129,7 +129,7 @@ export class UsersController {
   }
 
   @Delete('/')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: '회원탈퇴',

@@ -36,15 +36,21 @@ import {
   IBlogPostRepository,
   IGetBlogPostItem,
 } from './interface/blogPost.interface';
-import {convertTimeToStr, isPageNext} from '../../shared/utils';
+import {commafy, convertTimeToStr, isPageNext} from '../../shared/utils';
 import {BlogPost} from '@entities/BlogPost';
-import { BlogComment } from '@entities/BlogComment';
+import {BlogComment} from '@entities/BlogComment';
+import {BlogLikeRepository} from 'src/api/like/repository/like.repository';
+import {BlogLike} from '@entities/BlogLike';
+import {UserRepository} from 'src/api/users/users.repository';
+import {User} from '@entities/User';
 
 @Injectable()
 export class FeedService {
   private readonly logger = new Logger(FeedService.name);
 
   constructor(
+    private readonly imageService: ImageService,
+    private connection: Connection,
     @InjectRepository(BlogPostRepository)
     private blogPostRepository: IBlogPostRepository,
     @InjectRepository(BlogChallengesRepository)
@@ -55,8 +61,10 @@ export class FeedService {
     private blogImageRepository: BlogImageRepository,
     @InjectRepository(BlogCommentRepository)
     private blogCommentRepository: BlogCommentRepository,
-    private readonly imageService: ImageService,
-    private connection: Connection,
+    @InjectRepository(BlogLikeRepository)
+    private blogLikeRepository: BlogLikeRepository,
+    @InjectRepository(UserRepository)
+    private userRepository: UserRepository,
   ) {}
 
   async create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO) {
@@ -183,7 +191,7 @@ export class FeedService {
       }
       throw new HttpException(
         {
-          error: e.meesage,
+          error: e.message,
           message: e.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -199,7 +207,7 @@ export class FeedService {
     } catch (e) {
       throw new HttpException(
         {
-          error: e.meesage,
+          error: e.message,
           message: e.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -228,7 +236,7 @@ export class FeedService {
       this.logger.error(e);
       throw new HttpException(
         {
-          error: e.meesage,
+          error: e.message,
           message: e.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -385,6 +393,7 @@ export class FeedService {
 
   public async getListFeed(
     query: GetListFeedReqQueryDTO,
+    userId?: number,
   ): Promise<GetListFeedResDTO> {
     const {feedId: blogPostId, challengeId, page: skip, take} = query;
     // 선택한 데이터 맨상단에 노출 [데이터 고정]
@@ -410,6 +419,7 @@ export class FeedService {
       this.getFeedListTake(skip, take),
       blogPostIds,
       excludeBlogPostId,
+      userId,
     );
 
     if (+skip === 1) {
@@ -417,31 +427,49 @@ export class FeedService {
     }
 
     let blogImages: IGetBlogImagesByBlogPost[] = [];
-    // [추후 개발]피드 이미지 정보, 피드 정보, 유저 정보, 좋아요 정보, 댓글 정보 [Service OR Dao 호출 고민]
     blogPostIds = blogPosts.items.map(bp => bp.id);
     if (blogPostIds.length > 0) {
       blogImages = await this.blogImageRepository.getBlogImagesByBlogPost(
         blogPostIds,
       );
     }
-    // const user = await this.userRepository.getUser(blogPost.userId);
-    // const isLikeByUser await this.blogLikeRepository.getBlogLikeByUser();
-    // const blogCommentCount = await this.blogCommentRepository.getBlogCommentCount(blogPost.id);
-    // const blogLikeCount = await this.blogLikeRepository.getBlogLikeCount(blogPost.id);
+
+    const feedsCommentCount =
+      await this.blogCommentRepository.selectFeedsByCommentCount(blogPostIds);
+    const feedsLikeCount = await this.blogLikeRepository.selectFeedsByLikeCount(
+      blogPostIds,
+    );
+
+    // 비회원의 경우 false, 회원인 경우 좋아요 여부 확인
+    let likes = [];
+    if (userId) {
+      likes = await this.getFeedListByUserLikes(blogPostIds, userId);
+    }
+
+    const findUsers = await this.getFeedListByUserInfo(
+      blogPosts.items.map(b => b.userId),
+    );
 
     return {
       feeds: blogPosts.items.map((blogPost: IGetBlogPostItem) => {
+        const writer = findUsers.find(user => user.id === blogPost.userId);
         return new GetFeedResDTO(
           blogPost.id,
-          '녹녹제리다',
-          'https://gihub.com/hiong04',
+          writer.nickname,
+          writer.image,
           blogPost.content,
           convertTimeToStr(blogPost.regDate),
           '1:1',
-          '1,301',
-          true,
-          '2,456',
-          blogImages,
+          commafy(
+            feedsLikeCount.find(like => like.postId === blogPost.id)
+              ?.likeCount || 0,
+          ),
+          userId ? likes.some(like => like.postId === blogPost.id) : false,
+          commafy(
+            feedsCommentCount.find(comment => comment.postId === blogPost.id)
+              ?.commentCount || 0,
+          ),
+          blogImages.filter(bi => bi.postId === blogPost.id),
         );
       }),
       isNext: isPageNext(
@@ -462,6 +490,20 @@ export class FeedService {
     } else {
       return take;
     }
+  }
+
+  private async getFeedListByUserLikes(
+    postIds: number[],
+    userId: number,
+  ): Promise<BlogLike[]> {
+    return await this.blogLikeRepository.selectFeedListByUserLikes(
+      postIds,
+      userId,
+    );
+  }
+
+  private async getFeedListByUserInfo(userIds: number[]): Promise<User[]> {
+    return await this.userRepository.selectUsers(userIds);
   }
 
   async getListFeedComment({
@@ -487,7 +529,7 @@ export class FeedService {
       this.logger.error(e);
       throw new HttpException(
         {
-          error: e.meesage,
+          error: e.message,
           message: e.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,

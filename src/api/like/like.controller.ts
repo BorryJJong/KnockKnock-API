@@ -15,14 +15,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {UsersService} from 'src/api/users/users.service';
-import {JwtAuthGuard} from 'src/auth/jwt/jwt.guard';
+import {JwtGuard} from 'src/auth/jwt/jwt.guard';
 import {GetListFeedLikeResponse} from '@shared/response_entities/feed/temp.response';
 import {GetListFeedLikeResDTO} from '../feed/dto/feed.dto';
 import {LikeService} from './like.service';
 
 @ApiTags('like')
 @Controller('like')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtGuard)
 @ApiBearerAuth()
 export class LikeController {
   constructor(

@@ -25,6 +25,7 @@ export interface IBlogPostRepository {
     take: number,
     blogPostIds: number[],
     excludeBlogPostId: number,
+    userId: number,
   ): Promise<IGetBlogPostItems>;
   getBlogPost(blogPostId: number): Promise<BlogPost>;
   getBlogPostById(id: number): Promise<GetBlogPostDTO>;

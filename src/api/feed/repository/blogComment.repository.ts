@@ -1,8 +1,13 @@
 import {Injectable} from '@nestjs/common';
 import {EntityRepository, getManager, QueryRunner, Repository} from 'typeorm';
 import {BlogComment} from 'src/entities/BlogComment';
-import { GetBlogCommentDTO, GetListFeedCommentResDTO, InsBlogCommentDTO } from '../dto/feed.dto';
-import { User } from 'src/entities/User';
+import {
+  GetBlogCommentDTO,
+  GetListFeedCommentResDTO,
+  InsBlogCommentDTO,
+} from '../dto/feed.dto';
+import {User} from 'src/entities/User';
+import {IGetFeedsByCommentCountResponse} from 'src/api/feed/interface/blogComment.interface';
 
 @Injectable()
 @EntityRepository(BlogComment)
@@ -10,7 +15,7 @@ export class BlogCommentRepository extends Repository<BlogComment> {
   createBlogComment(insBlogCommentDTO: InsBlogCommentDTO): BlogComment {
     return this.create({...insBlogCommentDTO});
   }
-  
+
   async saveBlogComment(
     queryRunner: QueryRunner | null,
     BlogComment: BlogComment,
@@ -94,5 +99,18 @@ export class BlogCommentRepository extends Repository<BlogComment> {
 
   async getBlogComment(id: number): Promise<BlogComment> {
     return await this.findOne(id);
+  }
+
+  async selectFeedsByCommentCount(
+    postIds: number[],
+  ): Promise<IGetFeedsByCommentCountResponse[]> {
+    return await this.createQueryBuilder('blogComment')
+      .select('blogComment.postId', 'postId')
+      .addSelect('count(*)', 'commentCount')
+      .where('blogComment.postId IN (:...postIds)', {
+        postIds,
+      })
+      .groupBy('blogComment.postId')
+      .getRawMany<IGetFeedsByCommentCountResponse>();
   }
 }

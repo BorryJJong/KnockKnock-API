@@ -2,7 +2,7 @@ import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {plainToInstance} from 'class-transformer';
 import {GetFeedLikeDTO, GetListFeedLikeResDTO} from '../feed/dto/feed.dto';
-import {BlogLikeRepository} from './repository/feed.repository';
+import {BlogLikeRepository} from './repository/like.repository';
 
 @Injectable()
 export class LikeService {

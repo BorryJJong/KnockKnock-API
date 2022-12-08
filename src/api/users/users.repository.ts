@@ -42,15 +42,6 @@ export class UserRepository
       .getOne();
   }
 
-  public async findUserByEmail(email: string): Promise<User> {
-    return await this.findOne({email});
-  }
-
-  public async findUserByIdWithoutPassword(id: string): Promise<User> {
-    const user = await this.findOne(id);
-    return user;
-  }
-
   public async isExistSocialUser(
     socialUuid: string,
     socialType: SOCIAL_TYPE,
@@ -75,6 +66,10 @@ export class UserRepository
 
   public async selectUser(userId: number): Promise<User | undefined> {
     return await this.findOne(userId);
+  }
+
+  public async selectUsers(userIds: number[]): Promise<User[]> {
+    return await this.findByIds(userIds);
   }
 
   public async updateUserDeletedAt(
