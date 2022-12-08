@@ -24,6 +24,14 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             return await queryRunner.manager.save(blogPost);
         }
     }
+    async updateBlogPost(queryRunner, postId, blogPost) {
+        if (queryRunner === null) {
+            return await this.update(postId, blogPost);
+        }
+        else {
+            return await queryRunner.manager.update(BlogPost_1.BlogPost, postId, blogPost);
+        }
+    }
     async getBlogPosts(page, take, blogPostIds) {
         let queryBuilder = await this.createQueryBuilder('blogPost');
         if (blogPostIds.length > 0) {
@@ -79,6 +87,7 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             .addSelect('bp.user_id', 'userId')
             .addSelect('bp.content', 'content')
             .addSelect('bp.store_address', 'storeAddress')
+            .addSelect('bp.store_name', 'storeName')
             .addSelect('bp.location_x', 'locationX')
             .addSelect('bp.location_y', 'locationY')
             .addSelect('bp.reg_date', 'regDate')

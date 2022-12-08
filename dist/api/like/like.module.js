@@ -11,7 +11,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const like_service_1 = require("./like.service");
 const like_controller_1 = require("./like.controller");
-const feed_repository_1 = require("./repository/feed.repository");
+const like_repository_1 = require("./repository/like.repository");
 const jwt_guard_1 = require("../../auth/jwt/jwt.guard");
 const users_service_1 = require("../users/users.service");
 const users_repository_1 = require("../users/users.repository");
@@ -20,9 +20,9 @@ let LikeModule = class LikeModule {
 };
 LikeModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([feed_repository_1.BlogLikeRepository, users_repository_1.UserRepository])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([like_repository_1.BlogLikeRepository, users_repository_1.UserRepository])],
         controllers: [like_controller_1.LikeController],
-        providers: [like_service_1.LikeService, jwt_guard_1.JwtAuthGuard, users_service_1.UsersService, kakao_service_1.KakaoService],
+        providers: [like_service_1.LikeService, jwt_guard_1.JwtGuard, users_service_1.UsersService, kakao_service_1.KakaoService],
     })
 ], LikeModule);
 exports.LikeModule = LikeModule;

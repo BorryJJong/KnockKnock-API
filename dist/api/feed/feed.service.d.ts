@@ -1,6 +1,6 @@
 /// <reference types="multer" />
 import { Connection, QueryRunner } from 'typeorm';
-import { CreateFeedDTO, UpdateFeedDTO, CreateBlogPostDTO, GetListFeedMainReqDTO, GetListFeedMainResDTO, GetListFeedReqQueryDTO, GetListFeedResDTO, InsBlogCommentDTO, GetFeedViewReqDTO, GetFeedViewResDTO, GetListFeedCommentReqDTO, GetListFeedCommentResDTO } from './dto/feed.dto';
+import { CreateFeedDTO, UpdateFeedDTO, CreateBlogPostDTO, GetListFeedMainReqDTO, GetListFeedMainResDTO, GetListFeedReqQueryDTO, GetListFeedResDTO, InsBlogCommentDTO, GetFeedViewReqDTO, GetFeedViewResDTO, GetListFeedCommentReqDTO, GetListFeedCommentResDTO, DelBlogCommentReqDTO, UpdateBlogPostDTO } from './dto/feed.dto';
 import { ImageService } from 'src/api/image/image.service';
 import { BlogChallengesRepository } from './repository/blogChallenges.repository';
 import { BlogImageRepository } from './repository/blogImage.repository';
@@ -8,16 +8,20 @@ import { BlogPromotionRepository } from './repository/blogPromotion.repository';
 import { BlogCommentRepository } from './repository/blogComment.repository';
 import { IBlogPostRepository } from './interface/blogPost.interface';
 import { BlogPost } from '@entities/BlogPost';
+import { BlogLikeRepository } from 'src/api/like/repository/like.repository';
+import { UserRepository } from 'src/api/users/users.repository';
 export declare class FeedService {
+    private readonly imageService;
+    private connection;
     private blogPostRepository;
     private blogChallengesRepository;
     private blogPromotionRepository;
     private blogImageRepository;
     private blogCommentRepository;
-    private readonly imageService;
-    private connection;
+    private blogLikeRepository;
+    private userRepository;
     private readonly logger;
-    constructor(blogPostRepository: IBlogPostRepository, blogChallengesRepository: BlogChallengesRepository, blogPromotionRepository: BlogPromotionRepository, blogImageRepository: BlogImageRepository, blogCommentRepository: BlogCommentRepository, imageService: ImageService, connection: Connection);
+    constructor(imageService: ImageService, connection: Connection, blogPostRepository: IBlogPostRepository, blogChallengesRepository: BlogChallengesRepository, blogPromotionRepository: BlogPromotionRepository, blogImageRepository: BlogImageRepository, blogCommentRepository: BlogCommentRepository, blogLikeRepository: BlogLikeRepository, userRepository: UserRepository);
     create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO): Promise<boolean>;
     savePost(queryRunner: QueryRunner, createBlogPostDTO: CreateBlogPostDTO): Promise<BlogPost>;
     saveChallenges(queryRunner: QueryRunner, postId: number, challenges: string): Promise<void>;
@@ -25,10 +29,15 @@ export declare class FeedService {
     savePostImage(queryRunner: QueryRunner, postId: number, file: Express.Multer.File): Promise<void>;
     saveBlogComment(insBlogCommentDTO: InsBlogCommentDTO): Promise<void>;
     getFeed({ id }: GetFeedViewReqDTO): Promise<GetFeedViewResDTO>;
-    update(id: number, updateFeedDTO: UpdateFeedDTO): string;
-    remove(id: number): string;
+    update(updateFeedDTO: UpdateFeedDTO): Promise<boolean>;
+    updatePost(queryRunner: QueryRunner, postId: number, updateBlogPostDTO: UpdateBlogPostDTO): Promise<any>;
+    updateChallenges(queryRunner: QueryRunner, postId: number, challenges: string): Promise<void>;
+    updatePromotion(queryRunner: QueryRunner, postId: number, promotions: string): Promise<void>;
     getFeedsByChallengesFilter(query: GetListFeedMainReqDTO): Promise<GetListFeedMainResDTO>;
-    getListFeed(query: GetListFeedReqQueryDTO): Promise<GetListFeedResDTO>;
+    getListFeed(query: GetListFeedReqQueryDTO, userId?: number): Promise<GetListFeedResDTO>;
     private getFeedListTake;
+    private getFeedListByUserLikes;
+    private getFeedListByUserInfo;
     getListFeedComment({ id, }: GetListFeedCommentReqDTO): Promise<GetListFeedCommentResDTO[]>;
+    deleteBlogComment({ id }: DelBlogCommentReqDTO): Promise<void>;
 }

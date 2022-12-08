@@ -50,7 +50,9 @@ let KakaoService = class KakaoService {
             };
         }
         catch (error) {
-            throw new Error(error.response.body);
+            throw new common_1.HttpException({
+                message: error.message,
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 };

@@ -31,9 +31,17 @@ let BlogPromotionRepository = class BlogPromotionRepository extends typeorm_1.Re
             .addSelect('p.type', 'title')
             .from(BlogPromotion_1.BlogPromotion, 'bp')
             .innerJoin(Promotions_1.Promotions, 'p', 'bp.promotion_id = p.id')
-            .where("bp.post_id = :id", { id: id })
+            .where('bp.post_id = :id', { id: id })
             .getRawMany();
         return promotions;
+    }
+    async deleteBlogPromotionByPostId(queryRunner, postId) {
+        if (queryRunner === null) {
+            return await this.delete({ postId: postId });
+        }
+        else {
+            return await queryRunner.manager.delete(BlogPromotion_1.BlogPromotion, { postId: postId });
+        }
     }
 };
 BlogPromotionRepository = __decorate([

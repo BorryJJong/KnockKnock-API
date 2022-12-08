@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetListFeedLikeResDTO = exports.GetFeedLikeDTO = exports.GetListFeedCommentReqDTO = exports.GetListFeedCommentResDTO = exports.GetBlogCommentDTO = exports.InsBlogCommentDTO = exports.GetFeedViewResDTO = exports.GetBlogImageDTO = exports.GetBlogChallengesDTO = exports.GetBlogPromotionDTO = exports.GetBlogPostDTO = exports.GetFeedViewReqDTO = exports.GetListFeedResDTO = exports.GetFeedResDTO = exports.GetFeedImageResDTO = exports.GetListFeedReqQueryDTO = exports.GetListBlogImageByBlogPostResDTO = exports.GetListFeedMainResDTO = exports.GetFeedMainResDTO = exports.GetListFeedMainReqDTO = exports.UpdateFeedDto = exports.CreateBlogImageDTO = exports.CreateBlogPromotionDTO = exports.CreateBlogChallengesDTO = exports.CreateBlogPostDTO = exports.UpdateFeedDTO = exports.CreateFeedDTO = void 0;
+exports.GetListFeedLikeResDTO = exports.GetFeedLikeDTO = exports.GetListFeedCommentReqDTO = exports.GetListFeedCommentResDTO = exports.GetBlogCommentDTO = exports.DelBlogCommentReqDTO = exports.InsBlogCommentDTO = exports.GetFeedViewResDTO = exports.GetBlogImageDTO = exports.GetBlogChallengesDTO = exports.GetBlogPromotionDTO = exports.GetBlogPostDTO = exports.GetFeedViewReqDTO = exports.GetListFeedResDTO = exports.GetFeedResDTO = exports.GetFeedImageResDTO = exports.GetListFeedReqQueryDTO = exports.GetListBlogImageByBlogPostResDTO = exports.GetListFeedMainResDTO = exports.GetFeedMainResDTO = exports.GetListFeedMainReqDTO = exports.UpdateBlogPostDTO = exports.CreateBlogImageDTO = exports.CreateBlogPromotionDTO = exports.CreateBlogChallengesDTO = exports.CreateBlogPostDTO = exports.UpdateFeedDTO = exports.CreateFeedDTO = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 const swagger_1 = require("@nestjs/swagger");
@@ -46,8 +46,31 @@ __decorate([
     __metadata("design:type", Array)
 ], CreateFeedDTO.prototype, "images", void 0);
 exports.CreateFeedDTO = CreateFeedDTO;
-class UpdateFeedDTO extends (0, swagger_1.PartialType)(CreateFeedDTO) {
+class UpdateFeedDTO extends (0, swagger_1.OmitType)(BlogPost_1.BlogPost, [
+    'userId',
+    'hits',
+    'modDate',
+    'regDate',
+    'delDate',
+    'isDeleted',
+]) {
 }
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '게시글 id', example: '1' }),
+    __metadata("design:type", Number)
+], UpdateFeedDTO.prototype, "id", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({ description: '프로모션 id', example: '1 or 1,2' }),
+    __metadata("design:type", String)
+], UpdateFeedDTO.prototype, "promotions", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({ description: '챌린지 id', example: '1 or 1,2,3' }),
+    __metadata("design:type", String)
+], UpdateFeedDTO.prototype, "challenges", void 0);
 exports.UpdateFeedDTO = UpdateFeedDTO;
 class CreateBlogPostDTO extends (0, swagger_1.OmitType)(BlogPost_1.BlogPost, [
     'id',
@@ -68,9 +91,9 @@ exports.CreateBlogPromotionDTO = CreateBlogPromotionDTO;
 class CreateBlogImageDTO extends (0, swagger_1.OmitType)(BlogImage_1.BlogImage, ['id']) {
 }
 exports.CreateBlogImageDTO = CreateBlogImageDTO;
-class UpdateFeedDto extends (0, swagger_1.PartialType)(CreateFeedDTO) {
+class UpdateBlogPostDTO extends (0, swagger_1.PartialType)((0, swagger_1.OmitType)(CreateBlogPostDTO, ['userId'])) {
 }
-exports.UpdateFeedDto = UpdateFeedDto;
+exports.UpdateBlogPostDTO = UpdateBlogPostDTO;
 class GetListFeedMainReqDTO extends pagenation_dto_1.PagenationReqDTO {
 }
 __decorate([
@@ -279,6 +302,14 @@ __decorate([
 __decorate([
     (0, class_transformer_1.Expose)(),
     (0, swagger_1.ApiProperty)({
+        description: '매장명',
+        example: '스타벅스 리버사이드팔당DTR점',
+    }),
+    __metadata("design:type", String)
+], GetBlogPostDTO.prototype, "storeName", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, swagger_1.ApiProperty)({
         description: '매장 주소 x좌표',
         example: '127.102269186127',
     }),
@@ -453,6 +484,14 @@ class InsBlogCommentDTO extends (0, swagger_1.OmitType)(BlogComment_1.BlogCommen
 ]) {
 }
 exports.InsBlogCommentDTO = InsBlogCommentDTO;
+class DelBlogCommentReqDTO {
+}
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({ description: '댓글 id', example: '1' }),
+    __metadata("design:type", Number)
+], DelBlogCommentReqDTO.prototype, "id", void 0);
+exports.DelBlogCommentReqDTO = DelBlogCommentReqDTO;
 let GetBlogCommentDTO = class GetBlogCommentDTO {
 };
 __decorate([

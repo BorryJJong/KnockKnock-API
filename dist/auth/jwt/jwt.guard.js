@@ -9,10 +9,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JwtAuthGuard = void 0;
+exports.JwtGuard = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
-let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt-access-token') {
+let JwtGuard = class JwtGuard extends (0, passport_1.AuthGuard)('jwt-access-token') {
     constructor() {
         super();
     }
@@ -20,14 +20,16 @@ let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt-acc
         const request = context.switchToHttp().getRequest();
         const { authorization } = request.headers;
         if (!authorization) {
-            throw new common_1.HttpException('AccessToken 미전송', common_1.HttpStatus.UNAUTHORIZED);
+            throw new common_1.HttpException({
+                error: 'AccessToken 미전송',
+            }, common_1.HttpStatus.UNAUTHORIZED);
         }
         return super.canActivate(context);
     }
 };
-JwtAuthGuard = __decorate([
+JwtGuard = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [])
-], JwtAuthGuard);
-exports.JwtAuthGuard = JwtAuthGuard;
+], JwtGuard);
+exports.JwtGuard = JwtGuard;
 //# sourceMappingURL=jwt.guard.js.map

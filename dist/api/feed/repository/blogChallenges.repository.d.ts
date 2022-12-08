@@ -6,4 +6,5 @@ export declare class BlogChallengesRepository extends Repository<BlogChallenges>
     saveBlogChallenges(queryRunner: QueryRunner | null, blogChallenges: BlogChallenges): Promise<BlogChallenges>;
     getBlogChallengesByChallengeId(challengeId: number): Promise<BlogChallenges[]>;
     getBlogChallengesByPostId(id: number): Promise<GetBlogChallengesDTO[]>;
+    deleteBlogChallengesByPostId(queryRunner: QueryRunner | null, postId: number): Promise<import("typeorm").DeleteResult>;
 }

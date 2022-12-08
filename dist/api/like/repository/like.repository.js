@@ -36,10 +36,28 @@ let BlogLikeRepository = class BlogLikeRepository extends typeorm_1.Repository {
             .getRawMany();
         return post;
     }
+    async selectFeedListByUserLikes(postIds, userId) {
+        return await this.manager.find(BlogLike_1.BlogLike, {
+            where: {
+                postId: (0, typeorm_1.In)(postIds),
+                userId,
+            },
+        });
+    }
+    async selectFeedsByLikeCount(postIds) {
+        return await this.createQueryBuilder('blogLike')
+            .select('blogLike.postId', 'postId')
+            .addSelect('count(*)', 'likeCount')
+            .where('blogLike.postId IN (:...postIds)', {
+            postIds,
+        })
+            .groupBy('blogLike.postId')
+            .getRawMany();
+    }
 };
 BlogLikeRepository = __decorate([
     (0, common_1.Injectable)(),
     (0, typeorm_1.EntityRepository)(BlogLike_1.BlogLike)
 ], BlogLikeRepository);
 exports.BlogLikeRepository = BlogLikeRepository;
-//# sourceMappingURL=feed.repository.js.map
+//# sourceMappingURL=like.repository.js.map

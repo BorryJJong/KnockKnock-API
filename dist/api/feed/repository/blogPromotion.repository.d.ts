@@ -5,4 +5,5 @@ export declare class BlogPromotionRepository extends Repository<BlogPromotion> {
     createBlogPromotion(createBlogPromotionDTO: CreateBlogPromotionDTO): BlogPromotion;
     saveBlogPromotion(queryRunner: QueryRunner | null, blogPromotion: BlogPromotion): Promise<BlogPromotion>;
     getBlogPromotionByPostId(id: number): Promise<GetBlogPromotionDTO[]>;
+    deleteBlogPromotionByPostId(queryRunner: QueryRunner | null, postId: number): Promise<import("typeorm").DeleteResult>;
 }

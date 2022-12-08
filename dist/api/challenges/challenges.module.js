@@ -19,7 +19,7 @@ ChallengesModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([challenges_repository_1.ChallengesRepository])],
         controllers: [challenges_controller_1.ChallengesController],
-        providers: [challenges_service_1.ChallengesService, jwt_guard_1.JwtAuthGuard],
+        providers: [challenges_service_1.ChallengesService, jwt_guard_1.JwtGuard],
     })
 ], ChallengesModule);
 exports.ChallengesModule = ChallengesModule;

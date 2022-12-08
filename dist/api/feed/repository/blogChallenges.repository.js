@@ -40,6 +40,14 @@ let BlogChallengesRepository = class BlogChallengesRepository extends typeorm_1.
             .getRawMany();
         return challenges;
     }
+    async deleteBlogChallengesByPostId(queryRunner, postId) {
+        if (queryRunner === null) {
+            return await this.delete({ postId: postId });
+        }
+        else {
+            return await queryRunner.manager.delete(BlogChallenges_1.BlogChallenges, { postId: postId });
+        }
+    }
 };
 BlogChallengesRepository = __decorate([
     (0, common_1.Injectable)(),

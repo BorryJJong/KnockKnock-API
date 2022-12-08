@@ -1,5 +1,5 @@
 import { GetListFeedLikeResDTO } from '../feed/dto/feed.dto';
-import { BlogLikeRepository } from './repository/feed.repository';
+import { BlogLikeRepository } from './repository/like.repository';
 export declare class LikeService {
     private blogLikeRepository;
     constructor(blogLikeRepository: BlogLikeRepository);

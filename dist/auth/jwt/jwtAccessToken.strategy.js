@@ -19,7 +19,7 @@ let JwtAccessTokenStrategy = class JwtAccessTokenStrategy extends (0, passport_1
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             secretOrKey: process.env.JWT_ACCESS_SECRET,
-            ignoreExpiration: true,
+            ignoreExpiration: false,
         });
         this.authService = authService;
     }

@@ -3,6 +3,7 @@ export declare class BlogPost {
     userId: number;
     content: string;
     storeAddress?: string;
+    storeName?: string;
     locationX?: string;
     locationY?: string;
     scale: string;
