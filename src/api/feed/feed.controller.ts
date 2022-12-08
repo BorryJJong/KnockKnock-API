@@ -9,6 +9,8 @@ import {
   UseInterceptors,
   UploadedFiles,
   Query,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import {FeedService} from './feed.service';
 import {
@@ -26,6 +28,7 @@ import {
   DelBlogCommentReqDTO,
 } from './dto/feed.dto';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOperation,
   ApiResponse,
@@ -39,6 +42,8 @@ import {
   DeleteBlogCommentResponse,
   UpdateFeedResponse,
 } from 'src/shared/response_entities/feed/temp.response';
+import {User} from '@entities/User';
+import {JwtOptionalGuard} from 'src/auth/jwt/jwtNoneRequired.guard';
 
 // TODO: 400,401,403,404등 공통 사용 응답코드는 컨트롤러에 붙이기
 // @ApiBadRequestResponse({
@@ -76,6 +81,8 @@ export class FeedController {
   }
 
   @Get('/blog-post')
+  @UseGuards(JwtOptionalGuard)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: '피드 게시글 목록 API',
     externalDocs: {
@@ -91,8 +98,10 @@ export class FeedController {
   })
   public async getListFeed(
     @Query() query: GetListFeedReqQueryDTO,
+    @Request() req,
   ): Promise<GetListFeedResDTO> {
-    return this.feedService.getListFeed(query);
+    const requestUser: User = req.user;
+    return this.feedService.getListFeed(query, requestUser.id);
   }
 
   @Post()

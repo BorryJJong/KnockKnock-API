@@ -9,8 +9,6 @@ export interface IUserRepository {
     socialUuid: string,
     socialType: SOCIAL_TYPE,
   ): Promise<User | undefined>;
-  findUserByEmail(email: string): Promise<User>;
-  findUserByIdWithoutPassword(id: string): Promise<User>;
   isExistSocialUser(
     socialUuid: string,
     socialType: SOCIAL_TYPE,

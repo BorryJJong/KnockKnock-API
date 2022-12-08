@@ -7,7 +7,10 @@ import {BlogChallengesRepository} from './repository/blogChallenges.repository';
 import {BlogImageRepository} from './repository/blogImage.repository';
 import {BlogPostRepository} from './repository/blogPost.repository';
 import {BlogPromotionRepository} from './repository/blogPromotion.repository';
-import { BlogCommentRepository } from './repository/blogComment.repository';
+import {BlogCommentRepository} from './repository/blogComment.repository';
+import {JwtOptionalGuard} from 'src/auth/jwt/jwtNoneRequired.guard';
+import {BlogLikeRepository} from 'src/api/like/repository/like.repository';
+import {UserRepository} from 'src/api/users/users.repository';
 
 @Module({
   imports: [
@@ -17,10 +20,12 @@ import { BlogCommentRepository } from './repository/blogComment.repository';
       BlogImageRepository,
       BlogPostRepository,
       BlogPromotionRepository,
-      BlogCommentRepository
+      BlogCommentRepository,
+      BlogLikeRepository,
+      UserRepository,
     ]),
   ],
   controllers: [FeedController],
-  providers: [FeedService],
+  providers: [FeedService, JwtOptionalGuard],
 })
 export class FeedModule {}

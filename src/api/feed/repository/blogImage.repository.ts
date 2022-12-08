@@ -34,12 +34,12 @@ export class BlogImageRepository extends Repository<BlogImage> {
     return blogImages;
   }
 
-  async getBlogImageByPostId(id:number){
-    const images:GetBlogImageDTO[] = await this.find({
+  async getBlogImageByPostId(id: number) {
+    const images: GetBlogImageDTO[] = await this.find({
       select: ['id', 'fileUrl'],
-      where: {postId: id}
+      where: {postId: id},
     });
-    
+
     return images;
   }
 }

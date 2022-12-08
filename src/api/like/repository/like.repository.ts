@@ -1,6 +1,7 @@
 import {Injectable} from '@nestjs/common';
-import { GetFeedLikeDTO } from 'src/api/feed/dto/feed.dto';
-import {EntityRepository, getManager, Repository} from 'typeorm';
+import {GetFeedLikeDTO} from 'src/api/feed/dto/feed.dto';
+import {IGetFeedsByLikeCountResponse} from 'src/api/like/like.interface';
+import {EntityRepository, getManager, In, Repository} from 'typeorm';
 import {BlogLike} from '../../../entities/BlogLike';
 import {User} from '../../../entities/User';
 
@@ -35,5 +36,30 @@ export class BlogLikeRepository extends Repository<BlogLike> {
       .getRawMany();
 
     return post;
+  }
+
+  async selectFeedListByUserLikes(
+    postIds: number[],
+    userId: number,
+  ): Promise<BlogLike[]> {
+    return await this.manager.find(BlogLike, {
+      where: {
+        postId: In(postIds),
+        userId,
+      },
+    });
+  }
+
+  async selectFeedsByLikeCount(
+    postIds: number[],
+  ): Promise<IGetFeedsByLikeCountResponse[]> {
+    return await this.createQueryBuilder('blogLike')
+      .select('blogLike.postId', 'postId')
+      .addSelect('count(*)', 'likeCount')
+      .where('blogLike.postId IN (:...postIds)', {
+        postIds,
+      })
+      .groupBy('blogLike.postId')
+      .getRawMany<IGetFeedsByLikeCountResponse>();
   }
 }
