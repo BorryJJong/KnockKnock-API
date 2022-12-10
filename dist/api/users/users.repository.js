@@ -46,7 +46,9 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
         return await this.findOne(userId);
     }
     async selectUsers(userIds) {
-        return await this.findByIds(userIds);
+        return await this.findByIds(userIds, {
+            withDeleted: true,
+        });
     }
     async updateUserDeletedAt(userId, queryRunner) {
         await queryRunner.manager.softDelete(User_1.User, userId);
