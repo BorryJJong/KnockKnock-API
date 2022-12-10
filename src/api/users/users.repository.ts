@@ -6,7 +6,7 @@ import {
   IUpdateUser,
   IUserRepository,
 } from 'src/api/users/users.interface';
-import {EntityRepository, QueryRunner, Repository} from 'typeorm';
+import {EntityRepository, In, QueryRunner, Repository} from 'typeorm';
 
 @Injectable()
 @EntityRepository(User)
@@ -69,7 +69,9 @@ export class UserRepository
   }
 
   public async selectUsers(userIds: number[]): Promise<User[]> {
-    return await this.findByIds(userIds);
+    return await this.findByIds(userIds, {
+      withDeleted: true,
+    });
   }
 
   public async updateUserDeletedAt(
