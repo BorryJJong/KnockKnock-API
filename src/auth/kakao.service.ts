@@ -1,9 +1,6 @@
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import got from 'got';
-
-export interface IUserPropertiesResponse {
-  id: number;
-}
+import {IUserPropertiesResponse} from 'src/auth/auth.interface';
 
 @Injectable()
 export class KakaoService {
