@@ -15,6 +15,8 @@ import {
 } from '@nestjs/swagger';
 import {SOCIAL_TYPE} from '@shared/enums/enum';
 import {UserValidator} from 'src/api/users/users.validator';
+import {AppleService} from 'src/auth/apple.service';
+import {IUserPropertiesResponse} from 'src/auth/auth.interface';
 import {AuthService} from 'src/auth/auth.service';
 import {JwtGuard} from 'src/auth/jwt/jwt.guard';
 import {KakaoService} from 'src/auth/kakao.service';
@@ -32,8 +34,9 @@ export class UsersController {
   constructor(
     private readonly userService: UsersService,
     private readonly authService: AuthService,
-    private readonly kakaoService: KakaoService,
     private readonly userValidator: UserValidator,
+    private readonly kakaoService: KakaoService,
+    private readonly appleService: AppleService,
   ) {}
 
   @Post('/social-login')
@@ -49,13 +52,15 @@ export class UsersController {
   async socialLogin(
     @Body() body: SocialLoginRequestDTO,
   ): Promise<SocialLoginResponseDTO> {
-    const kakaoSocialUid = await this.kakaoService.getUserProperties(
-      body.socialUuid,
+    const {socialType, socialUuid} = body;
+    const userProperties = await this.getSocialLoginAttributes(
+      socialType,
+      socialUuid,
     );
 
     const user = await this.userService.getSocialUser({
-      socialUuid: kakaoSocialUid.id.toString(),
-      socialType: SOCIAL_TYPE.KAKAO,
+      socialUuid: userProperties.id.toString(),
+      socialType,
     });
 
     if (user) {
@@ -83,18 +88,19 @@ export class UsersController {
     @Body() body: SignUpRequestDTO,
   ): Promise<SocialLoginResponseDTO> {
     const {socialUuid, socialType, nickname} = body;
-    const kakaoSocialUid = await this.kakaoService.getUserProperties(
+    const userProperties = await this.getSocialLoginAttributes(
+      socialType,
       socialUuid,
     );
 
     await this.userValidator.checkExistSocialUser(
-      kakaoSocialUid.id.toString(),
+      userProperties.id.toString(),
       socialType,
     );
 
     const newUser = await this.userService.saveUser({
       socialType,
-      socialUuid: kakaoSocialUid.id.toString(),
+      socialUuid: userProperties.id.toString(),
       nickname,
     });
 
@@ -145,5 +151,17 @@ export class UsersController {
     await this.userService.deleteUser(user.id, user.socialUuid);
 
     return true;
+  }
+
+  private async getSocialLoginAttributes(
+    socialType: SOCIAL_TYPE,
+    socialUuid: string,
+  ): Promise<IUserPropertiesResponse> {
+    switch (socialType) {
+      case SOCIAL_TYPE.APPLE:
+        return await this.appleService.getUserProperties(socialUuid);
+      case SOCIAL_TYPE.KAKAO:
+        return await this.kakaoService.getUserProperties(socialUuid);
+    }
   }
 }
