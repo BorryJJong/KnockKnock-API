@@ -13,6 +13,7 @@ const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
 const typeorm_1 = require("@nestjs/typeorm");
 const users_repository_1 = require("../api/users/users.repository");
+const apple_service_1 = require("./apple.service");
 const kakao_service_1 = require("./kakao.service");
 const auth_service_1 = require("./auth.service");
 const jwtAccessToken_strategy_1 = require("./jwt/jwtAccessToken.strategy");
@@ -34,6 +35,7 @@ AuthModule = __decorate([
             jwtAccessToken_strategy_1.JwtAccessTokenStrategy,
             kakao_service_1.KakaoService,
             config_1.ConfigService,
+            apple_service_1.AppleService,
         ],
         exports: [auth_service_1.AuthService, kakao_service_1.KakaoService],
     })

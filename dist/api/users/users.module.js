@@ -15,6 +15,7 @@ const users_repository_1 = require("./users.repository");
 const auth_module_1 = require("../../auth/auth.module");
 const users_validator_1 = require("./users.validator");
 const kakao_service_1 = require("../../auth/kakao.service");
+const apple_service_1 = require("../../auth/apple.service");
 let UsersModule = class UsersModule {
 };
 UsersModule = __decorate([
@@ -24,7 +25,7 @@ UsersModule = __decorate([
             (0, common_1.forwardRef)(() => auth_module_1.AuthModule),
         ],
         controllers: [users_controller_1.UsersController],
-        providers: [users_service_1.UsersService, users_validator_1.UserValidator, kakao_service_1.KakaoService],
+        providers: [users_service_1.UsersService, users_validator_1.UserValidator, kakao_service_1.KakaoService, apple_service_1.AppleService],
         exports: [users_service_1.UsersService],
     })
 ], UsersModule);
