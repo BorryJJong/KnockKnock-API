@@ -17,23 +17,26 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const enum_1 = require("../../shared/enums/enum");
 const users_validator_1 = require("./users.validator");
+const apple_service_1 = require("../../auth/apple.service");
 const auth_service_1 = require("../../auth/auth.service");
 const jwt_guard_1 = require("../../auth/jwt/jwt.guard");
 const kakao_service_1 = require("../../auth/kakao.service");
 const auth_dto_1 = require("../../auth/dto/auth.dto");
 const users_service_1 = require("./users.service");
 let UsersController = class UsersController {
-    constructor(userService, authService, kakaoService, userValidator) {
+    constructor(userService, authService, userValidator, kakaoService, appleService) {
         this.userService = userService;
         this.authService = authService;
-        this.kakaoService = kakaoService;
         this.userValidator = userValidator;
+        this.kakaoService = kakaoService;
+        this.appleService = appleService;
     }
     async socialLogin(body) {
-        const kakaoSocialUid = await this.kakaoService.getUserProperties(body.socialUuid);
+        const { socialType, socialUuid } = body;
+        const userProperties = await this.getSocialLoginAttributes(socialType, socialUuid);
         const user = await this.userService.getSocialUser({
-            socialUuid: kakaoSocialUid.id.toString(),
-            socialType: enum_1.SOCIAL_TYPE.KAKAO,
+            socialUuid: userProperties.id.toString(),
+            socialType,
         });
         if (user) {
             const { accessToken, refreshToken } = await this.authService.makeJwtToken(user.id);
@@ -46,11 +49,11 @@ let UsersController = class UsersController {
     }
     async signUp(body) {
         const { socialUuid, socialType, nickname } = body;
-        const kakaoSocialUid = await this.kakaoService.getUserProperties(socialUuid);
-        await this.userValidator.checkExistSocialUser(kakaoSocialUid.id.toString(), socialType);
+        const userProperties = await this.getSocialLoginAttributes(socialType, socialUuid);
+        await this.userValidator.checkExistSocialUser(userProperties.id.toString(), socialType);
         const newUser = await this.userService.saveUser({
             socialType,
-            socialUuid: kakaoSocialUid.id.toString(),
+            socialUuid: userProperties.id.toString(),
             nickname,
         });
         const { accessToken, refreshToken } = await this.authService.makeJwtToken(newUser.id);
@@ -68,6 +71,14 @@ let UsersController = class UsersController {
         const user = await this.userService.getUser(requestUser.id);
         await this.userService.deleteUser(user.id, user.socialUuid);
         return true;
+    }
+    async getSocialLoginAttributes(socialType, socialUuid) {
+        switch (socialType) {
+            case enum_1.SOCIAL_TYPE.APPLE:
+                return await this.appleService.getUserProperties(socialUuid);
+            case enum_1.SOCIAL_TYPE.KAKAO:
+                return await this.kakaoService.getUserProperties(socialUuid);
+        }
     }
 };
 __decorate([
@@ -137,8 +148,9 @@ UsersController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [users_service_1.UsersService,
         auth_service_1.AuthService,
+        users_validator_1.UserValidator,
         kakao_service_1.KakaoService,
-        users_validator_1.UserValidator])
+        apple_service_1.AppleService])
 ], UsersController);
 exports.UsersController = UsersController;
 //# sourceMappingURL=users.controller.js.map

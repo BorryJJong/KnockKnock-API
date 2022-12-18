@@ -1,6 +1,4 @@
-export interface IUserPropertiesResponse {
-    id: number;
-}
+import { IUserPropertiesResponse } from 'src/auth/auth.interface';
 export declare class KakaoService {
     private readonly adminKey;
     private readonly endPointV1;
