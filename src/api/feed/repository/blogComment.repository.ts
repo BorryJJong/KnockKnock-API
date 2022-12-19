@@ -108,7 +108,7 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       .select('blogComment.postId', 'postId')
       .addSelect('count(*)', 'commentCount')
       .where('blogComment.postId IN (:...postIds)', {
-        postIds,
+        postIds: postIds.length === 0 ? [] : postIds,
       })
       .groupBy('blogComment.postId')
       .getRawMany<IGetFeedsByCommentCountResponse>();
