@@ -14,16 +14,26 @@ export class KakaoService {
   public async getUserProperties(
     kakaoToken: string,
   ): Promise<IUserPropertiesResponse> {
-    const response = await got.post<IUserPropertiesResponse>(
-      `${this.endPointV2}${this.userMePath}`,
-      {
-        headers: {
-          Authorization: `Bearer ${kakaoToken}`,
+    try {
+      const response = await got.post<IUserPropertiesResponse>(
+        `${this.endPointV2}${this.userMePath}`,
+        {
+          headers: {
+            Authorization: `Bearer ${kakaoToken}`,
+          },
+          responseType: 'json',
         },
-        responseType: 'json',
-      },
-    );
-    return response.body;
+      );
+      return response.body;
+    } catch (error) {
+      throw new HttpException(
+        {
+          error: error.message,
+          message: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   public async unlink(
@@ -54,6 +64,7 @@ export class KakaoService {
     } catch (error) {
       throw new HttpException(
         {
+          error: error.message,
           message: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
