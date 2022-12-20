@@ -1,5 +1,5 @@
 import {User} from '@entities/User';
-import {Injectable} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {ICreateUser, IUpdateUser} from 'src/api/users/users.interface';
 import {SocialLoginRequestDTO} from 'src/auth/dto/auth.dto';
@@ -49,9 +49,16 @@ export class UsersService {
 
       await this.userRepository.updateUserDeletedAt(userId, queryRunner);
       await this.userRepository.updateRefreshToken(userId, null, queryRunner);
+      await this.userRepository.deleteUserInfo(userId, queryRunner);
 
       await queryRunner.commitTransaction();
-    } catch (err) {
+    } catch (error) {
+      throw new HttpException(
+        {
+          message: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
       await queryRunner.rollbackTransaction();
     } finally {
       if (!queryRunner.isReleased) {

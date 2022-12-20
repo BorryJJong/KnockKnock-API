@@ -80,4 +80,15 @@ export class UserRepository
   ): Promise<void> {
     await queryRunner.manager.softDelete(User, userId);
   }
+
+  public async deleteUserInfo(
+    userId: number,
+    queryRunner?: QueryRunner,
+  ): Promise<void> {
+    await queryRunner.manager.update(User, userId, {
+      nickname: '',
+      socialUuid: '',
+      socialType: SOCIAL_TYPE.NONE,
+    });
+  }
 }
