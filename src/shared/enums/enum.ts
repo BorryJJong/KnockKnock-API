@@ -7,6 +7,7 @@ export enum FEED_SEARCH_TYPE {
 export enum SOCIAL_TYPE {
   KAKAO = 'KAKAO',
   APPLE = 'APPLE',
+  NONE = 'NONE',
 }
 
 export enum ERRPR_CODE {
