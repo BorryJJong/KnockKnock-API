@@ -11,4 +11,5 @@ export declare class UserRepository extends Repository<User> implements IUserRep
     selectUser(userId: number): Promise<User | undefined>;
     selectUsers(userIds: number[]): Promise<User[]>;
     updateUserDeletedAt(userId: number, queryRunner?: QueryRunner): Promise<void>;
+    deleteUserInfo(userId: number, queryRunner?: QueryRunner): Promise<void>;
 }

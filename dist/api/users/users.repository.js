@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserRepository = void 0;
 const User_1 = require("../../entities/User");
 const common_1 = require("@nestjs/common");
+const enum_1 = require("../../shared/enums/enum");
 const typeorm_1 = require("typeorm");
 let UserRepository = class UserRepository extends typeorm_1.Repository {
     async insertUser(request) {
@@ -52,6 +53,13 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
     }
     async updateUserDeletedAt(userId, queryRunner) {
         await queryRunner.manager.softDelete(User_1.User, userId);
+    }
+    async deleteUserInfo(userId, queryRunner) {
+        await queryRunner.manager.update(User_1.User, userId, {
+            nickname: '',
+            socialUuid: '',
+            socialType: enum_1.SOCIAL_TYPE.NONE,
+        });
     }
 };
 UserRepository = __decorate([

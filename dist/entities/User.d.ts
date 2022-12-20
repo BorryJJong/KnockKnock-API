@@ -5,7 +5,6 @@ export declare class User {
     socialUuid: string;
     socialType: SOCIAL_TYPE;
     image: string;
-    email?: string;
     serviceConnectionDate?: Date;
     regDate: Date;
     beforeInsert(): void;

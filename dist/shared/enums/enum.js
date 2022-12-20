@@ -11,6 +11,7 @@ var SOCIAL_TYPE;
 (function (SOCIAL_TYPE) {
     SOCIAL_TYPE["KAKAO"] = "KAKAO";
     SOCIAL_TYPE["APPLE"] = "APPLE";
+    SOCIAL_TYPE["NONE"] = "NONE";
 })(SOCIAL_TYPE = exports.SOCIAL_TYPE || (exports.SOCIAL_TYPE = {}));
 var ERRPR_CODE;
 (function (ERRPR_CODE) {

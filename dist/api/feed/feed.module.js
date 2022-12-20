@@ -20,6 +20,7 @@ const blogComment_repository_1 = require("./repository/blogComment.repository");
 const jwtNoneRequired_guard_1 = require("../../auth/jwt/jwtNoneRequired.guard");
 const like_repository_1 = require("../like/repository/like.repository");
 const users_repository_1 = require("../users/users.repository");
+const feed_validator_1 = require("./feed.validator");
 let FeedModule = class FeedModule {
 };
 FeedModule = __decorate([
@@ -37,7 +38,7 @@ FeedModule = __decorate([
             ]),
         ],
         controllers: [feed_controller_1.FeedController],
-        providers: [feed_service_1.FeedService, jwtNoneRequired_guard_1.JwtOptionalGuard],
+        providers: [feed_service_1.FeedService, jwtNoneRequired_guard_1.JwtOptionalGuard, feed_validator_1.FeedValidator],
     })
 ], FeedModule);
 exports.FeedModule = FeedModule;

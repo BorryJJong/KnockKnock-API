@@ -1,6 +1,6 @@
 /// <reference types="multer" />
 import { Connection, QueryRunner } from 'typeorm';
-import { CreateFeedDTO, UpdateFeedDTO, CreateBlogPostDTO, GetListFeedMainReqDTO, GetListFeedMainResDTO, GetListFeedReqQueryDTO, GetListFeedResDTO, InsBlogCommentDTO, GetFeedViewReqDTO, GetFeedViewResDTO, GetListFeedCommentReqDTO, GetListFeedCommentResDTO, DelBlogCommentReqDTO, UpdateBlogPostDTO } from './dto/feed.dto';
+import { CreateFeedDTO, UpdateFeedDTO, CreateBlogPostDTO, GetListFeedMainReqDTO, GetListFeedMainResDTO, GetListFeedReqQueryDTO, GetListFeedResDTO, InsBlogCommentDTO, GetFeedViewReqDTO, GetFeedViewResDTO, GetListFeedCommentReqDTO, GetListFeedCommentResDTO, DelBlogCommentReqDTO, UpdateBlogPostDTO, DeleteFeedReqDTO } from './dto/feed.dto';
 import { ImageService } from 'src/api/image/image.service';
 import { BlogChallengesRepository } from './repository/blogChallenges.repository';
 import { BlogImageRepository } from './repository/blogImage.repository';
@@ -40,4 +40,5 @@ export declare class FeedService {
     private getFeedListByUserInfo;
     getListFeedComment({ id, }: GetListFeedCommentReqDTO): Promise<GetListFeedCommentResDTO[]>;
     deleteBlogComment({ id }: DelBlogCommentReqDTO): Promise<void>;
+    delete({ id }: DeleteFeedReqDTO): Promise<void>;
 }

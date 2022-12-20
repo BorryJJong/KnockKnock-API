@@ -10,4 +10,7 @@ export declare class BlogPostRepository extends Repository<BlogPost> implements 
     getListBlogPost(page: number, take: number, blogPostIds: number[], excludeBlogPostId?: number): Promise<IGetBlogPostItems>;
     getBlogPost(blogPostId: number): Promise<BlogPost>;
     getBlogPostById(id: number): Promise<GetBlogPostDTO>;
+    updateBlogPostHits(id: number): Promise<void>;
+    deleteBlogPost(id: number, queryRunner?: QueryRunner): Promise<void>;
+    selectBlogPostByUser(id: number, userId: number): Promise<BlogPost | undefined>;
 }

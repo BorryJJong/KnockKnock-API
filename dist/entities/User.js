@@ -63,15 +63,6 @@ __decorate([
 ], User.prototype, "image", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'email',
-        nullable: true,
-        comment: '카카오 또는 애플 이메일',
-        type: 'varchar',
-    }),
-    __metadata("design:type", String)
-], User.prototype, "email", void 0);
-__decorate([
-    (0, typeorm_1.Column)({
         name: 'service_connection_date',
         nullable: true,
         comment: '서비스 접속 시간',

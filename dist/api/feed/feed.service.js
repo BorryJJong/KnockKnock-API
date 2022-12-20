@@ -138,6 +138,7 @@ let FeedService = FeedService_1 = class FeedService {
                 challenges: (0, class_transformer_1.plainToInstance)(feed_dto_1.GetBlogChallengesDTO, challenges),
                 images: (0, class_transformer_1.plainToInstance)(feed_dto_1.GetBlogImageDTO, images),
             };
+            await this.blogPostRepository.updateBlogPostHits(id);
             return result;
         }
         catch (e) {
@@ -224,7 +225,7 @@ let FeedService = FeedService_1 = class FeedService {
             excludeBlogPostId = selectBlogPost.id;
         }
         let blogPostIds = [];
-        if (challengeId) {
+        if (+challengeId) {
             const blogChallenges = await this.blogChallengesRepository.getBlogChallengesByChallengeId(challengeId);
             blogPostIds = blogChallenges.map(bc => bc.postId);
         }
@@ -250,7 +251,7 @@ let FeedService = FeedService_1 = class FeedService {
                 const writer = findUsers.find(user => user.id === blogPost.userId);
                 return new feed_dto_1.GetFeedResDTO(blogPost.id, writer.nickname, writer.image, blogPost.content, (0, utils_1.convertTimeToStr)(blogPost.regDate), '1:1', (0, utils_1.commafy)(((_a = feedsLikeCount.find(like => like.postId === blogPost.id)) === null || _a === void 0 ? void 0 : _a.likeCount) || 0), userId ? likes.some(like => like.postId === blogPost.id) : false, (0, utils_1.commafy)(((_b = feedsCommentCount.find(comment => comment.postId === blogPost.id)) === null || _b === void 0 ? void 0 : _b.commentCount) || 0), blogImages.filter(bi => bi.postId === blogPost.id));
             }),
-            isNext: (0, utils_1.isPageNext)(blogPosts.pagination.page, blogPosts.pagination.take, blogPosts.pagination.total),
+            isNext: true,
             total: blogPosts.pagination.total,
         };
     }
@@ -285,7 +286,6 @@ let FeedService = FeedService_1 = class FeedService {
             return result;
         }
         catch (e) {
-            this.logger.error(e);
             throw new common_1.HttpException({
                 error: e.message,
                 message: e.message,
@@ -300,7 +300,21 @@ let FeedService = FeedService_1 = class FeedService {
             await this.blogCommentRepository.saveBlogComment(null, comment);
         }
         catch (e) {
-            throw new Error(e.message);
+            throw new common_1.HttpException({
+                error: e.message,
+                message: e.message,
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async delete({ id }) {
+        try {
+            await this.blogPostRepository.deleteBlogPost(id);
+        }
+        catch (error) {
+            throw new common_1.HttpException({
+                error: error.message,
+                message: error.message,
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 };

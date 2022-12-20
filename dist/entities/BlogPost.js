@@ -162,15 +162,6 @@ __decorate([
     __metadata("design:type", Date)
 ], BlogPost.prototype, "delDate", void 0);
 __decorate([
-    (0, typeorm_1.Column)({
-        name: 'is_deleted',
-        type: 'tinyint',
-        default: false,
-        comment: '삭제 여부',
-    }),
-    __metadata("design:type", Boolean)
-], BlogPost.prototype, "isDeleted", void 0);
-__decorate([
     (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

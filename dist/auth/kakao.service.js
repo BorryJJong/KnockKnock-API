@@ -21,13 +21,21 @@ let KakaoService = class KakaoService {
         this.unlinkPath = '/user/unlink';
     }
     async getUserProperties(kakaoToken) {
-        const response = await got_1.default.post(`${this.endPointV2}${this.userMePath}`, {
-            headers: {
-                Authorization: `Bearer ${kakaoToken}`,
-            },
-            responseType: 'json',
-        });
-        return response.body;
+        try {
+            const response = await got_1.default.post(`${this.endPointV2}${this.userMePath}`, {
+                headers: {
+                    Authorization: `Bearer ${kakaoToken}`,
+                },
+                responseType: 'json',
+            });
+            return response.body;
+        }
+        catch (error) {
+            throw new common_1.HttpException({
+                error: error.message,
+                message: error.message,
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async unlink(socialUuid) {
         try {
@@ -51,6 +59,7 @@ let KakaoService = class KakaoService {
         }
         catch (error) {
             throw new common_1.HttpException({
+                error: error.message,
                 message: error.message,
             }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
