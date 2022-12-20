@@ -5,7 +5,11 @@ import {
   IGetBlogPostItems,
 } from '../interface/blogPost.interface';
 import {EntityRepository, getManager, QueryRunner, Repository} from 'typeorm';
-import {CreateBlogPostDTO, GetBlogPostDTO, UpdateBlogPostDTO} from '../dto/feed.dto';
+import {
+  CreateBlogPostDTO,
+  GetBlogPostDTO,
+  UpdateBlogPostDTO,
+} from '../dto/feed.dto';
 import {User} from '../../../entities/User';
 import {getCurrentPageCount} from '../../../shared/utils';
 
@@ -58,7 +62,8 @@ export class BlogPostRepository
     const [blogPosts, total] = await queryBuilder
       .skip(getCurrentPageCount(page, take))
       .take(take)
-      .orderBy('blogPost.regDate', 'ASC')
+      .orderBy('blogPost.hits', 'DESC')
+      .addOrderBy('blogPost.regDate', 'DESC')
       .getManyAndCount();
 
     return {
@@ -89,10 +94,12 @@ export class BlogPostRepository
       queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
     }
 
+    const limit = +page === 1 ? take - 1 : take;
     const [blogPosts, total] = await queryBuilder
-      .skip(getCurrentPageCount(page, take))
-      .take(take)
+      // .skip(getCurrentPageCount(page, take))
+      // .take(take)
       .orderBy('RAND()')
+      .limit(limit)
       .getManyAndCount();
 
     return {
@@ -131,5 +138,13 @@ export class BlogPostRepository
       .getRawOne();
 
     return post;
+  }
+
+  async updateBlogPostHits(id: number): Promise<void> {
+    await this.createQueryBuilder('blogPost')
+      .update()
+      .where('id = :id', {id})
+      .set({hits: () => '`hits` + 1'})
+      .execute();
   }
 }

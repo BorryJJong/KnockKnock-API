@@ -231,6 +231,8 @@ export class FeedService {
         images: plainToInstance(GetBlogImageDTO, images),
       };
 
+      await this.blogPostRepository.updateBlogPostHits(id);
+
       return result;
     } catch (e) {
       this.logger.error(e);
@@ -325,13 +327,12 @@ export class FeedService {
     postId: number,
     promotions: string,
   ) {
-
     // 1. 모든 프로모션 삭제
     await this.blogPromotionRepository.deleteBlogPromotionByPostId(
       queryRunner,
       postId,
     );
-    
+
     // 2. 재저장
     await Promise.all(
       promotions.split(',').map(async id => {
@@ -406,7 +407,8 @@ export class FeedService {
 
     // 챌린지ID가 있다면, 챌린지ID에 맞는 데이터를 랜덤으로 노출
     let blogPostIds: number[] = [];
-    if (challengeId) {
+
+    if (+challengeId) {
       const blogChallenges =
         await this.blogChallengesRepository.getBlogChallengesByChallengeId(
           challengeId,
@@ -472,11 +474,13 @@ export class FeedService {
           blogImages.filter(bi => bi.postId === blogPost.id),
         );
       }),
-      isNext: isPageNext(
-        blogPosts.pagination.page,
-        blogPosts.pagination.take,
-        blogPosts.pagination.total,
-      ),
+      // SELECT절의 random()이 아니기 때문에, total과 상관없이 무한 스크롤 가능하게 수정
+      // isNext: isPageNext(
+      //   blogPosts.pagination.page,
+      //   blogPosts.pagination.take,
+      //   blogPosts.pagination.total,
+      // ),
+      isNext: true,
       total: blogPosts.pagination.total,
     };
   }

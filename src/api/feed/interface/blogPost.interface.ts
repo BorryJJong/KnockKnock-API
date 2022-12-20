@@ -1,6 +1,10 @@
 import {QueryRunner} from 'typeorm';
 import {BlogPost} from '../../../entities/BlogPost';
-import {CreateBlogPostDTO, GetBlogPostDTO, UpdateBlogPostDTO} from '../dto/feed.dto';
+import {
+  CreateBlogPostDTO,
+  GetBlogPostDTO,
+  UpdateBlogPostDTO,
+} from '../dto/feed.dto';
 
 export interface IBlogPostRepository {
   createBlogPost(
@@ -29,6 +33,7 @@ export interface IBlogPostRepository {
   ): Promise<IGetBlogPostItems>;
   getBlogPost(blogPostId: number): Promise<BlogPost>;
   getBlogPostById(id: number): Promise<GetBlogPostDTO>;
+  updateBlogPostHits(id: number): Promise<void>;
 }
 
 export interface IGetBlogPostItems {

@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseInterceptors,
@@ -115,7 +114,6 @@ export class FeedController {
     @UploadedFiles() files: Express.Multer.File[],
     @Body() createFeedDTO: CreateFeedDTO,
   ) {
-    //return;
     const status = await this.feedService.create(files, createFeedDTO);
     const result: FeedCreateResponse = {
       code: status ? 201 : 500,
