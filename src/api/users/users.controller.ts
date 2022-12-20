@@ -14,6 +14,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {SOCIAL_TYPE} from '@shared/enums/enum';
+import {UserInfoResponseDTO} from 'src/api/users/dto/users.dto';
 import {UserValidator} from 'src/api/users/users.validator';
 import {AppleService} from 'src/auth/apple.service';
 import {IUserPropertiesResponse} from 'src/auth/auth.interface';
@@ -71,6 +72,13 @@ export class UsersController {
       await this.authService.updateRefreshToken(user.id, refreshToken);
       return new SocialLoginResponseDTO(
         true,
+        new UserInfoResponseDTO(
+          user.nickname,
+          user.socialType,
+          user.image,
+          user.regDate,
+          user.deletedAt,
+        ),
         new AuthInfoResponseDTO(accessToken, refreshToken),
       );
     } else {
@@ -111,6 +119,13 @@ export class UsersController {
     await this.authService.updateRefreshToken(newUser.id, refreshToken);
     return new SocialLoginResponseDTO(
       false,
+      new UserInfoResponseDTO(
+        newUser.nickname,
+        newUser.socialType,
+        newUser.image,
+        newUser.regDate,
+        newUser.deletedAt,
+      ),
       new AuthInfoResponseDTO(accessToken, refreshToken),
     );
   }

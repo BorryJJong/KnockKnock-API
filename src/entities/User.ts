@@ -50,14 +50,6 @@ export class User {
   image: string;
 
   @Column({
-    name: 'email',
-    nullable: true,
-    comment: '카카오 또는 애플 이메일',
-    type: 'varchar',
-  })
-  email?: string;
-
-  @Column({
     name: 'service_connection_date',
     nullable: true,
     comment: '서비스 접속 시간',
