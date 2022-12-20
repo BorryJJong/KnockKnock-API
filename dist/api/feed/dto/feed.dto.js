@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetListFeedLikeResDTO = exports.GetFeedLikeDTO = exports.GetListFeedCommentReqDTO = exports.GetListFeedCommentResDTO = exports.GetBlogCommentDTO = exports.DelBlogCommentReqDTO = exports.InsBlogCommentDTO = exports.GetFeedViewResDTO = exports.GetBlogImageDTO = exports.GetBlogChallengesDTO = exports.GetBlogPromotionDTO = exports.GetBlogPostDTO = exports.GetFeedViewReqDTO = exports.GetListFeedResDTO = exports.GetFeedResDTO = exports.GetFeedImageResDTO = exports.GetListFeedReqQueryDTO = exports.GetListBlogImageByBlogPostResDTO = exports.GetListFeedMainResDTO = exports.GetFeedMainResDTO = exports.GetListFeedMainReqDTO = exports.UpdateBlogPostDTO = exports.CreateBlogImageDTO = exports.CreateBlogPromotionDTO = exports.CreateBlogChallengesDTO = exports.CreateBlogPostDTO = exports.UpdateFeedDTO = exports.CreateFeedDTO = void 0;
+exports.DeleteFeedReqDTO = exports.GetListFeedLikeResDTO = exports.GetFeedLikeDTO = exports.GetListFeedCommentReqDTO = exports.GetListFeedCommentResDTO = exports.GetBlogCommentDTO = exports.DelBlogCommentReqDTO = exports.InsBlogCommentDTO = exports.GetFeedViewResDTO = exports.GetBlogImageDTO = exports.GetBlogChallengesDTO = exports.GetBlogPromotionDTO = exports.GetBlogPostDTO = exports.GetFeedViewReqDTO = exports.GetListFeedResDTO = exports.GetFeedResDTO = exports.GetFeedImageResDTO = exports.GetListFeedReqQueryDTO = exports.GetListBlogImageByBlogPostResDTO = exports.GetListFeedMainResDTO = exports.GetFeedMainResDTO = exports.GetListFeedMainReqDTO = exports.UpdateBlogPostDTO = exports.CreateBlogImageDTO = exports.CreateBlogPromotionDTO = exports.CreateBlogChallengesDTO = exports.CreateBlogPostDTO = exports.UpdateFeedDTO = exports.CreateFeedDTO = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 const swagger_1 = require("@nestjs/swagger");
@@ -26,7 +26,6 @@ class CreateFeedDTO extends (0, swagger_1.OmitType)(BlogPost_1.BlogPost, [
     'modDate',
     'regDate',
     'delDate',
-    'isDeleted',
 ]) {
 }
 __decorate([
@@ -52,7 +51,6 @@ class UpdateFeedDTO extends (0, swagger_1.OmitType)(BlogPost_1.BlogPost, [
     'modDate',
     'regDate',
     'delDate',
-    'isDeleted',
 ]) {
 }
 __decorate([
@@ -78,7 +76,6 @@ class CreateBlogPostDTO extends (0, swagger_1.OmitType)(BlogPost_1.BlogPost, [
     'modDate',
     'regDate',
     'delDate',
-    'isDeleted',
 ]) {
 }
 exports.CreateBlogPostDTO = CreateBlogPostDTO;
@@ -629,4 +626,11 @@ __decorate([
     __metadata("design:type", Array)
 ], GetListFeedLikeResDTO.prototype, "likes", void 0);
 exports.GetListFeedLikeResDTO = GetListFeedLikeResDTO;
+class DeleteFeedReqDTO {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '피드 id', example: '1' }),
+    __metadata("design:type", Number)
+], DeleteFeedReqDTO.prototype, "id", void 0);
+exports.DeleteFeedReqDTO = DeleteFeedReqDTO;
 //# sourceMappingURL=feed.dto.js.map

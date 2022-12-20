@@ -77,7 +77,7 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             .select('blogComment.postId', 'postId')
             .addSelect('count(*)', 'commentCount')
             .where('blogComment.postId IN (:...postIds)', {
-            postIds,
+            postIds: postIds.length === 0 ? [] : postIds,
         })
             .groupBy('blogComment.postId')
             .getRawMany();

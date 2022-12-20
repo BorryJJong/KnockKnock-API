@@ -47,10 +47,14 @@ let UsersService = class UsersService {
             await this.kakaoService.unlink(socialUuid);
             await this.userRepository.updateUserDeletedAt(userId, queryRunner);
             await this.userRepository.updateRefreshToken(userId, null, queryRunner);
+            await this.userRepository.deleteUserInfo(userId, queryRunner);
             await queryRunner.commitTransaction();
         }
-        catch (err) {
+        catch (error) {
             await queryRunner.rollbackTransaction();
+            throw new common_1.HttpException({
+                message: error.message,
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
         finally {
             if (!queryRunner.isReleased) {

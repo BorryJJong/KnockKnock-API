@@ -13,6 +13,7 @@ exports.SignUpResponseDTO = exports.SignUpRequestDTO = exports.SocialLoginReques
 const swagger_1 = require("@nestjs/swagger");
 const enum_1 = require("../../shared/enums/enum");
 const class_validator_1 = require("class-validator");
+const users_dto_1 = require("../../api/users/dto/users.dto");
 class AuthInfoResponseDTO {
     constructor(accessToken, refreshToken) {
         this.accessToken = accessToken;
@@ -31,8 +32,9 @@ __decorate([
 ], AuthInfoResponseDTO.prototype, "refreshToken", void 0);
 exports.AuthInfoResponseDTO = AuthInfoResponseDTO;
 class SocialLoginResponseDTO {
-    constructor(isExistUser, authInfo) {
+    constructor(isExistUser, userInfo, authInfo) {
         this.isExistUser = isExistUser;
+        this.userInfo = userInfo;
         this.authInfo = authInfo;
     }
 }
@@ -41,6 +43,15 @@ __decorate([
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], SocialLoginResponseDTO.prototype, "isExistUser", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '회원 정보',
+        example: users_dto_1.UserInfoResponseDTO,
+        type: users_dto_1.UserInfoResponseDTO,
+        required: false,
+    }),
+    __metadata("design:type", users_dto_1.UserInfoResponseDTO)
+], SocialLoginResponseDTO.prototype, "userInfo", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '토큰 정보',

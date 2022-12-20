@@ -16,6 +16,7 @@ exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const enum_1 = require("../../shared/enums/enum");
+const users_dto_1 = require("./dto/users.dto");
 const users_validator_1 = require("./users.validator");
 const apple_service_1 = require("../../auth/apple.service");
 const auth_service_1 = require("../../auth/auth.service");
@@ -41,7 +42,7 @@ let UsersController = class UsersController {
         if (user) {
             const { accessToken, refreshToken } = await this.authService.makeJwtToken(user.id);
             await this.authService.updateRefreshToken(user.id, refreshToken);
-            return new auth_dto_1.SocialLoginResponseDTO(true, new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
+            return new auth_dto_1.SocialLoginResponseDTO(true, new users_dto_1.UserInfoResponseDTO(user.nickname, user.socialType, user.image, user.regDate, user.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
         }
         else {
             return new auth_dto_1.SocialLoginResponseDTO(false);
@@ -58,7 +59,7 @@ let UsersController = class UsersController {
         });
         const { accessToken, refreshToken } = await this.authService.makeJwtToken(newUser.id);
         await this.authService.updateRefreshToken(newUser.id, refreshToken);
-        return new auth_dto_1.SocialLoginResponseDTO(false, new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
+        return new auth_dto_1.SocialLoginResponseDTO(false, new users_dto_1.UserInfoResponseDTO(newUser.nickname, newUser.socialType, newUser.image, newUser.regDate, newUser.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
     }
     async logout(req) {
         const requestUser = req.user;

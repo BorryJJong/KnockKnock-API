@@ -20,9 +20,12 @@ const swagger_1 = require("@nestjs/swagger");
 const platform_express_1 = require("@nestjs/platform-express");
 const temp_response_1 = require("../../shared/response_entities/feed/temp.response");
 const jwtNoneRequired_guard_1 = require("../../auth/jwt/jwtNoneRequired.guard");
+const feed_validator_1 = require("./feed.validator");
+const jwt_guard_1 = require("../../auth/jwt/jwt.guard");
 let FeedController = class FeedController {
-    constructor(feedService) {
+    constructor(feedService, feedValidator) {
         this.feedService = feedService;
+        this.feedValidator = feedValidator;
     }
     async getFeedsByChallengesFilter(query) {
         return this.feedService.getFeedsByChallengesFilter(query);
@@ -120,6 +123,12 @@ let FeedController = class FeedController {
             },
         };
         return result;
+    }
+    async delete(param, req) {
+        const requestUser = req.user;
+        await this.feedValidator.checkFeedAuthor(param.id, requestUser.id);
+        await this.feedService.delete(param);
+        return true;
     }
 };
 __decorate([
@@ -239,10 +248,26 @@ __decorate([
     __metadata("design:paramtypes", [feed_dto_1.UpdateFeedDTO]),
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: '피드 삭제' }),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiCreatedResponse)({
+        description: '성공',
+        type: Boolean,
+    }),
+    __param(0, (0, common_1.Param)()),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [feed_dto_1.DeleteFeedReqDTO, Object]),
+    __metadata("design:returntype", Promise)
+], FeedController.prototype, "delete", null);
 FeedController = __decorate([
     (0, swagger_1.ApiTags)('feed'),
     (0, common_1.Controller)('feed'),
-    __metadata("design:paramtypes", [feed_service_1.FeedService])
+    __metadata("design:paramtypes", [feed_service_1.FeedService,
+        feed_validator_1.FeedValidator])
 ], FeedController);
 exports.FeedController = FeedController;
 //# sourceMappingURL=feed.controller.js.map

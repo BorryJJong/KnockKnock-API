@@ -11,6 +11,5 @@ export declare class BlogPost {
     modDate?: Date;
     regDate: Date;
     delDate?: Date;
-    isDeleted: boolean;
     beforeInsert(): void;
 }

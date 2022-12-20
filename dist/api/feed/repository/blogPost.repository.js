@@ -40,7 +40,8 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
         const [blogPosts, total] = await queryBuilder
             .skip((0, utils_1.getCurrentPageCount)(page, take))
             .take(take)
-            .orderBy('blogPost.regDate', 'ASC')
+            .orderBy('blogPost.hits', 'DESC')
+            .addOrderBy('blogPost.regDate', 'DESC')
             .getManyAndCount();
         return {
             items: blogPosts,
@@ -61,10 +62,10 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
         if (blogPostIds.length > 0) {
             queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
         }
+        const limit = +page === 1 ? take - 1 : take;
         const [blogPosts, total] = await queryBuilder
-            .skip((0, utils_1.getCurrentPageCount)(page, take))
-            .take(take)
             .orderBy('RAND()')
+            .limit(limit)
             .getManyAndCount();
         return {
             items: blogPosts,
@@ -99,6 +100,25 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             .where('bp.id = :id', { id: id })
             .getRawOne();
         return post;
+    }
+    async updateBlogPostHits(id) {
+        await this.createQueryBuilder('blogPost')
+            .update()
+            .where('id = :id', { id })
+            .set({ hits: () => '`hits` + 1' })
+            .execute();
+    }
+    async deleteBlogPost(id, queryRunner) {
+        await this.createQueryBuilder('blogPost', queryRunner)
+            .where('id = :id', { id })
+            .softDelete()
+            .execute();
+    }
+    async selectBlogPostByUser(id, userId) {
+        return this.createQueryBuilder('blogPost')
+            .where('id = :id', { id })
+            .andWhere('blogPost.userId = :userId', { userId })
+            .getOne();
     }
 };
 BlogPostRepository = __decorate([
