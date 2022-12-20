@@ -16,7 +16,6 @@ export class CreateFeedDTO extends OmitType(BlogPost, [
   'modDate',
   'regDate',
   'delDate',
-  'isDeleted',
 ] as const) {
   @IsString()
   @IsNotEmpty()
@@ -43,7 +42,6 @@ export class UpdateFeedDTO extends OmitType(BlogPost, [
   'modDate',
   'regDate',
   'delDate',
-  'isDeleted',
 ] as const) {
   @ApiProperty({description: '게시글 id', example: '1'})
   id: number;
@@ -66,13 +64,14 @@ export class CreateBlogPostDTO extends OmitType(BlogPost, [
   'modDate',
   'regDate',
   'delDate',
-  'isDeleted',
 ] as const) {}
 
 export class CreateBlogChallengesDTO extends OmitType(BlogChallenges, ['id']) {}
 export class CreateBlogPromotionDTO extends OmitType(BlogPromotion, ['id']) {}
 export class CreateBlogImageDTO extends OmitType(BlogImage, ['id']) {}
-export class UpdateBlogPostDTO extends PartialType(OmitType(CreateBlogPostDTO, ['userId'])) {}
+export class UpdateBlogPostDTO extends PartialType(
+  OmitType(CreateBlogPostDTO, ['userId']),
+) {}
 
 export class GetListFeedMainReqDTO extends PagenationReqDTO {
   @ApiProperty({required: true, description: '챌린지ID', example: '1'})
@@ -532,4 +531,9 @@ export class GetListFeedLikeResDTO {
     example: GetFeedLikeDTO,
   })
   likes: GetFeedLikeDTO[];
+}
+
+export class DeleteFeedReqDTO {
+  @ApiProperty({description: '피드 id', example: '1'})
+  id: number;
 }

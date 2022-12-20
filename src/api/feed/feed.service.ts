@@ -24,6 +24,7 @@ import {
   GetBlogCommentDTO,
   DelBlogCommentReqDTO,
   UpdateBlogPostDTO,
+  DeleteFeedReqDTO,
 } from './dto/feed.dto';
 import {ImageService} from 'src/api/image/image.service';
 import {BlogChallengesRepository} from './repository/blogChallenges.repository';
@@ -530,7 +531,6 @@ export class FeedService {
 
       return result;
     } catch (e) {
-      this.logger.error(e);
       throw new HttpException(
         {
           error: e.message,
@@ -549,7 +549,27 @@ export class FeedService {
       comment.delDate = new Date();
       await this.blogCommentRepository.saveBlogComment(null, comment);
     } catch (e) {
-      throw new Error(e.message);
+      throw new HttpException(
+        {
+          error: e.message,
+          message: e.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async delete({id}: DeleteFeedReqDTO): Promise<void> {
+    try {
+      await this.blogPostRepository.deleteBlogPost(id);
+    } catch (error) {
+      throw new HttpException(
+        {
+          error: error.message,
+          message: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

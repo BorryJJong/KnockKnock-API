@@ -53,13 +53,13 @@ export class UsersService {
 
       await queryRunner.commitTransaction();
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       throw new HttpException(
         {
           message: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
-      await queryRunner.rollbackTransaction();
     } finally {
       if (!queryRunner.isReleased) {
         await queryRunner.release();
