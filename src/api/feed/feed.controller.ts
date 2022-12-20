@@ -25,6 +25,7 @@ import {
   GetListFeedCommentReqDTO,
   GetListFeedCommentResDTO,
   DelBlogCommentReqDTO,
+  DeleteFeedReqDTO,
 } from './dto/feed.dto';
 import {
   ApiBearerAuth,
@@ -43,6 +44,8 @@ import {
 } from 'src/shared/response_entities/feed/temp.response';
 import {User} from '@entities/User';
 import {JwtOptionalGuard} from 'src/auth/jwt/jwtNoneRequired.guard';
+import {FeedValidator} from 'src/api/feed/feed.validator';
+import {JwtGuard} from 'src/auth/jwt/jwt.guard';
 
 // TODO: 400,401,403,404등 공통 사용 응답코드는 컨트롤러에 붙이기
 // @ApiBadRequestResponse({
@@ -57,7 +60,10 @@ import {JwtOptionalGuard} from 'src/auth/jwt/jwtNoneRequired.guard';
 @ApiTags('feed')
 @Controller('feed')
 export class FeedController {
-  constructor(private readonly feedService: FeedService) {}
+  constructor(
+    private readonly feedService: FeedService,
+    private readonly feedValidator: FeedValidator,
+  ) {}
 
   @Get('/main')
   @ApiOperation({
@@ -233,7 +239,6 @@ export class FeedController {
     type: UpdateFeedResponse,
   })
   async update(@Body() updateFeedDTO: UpdateFeedDTO) {
-    //return;
     const status = await this.feedService.update(updateFeedDTO);
     const result: UpdateFeedResponse = {
       code: status ? 201 : 500,
@@ -243,5 +248,24 @@ export class FeedController {
       },
     };
     return result;
+  }
+
+  @Delete(':id')
+  @ApiOperation({summary: '피드 삭제'})
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({
+    description: '성공',
+    type: Boolean,
+  })
+  async delete(
+    @Param() param: DeleteFeedReqDTO,
+    @Request() req,
+  ): Promise<boolean> {
+    const requestUser: User = req.user;
+    await this.feedValidator.checkFeedAuthor(param.id, requestUser.id);
+    await this.feedService.delete(param);
+
+    return true;
   }
 }

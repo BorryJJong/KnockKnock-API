@@ -151,14 +151,6 @@ export class BlogPost {
   })
   delDate?: Date;
 
-  @Column({
-    name: 'is_deleted',
-    type: 'tinyint',
-    default: false,
-    comment: '삭제 여부',
-  })
-  isDeleted: boolean;
-
   @BeforeInsert()
   beforeInsert() {
     this.regDate = new Date();

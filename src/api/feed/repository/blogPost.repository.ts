@@ -147,4 +147,21 @@ export class BlogPostRepository
       .set({hits: () => '`hits` + 1'})
       .execute();
   }
+
+  async deleteBlogPost(id: number, queryRunner?: QueryRunner): Promise<void> {
+    await this.createQueryBuilder('blogPost', queryRunner)
+      .where('id = :id', {id})
+      .softDelete()
+      .execute();
+  }
+
+  async selectBlogPostByUser(
+    id: number,
+    userId: number,
+  ): Promise<BlogPost | undefined> {
+    return this.createQueryBuilder('blogPost')
+      .where('id = :id', {id})
+      .andWhere('blogPost.userId = :userId', {userId})
+      .getOne();
+  }
 }
