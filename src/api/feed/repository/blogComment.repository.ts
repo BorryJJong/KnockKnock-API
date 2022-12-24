@@ -110,6 +110,9 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       .where('blogComment.postId IN (:...postIds)', {
         postIds: postIds.length === 0 ? [] : postIds,
       })
+      .andWhere('blogComment.isDeleted = :isDeleted', {
+        isDeleted: false,
+      })
       .groupBy('blogComment.postId')
       .getRawMany<IGetFeedsByCommentCountResponse>();
   }

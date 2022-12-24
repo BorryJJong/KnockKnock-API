@@ -455,24 +455,30 @@ export class FeedService {
 
     return {
       feeds: blogPosts.items.map((blogPost: IGetBlogPostItem) => {
+        const defaultImageRatio = '1:1';
         const writer = findUsers.find(user => user.id === blogPost.userId);
+        const commentCount =
+          feedsCommentCount.find(comment => comment.postId === blogPost.id)
+            ?.commentCount || 0;
+        const likeCount =
+          feedsLikeCount.find(like => like.postId === blogPost.id)?.likeCount ||
+          0;
+        const isLike = userId
+          ? likes.some(like => like.postId === blogPost.id)
+          : false;
+        const images = blogImages.filter(bi => bi.postId === blogPost.id);
+
         return new GetFeedResDTO(
           blogPost.id,
           writer.nickname,
           writer.image,
           blogPost.content,
           convertTimeToStr(blogPost.regDate),
-          '1:1',
-          commafy(
-            feedsLikeCount.find(like => like.postId === blogPost.id)
-              ?.likeCount || 0,
-          ),
-          userId ? likes.some(like => like.postId === blogPost.id) : false,
-          commafy(
-            feedsCommentCount.find(comment => comment.postId === blogPost.id)
-              ?.commentCount || 0,
-          ),
-          blogImages.filter(bi => bi.postId === blogPost.id),
+          defaultImageRatio,
+          commafy(likeCount),
+          isLike,
+          commafy(commentCount),
+          images,
         );
       }),
       // SELECT절의 random()이 아니기 때문에, total과 상관없이 무한 스크롤 가능하게 수정
