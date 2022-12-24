@@ -132,12 +132,15 @@ export class FeedController {
   }
 
   @Get(':id')
+  @UseGuards(JwtOptionalGuard)
+  @ApiBearerAuth()
   @ApiOperation({summary: '피드 상세 조회'})
   @ApiResponse({
     description: '',
     type: GetFeedViewResponse,
   })
-  async getFeed(@Param() param: GetFeedViewReqDTO) {
+  async getFeed(@Param() param: GetFeedViewReqDTO, @Request() req) {
+    const requestUser: User = req.user;
     const result: GetFeedViewResponse = {
       code: 200,
       message: 'success',
@@ -145,7 +148,10 @@ export class FeedController {
     };
 
     try {
-      const feed: GetFeedViewResDTO = await this.feedService.getFeed(param);
+      const feed: GetFeedViewResDTO = await this.feedService.getFeed(
+        param,
+        requestUser.id,
+      );
       result.data = feed;
     } catch (e) {
       result.code = 500;

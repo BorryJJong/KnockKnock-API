@@ -22,8 +22,6 @@ import {LikeService} from './like.service';
 
 @ApiTags('like')
 @Controller('like')
-@UseGuards(JwtGuard)
-@ApiBearerAuth()
 export class LikeController {
   constructor(
     private readonly likeService: LikeService,
@@ -31,6 +29,8 @@ export class LikeController {
   ) {}
 
   @Post('/feed/:id')
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   @ApiOperation({summary: '피드 좋아요'})
   @ApiCreatedResponse({
     description: '성공',
@@ -46,6 +46,8 @@ export class LikeController {
   }
 
   @Delete('/feed/:id')
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   @ApiOperation({summary: '피드 좋아요 취소'})
   @ApiCreatedResponse({
     description: '성공',

@@ -8,7 +8,11 @@ import {BlogPost} from '../../../entities/BlogPost';
 import {BlogComment} from '../../../entities/BlogComment';
 import {PagenationReqDTO, PagenationResDTO} from '@shared/dto/pagenation.dto';
 import {IGetBlogImagesByBlogPost} from '../interface/blogImage.interface';
-import {convertTime, convertTimeToStr} from 'src/shared/utils';
+import {
+  convertTime,
+  convertTimeToStr,
+  dtoConvertBoolean,
+} from 'src/shared/utils';
 
 export class CreateFeedDTO extends OmitType(BlogPost, [
   'id',
@@ -302,12 +306,21 @@ export class GetBlogPostDTO {
     example: '{aws.s3.endpoint}/user/filename.png',
   })
   userImage: string;
+
   @Expose()
   @ApiProperty({
     description: '게시글 내 이미지의 비율',
     example: '1:1',
   })
   scale: string;
+
+  @Expose()
+  @Transform(({value}) => dtoConvertBoolean(value))
+  @ApiProperty({
+    description: '게시글 좋아요 여부',
+    example: true,
+  })
+  isLike: boolean;
 }
 
 @Exclude()

@@ -105,3 +105,8 @@ export const commafy = (num: number) => {
   }
   return str.join('.');
 };
+
+// dto transform convert boolean
+export const dtoConvertBoolean = (value: any): boolean => {
+  return value === 'true' || value === true || value === 1 || value === '1';
+};

@@ -32,7 +32,7 @@ export interface IBlogPostRepository {
     userId: number,
   ): Promise<IGetBlogPostItems>;
   getBlogPost(blogPostId: number): Promise<BlogPost>;
-  getBlogPostById(id: number): Promise<GetBlogPostDTO>;
+  getBlogPostById(id: number, userId?: number): Promise<GetBlogPostDTO>;
   updateBlogPostHits(id: number): Promise<void>;
   deleteBlogPost(id: number, queryRunner?: QueryRunner): Promise<void>;
   selectBlogPostByUser(
