@@ -216,9 +216,12 @@ export class FeedService {
     }
   }
 
-  async getFeed({id}: GetFeedViewReqDTO): Promise<GetFeedViewResDTO> {
+  async getFeed(
+    {id}: GetFeedViewReqDTO,
+    userId?: number,
+  ): Promise<GetFeedViewResDTO> {
     try {
-      const post = await this.blogPostRepository.getBlogPostById(id);
+      const post = await this.blogPostRepository.getBlogPostById(id, userId);
       const promotions =
         await this.blogPromotionRepository.getBlogPromotionByPostId(id);
       const challenges =

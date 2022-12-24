@@ -12,6 +12,7 @@ import {
 } from '../dto/feed.dto';
 import {User} from '../../../entities/User';
 import {getCurrentPageCount} from '../../../shared/utils';
+import {BlogLike} from '@entities/BlogLike';
 
 @Injectable()
 @EntityRepository(BlogPost)
@@ -118,8 +119,8 @@ export class BlogPostRepository
       .getOneOrFail();
   }
 
-  async getBlogPostById(id: number): Promise<GetBlogPostDTO> {
-    const post: GetBlogPostDTO = await getManager()
+  async getBlogPostById(id: number, userId?: number): Promise<GetBlogPostDTO> {
+    let queryBuilder = getManager()
       .createQueryBuilder()
       .select('bp.id', 'id')
       .addSelect('bp.user_id', 'userId')
@@ -134,10 +135,24 @@ export class BlogPostRepository
       .addSelect('u.image', 'userImage')
       .from(BlogPost, 'bp')
       .innerJoin(User, 'u', 'bp.user_id = u.id')
-      .where('bp.id = :id', {id: id})
-      .getRawOne();
+      .leftJoin(BlogLike, 'bl', 'bl.user_id = u.id')
+      .where('bp.id = :id', {id: id});
 
-    return post;
+    if (userId) {
+      queryBuilder = queryBuilder.addSelect(sq => {
+        return sq
+          .from(BlogLike, 'bl')
+          .select('IF(bl.id, true, false)')
+          .where('bl.userId = :userId', {
+            userId,
+          })
+          .andWhere('bl.postId = :postId', {
+            postId: id,
+          });
+      }, 'isLike');
+    }
+
+    return await queryBuilder.getRawOne();
   }
 
   async updateBlogPostHits(id: number): Promise<void> {
