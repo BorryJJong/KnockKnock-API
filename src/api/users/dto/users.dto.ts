@@ -5,7 +5,7 @@ export class UserInfoResponseDTO {
   @ApiProperty({type: String, example: 'jerry', description: '닉네임'})
   private nickname: string;
 
-  @ApiProperty({type: SOCIAL_TYPE, example: 'KAKAO', description: '소셜 종류'})
+  @ApiProperty({enum: SOCIAL_TYPE, example: 'KAKAO', description: '소셜 종류'})
   private socialType: string;
 
   @ApiProperty({type: String, example: '', description: '회원 프로필 이미지'})
