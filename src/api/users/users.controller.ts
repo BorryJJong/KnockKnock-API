@@ -45,6 +45,7 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: '성공',
+    type: UserInfoResponseDTO,
   })
   @ApiResponse({
     status: 401,
@@ -91,6 +92,7 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: '성공',
+    type: UserInfoResponseDTO,
   })
   async signUp(
     @Body() body: SignUpRequestDTO,
