@@ -3,6 +3,7 @@ import {IUserPropertiesResponse} from 'src/auth/auth.interface';
 import jwt from 'jsonwebtoken';
 import {JwksClient} from 'jwks-rsa';
 import {isPast} from 'date-fns';
+import got from 'got';
 
 interface AppleJwtTokenPayload {
   iss: string;
@@ -24,6 +25,7 @@ export class AppleService {
   private readonly bundleId = process.env.APPLE_BUNDLE_ID;
   private readonly endPoint = 'https://appleid.apple.com';
   private readonly authPath = '/auth/keys';
+  private readonly revokePath = '/auth/revoke';
 
   public async getUserProperties(
     appleToken: string,
@@ -71,6 +73,33 @@ export class AppleService {
       throw new HttpException(
         {
           message: '애플 로그인 토큰 검증 실패',
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  public async revoke(socialUuid: string, client_secret): Promise<void> {
+    try {
+      const response = await got.post(`${this.endPoint}${this.revokePath}`, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        searchParams: {
+          client_id: this.bundleId,
+          client_secret: client_secret,
+          token: socialUuid,
+          token_type_hint: 'access_token',
+        },
+        responseType: 'json',
+      });
+
+      console.log(response);
+    } catch (error) {
+      throw new HttpException(
+        {
+          message: '애플 회원탈퇴 토큰 검증 실패',
           error: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
