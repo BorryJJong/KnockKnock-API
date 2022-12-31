@@ -200,10 +200,12 @@ export class FeedService {
     }
   }
 
-  async saveBlogComment(insBlogCommentDTO: InsBlogCommentDTO) {
+  async saveBlogComment(insBlogCommentDTO: InsBlogCommentDTO, userId: number) {
     try {
-      const comment =
-        this.blogCommentRepository.createBlogComment(insBlogCommentDTO);
+      const comment = this.blogCommentRepository.createBlogComment(
+        insBlogCommentDTO,
+        userId,
+      );
       await this.blogCommentRepository.saveBlogComment(null, comment);
     } catch (e) {
       throw new HttpException(
