@@ -163,11 +163,16 @@ export class FeedController {
 
   @Post('/comment')
   @ApiOperation({summary: '댓글 등록'})
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   @ApiCreatedResponse({
     description: '성공',
     type: FeedCreateResponse,
   })
-  async insertBlogComment(@Body() insBlogCommentDTO: InsBlogCommentDTO) {
+  async insertBlogComment(
+    @Request() req,
+    @Body() insBlogCommentDTO: InsBlogCommentDTO,
+  ) {
     const result: FeedCreateResponse = {
       code: 201,
       message: 'success',
@@ -177,7 +182,8 @@ export class FeedController {
     };
 
     try {
-      await this.feedService.saveBlogComment(insBlogCommentDTO);
+      const requestUser: User = req.user;
+      await this.feedService.saveBlogComment(insBlogCommentDTO, requestUser.id);
     } catch (e) {
       result.code = 500;
       result.message = e.message;

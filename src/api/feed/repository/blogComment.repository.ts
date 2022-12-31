@@ -12,8 +12,17 @@ import {IGetFeedsByCommentCountResponse} from 'src/api/feed/interface/blogCommen
 @Injectable()
 @EntityRepository(BlogComment)
 export class BlogCommentRepository extends Repository<BlogComment> {
-  createBlogComment(insBlogCommentDTO: InsBlogCommentDTO): BlogComment {
-    return this.create({...insBlogCommentDTO});
+  createBlogComment(
+    insBlogCommentDTO: InsBlogCommentDTO,
+    userId: number,
+  ): BlogComment {
+    const {postId, commentId, content} = insBlogCommentDTO;
+    return this.create({
+      userId,
+      postId,
+      content,
+      commentId,
+    });
   }
 
   async saveBlogComment(
