@@ -39,13 +39,19 @@ export class UsersService {
     await this.userRepository.updateRefreshToken(userId, null);
   }
 
-  async deleteUser(userId: number, socialUuid: string): Promise<void> {
+  async deleteUser(
+    userId: number,
+    socialUuid: string,
+    isKakao: boolean,
+  ): Promise<void> {
     const queryRunner: QueryRunner = this.connection.createQueryRunner();
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      await this.kakaoService.unlink(socialUuid);
+      if (isKakao) {
+        await this.kakaoService.unlink(socialUuid);
+      }
 
       await this.userRepository.updateUserDeletedAt(userId, queryRunner);
       await this.userRepository.updateRefreshToken(userId, null, queryRunner);

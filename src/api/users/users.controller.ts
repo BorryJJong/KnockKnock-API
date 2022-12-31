@@ -165,11 +165,16 @@ export class UsersController {
   async deleteUser(@Request() req): Promise<boolean> {
     const requestUser: User = req.user;
     const user = await this.userService.getUser(requestUser.id);
-    await this.userService.deleteUser(user.id, user.socialUuid);
+    await this.userService.deleteUser(
+      user.id,
+      user.socialUuid,
+      requestUser.socialType === SOCIAL_TYPE.KAKAO,
+    );
 
     return true;
   }
 
+  // 추후에 multiton으로 수정
   private async getSocialLoginAttributes(
     socialType: SOCIAL_TYPE,
     socialUuid: string,
