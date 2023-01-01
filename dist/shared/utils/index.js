@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commafy = exports.isPageNext = exports.getCurrentPageCount = exports.convertTimeToStr = exports.convertTime = exports.dateFormat = exports.zeroFill = exports.isComparePassword = exports.hashPassword = void 0;
+exports.dtoConvertBoolean = exports.commafy = exports.isPageNext = exports.getCurrentPageCount = exports.convertTimeToStr = exports.convertTime = exports.dateFormat = exports.zeroFill = exports.isComparePassword = exports.hashPassword = void 0;
 const bcrypt_1 = require("bcrypt");
 const ramda_1 = require("ramda");
 const hashPassword = async (password) => {
@@ -70,4 +70,8 @@ const commafy = (num) => {
     return str.join('.');
 };
 exports.commafy = commafy;
+const dtoConvertBoolean = (value) => {
+    return value === 'true' || value === true || value === 1 || value === '1';
+};
+exports.dtoConvertBoolean = dtoConvertBoolean;
 //# sourceMappingURL=index.js.map

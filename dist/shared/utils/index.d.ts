@@ -7,3 +7,4 @@ export declare const convertTimeToStr: (t: Date) => string;
 export declare const getCurrentPageCount: (page: number, take: number) => number;
 export declare const isPageNext: (page: number, take: number, total: number) => boolean;
 export declare const commafy: (num: number) => string;
+export declare const dtoConvertBoolean: (value: any) => boolean;

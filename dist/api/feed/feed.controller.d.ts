@@ -9,11 +9,11 @@ export declare class FeedController {
     constructor(feedService: FeedService, feedValidator: FeedValidator);
     getFeedsByChallengesFilter(query: GetListFeedMainReqDTO): Promise<GetListFeedMainResDTO>;
     getListFeed(query: GetListFeedReqQueryDTO, req: any): Promise<GetListFeedResDTO>;
-    create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO): Promise<FeedCreateResponse>;
-    getFeed(param: GetFeedViewReqDTO): Promise<GetFeedViewResponse>;
-    insertBlogComment(insBlogCommentDTO: InsBlogCommentDTO): Promise<FeedCreateResponse>;
+    create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO, req: any): Promise<FeedCreateResponse>;
+    getFeed(param: GetFeedViewReqDTO, req: any): Promise<GetFeedViewResponse>;
+    insertBlogComment(req: any, insBlogCommentDTO: InsBlogCommentDTO): Promise<FeedCreateResponse>;
     getListFeedComment(param: GetListFeedCommentReqDTO): Promise<GetFeedCommentResponse>;
-    deleteBlogComment(delBlogCommentReqDTO: DelBlogCommentReqDTO): Promise<DeleteBlogCommentResponse>;
-    update(updateFeedDTO: UpdateFeedDTO): Promise<UpdateFeedResponse>;
+    deleteBlogComment(req: any, param: DelBlogCommentReqDTO): Promise<DeleteBlogCommentResponse>;
+    update(updateFeedDTO: UpdateFeedDTO, req: any): Promise<UpdateFeedResponse>;
     delete(param: DeleteFeedReqDTO, req: any): Promise<boolean>;
 }

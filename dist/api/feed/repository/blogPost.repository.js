@@ -12,9 +12,10 @@ const BlogPost_1 = require("../../../entities/BlogPost");
 const typeorm_1 = require("typeorm");
 const User_1 = require("../../../entities/User");
 const utils_1 = require("../../../shared/utils");
+const BlogLike_1 = require("../../../entities/BlogLike");
 let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
-    createBlogPost(createBlogPostDTO) {
-        return this.create(Object.assign({}, createBlogPostDTO));
+    createBlogPost(createBlogPostDTO, userId) {
+        return this.create(Object.assign(Object.assign({}, createBlogPostDTO), { userId }));
     }
     async saveBlogPost(queryRunner, blogPost) {
         if (queryRunner === null) {
@@ -81,8 +82,8 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             .where('blogPost.id = :id', { id: blogPostId })
             .getOneOrFail();
     }
-    async getBlogPostById(id) {
-        const post = await (0, typeorm_1.getManager)()
+    async getBlogPostById(id, userId) {
+        let queryBuilder = (0, typeorm_1.getManager)()
             .createQueryBuilder()
             .select('bp.id', 'id')
             .addSelect('bp.user_id', 'userId')
@@ -97,9 +98,22 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             .addSelect('u.image', 'userImage')
             .from(BlogPost_1.BlogPost, 'bp')
             .innerJoin(User_1.User, 'u', 'bp.user_id = u.id')
-            .where('bp.id = :id', { id: id })
-            .getRawOne();
-        return post;
+            .leftJoin(BlogLike_1.BlogLike, 'bl', 'bl.user_id = u.id')
+            .where('bp.id = :id', { id: id });
+        if (userId) {
+            queryBuilder = queryBuilder.addSelect(sq => {
+                return sq
+                    .from(BlogLike_1.BlogLike, 'bl')
+                    .select('IF(bl.id, true, false)')
+                    .where('bl.userId = :userId', {
+                    userId,
+                })
+                    .andWhere('bl.postId = :postId', {
+                    postId: id,
+                });
+            }, 'isLike');
+        }
+        return await queryBuilder.getRawOne();
     }
     async updateBlogPostHits(id) {
         await this.createQueryBuilder('blogPost')

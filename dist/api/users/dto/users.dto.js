@@ -26,7 +26,7 @@ __decorate([
     __metadata("design:type", String)
 ], UserInfoResponseDTO.prototype, "nickname", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ type: enum_1.SOCIAL_TYPE, example: 'KAKAO', description: '소셜 종류' }),
+    (0, swagger_1.ApiProperty)({ enum: enum_1.SOCIAL_TYPE, example: 'KAKAO', description: '소셜 종류' }),
     __metadata("design:type", String)
 ], UserInfoResponseDTO.prototype, "socialType", void 0);
 __decorate([

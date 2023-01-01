@@ -22,13 +22,13 @@ export declare class FeedService {
     private userRepository;
     private readonly logger;
     constructor(imageService: ImageService, connection: Connection, blogPostRepository: IBlogPostRepository, blogChallengesRepository: BlogChallengesRepository, blogPromotionRepository: BlogPromotionRepository, blogImageRepository: BlogImageRepository, blogCommentRepository: BlogCommentRepository, blogLikeRepository: BlogLikeRepository, userRepository: UserRepository);
-    create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO): Promise<boolean>;
-    savePost(queryRunner: QueryRunner, createBlogPostDTO: CreateBlogPostDTO): Promise<BlogPost>;
+    create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO, userId: number): Promise<boolean>;
+    savePost(queryRunner: QueryRunner, createBlogPostDTO: CreateBlogPostDTO, userId: number): Promise<BlogPost>;
     saveChallenges(queryRunner: QueryRunner, postId: number, challenges: string): Promise<void>;
     savePromotion(queryRunner: QueryRunner, postId: number, promotions: string): Promise<void>;
     savePostImage(queryRunner: QueryRunner, postId: number, file: Express.Multer.File): Promise<void>;
-    saveBlogComment(insBlogCommentDTO: InsBlogCommentDTO): Promise<void>;
-    getFeed({ id }: GetFeedViewReqDTO): Promise<GetFeedViewResDTO>;
+    saveBlogComment(insBlogCommentDTO: InsBlogCommentDTO, userId: number): Promise<void>;
+    getFeed({ id }: GetFeedViewReqDTO, userId?: number): Promise<GetFeedViewResDTO>;
     update(updateFeedDTO: UpdateFeedDTO): Promise<boolean>;
     updatePost(queryRunner: QueryRunner, postId: number, updateBlogPostDTO: UpdateBlogPostDTO): Promise<any>;
     updateChallenges(queryRunner: QueryRunner, postId: number, challenges: string): Promise<void>;

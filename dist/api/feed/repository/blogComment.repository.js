@@ -12,8 +12,14 @@ const typeorm_1 = require("typeorm");
 const BlogComment_1 = require("../../../entities/BlogComment");
 const User_1 = require("../../../entities/User");
 let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Repository {
-    createBlogComment(insBlogCommentDTO) {
-        return this.create(Object.assign({}, insBlogCommentDTO));
+    createBlogComment(insBlogCommentDTO, userId) {
+        const { postId, commentId, content } = insBlogCommentDTO;
+        return this.create({
+            userId,
+            postId,
+            content,
+            commentId,
+        });
     }
     async saveBlogComment(queryRunner, BlogComment) {
         if (queryRunner === null) {
@@ -79,8 +85,21 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             .where('blogComment.postId IN (:...postIds)', {
             postIds: postIds.length === 0 ? [] : postIds,
         })
+            .andWhere('blogComment.isDeleted = :isDeleted', {
+            isDeleted: false,
+        })
             .groupBy('blogComment.postId')
             .getRawMany();
+    }
+    async selectBlogPostCommentByUser(id, userId) {
+        return await this.createQueryBuilder('blogComment')
+            .where('blogComment.id = :id', {
+            id,
+        })
+            .andWhere('blogComment.userId = :userId', {
+            userId,
+        })
+            .getOne();
     }
 };
 BlogCommentRepository = __decorate([

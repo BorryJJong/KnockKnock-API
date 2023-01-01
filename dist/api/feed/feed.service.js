@@ -41,13 +41,13 @@ let FeedService = FeedService_1 = class FeedService {
         this.userRepository = userRepository;
         this.logger = new common_1.Logger(FeedService_1.name);
     }
-    async create(files, createFeedDTO) {
+    async create(files, createFeedDTO, userId) {
         const queryRunner = this.connection.createQueryRunner();
         let result = false;
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            const post = await this.savePost(queryRunner, createFeedDTO);
+            const post = await this.savePost(queryRunner, createFeedDTO, userId);
             const postId = post.id;
             await this.saveChallenges(queryRunner, postId, createFeedDTO.challenges);
             await this.savePromotion(queryRunner, postId, createFeedDTO.promotions);
@@ -66,8 +66,8 @@ let FeedService = FeedService_1 = class FeedService {
         }
         return result;
     }
-    async savePost(queryRunner, createBlogPostDTO) {
-        const post = this.blogPostRepository.createBlogPost(createBlogPostDTO);
+    async savePost(queryRunner, createBlogPostDTO, userId) {
+        const post = this.blogPostRepository.createBlogPost(createBlogPostDTO, userId);
         const returned = await this.blogPostRepository.saveBlogPost(queryRunner, post);
         return returned;
     }
@@ -114,9 +114,9 @@ let FeedService = FeedService_1 = class FeedService {
             }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async saveBlogComment(insBlogCommentDTO) {
+    async saveBlogComment(insBlogCommentDTO, userId) {
         try {
-            const comment = this.blogCommentRepository.createBlogComment(insBlogCommentDTO);
+            const comment = this.blogCommentRepository.createBlogComment(insBlogCommentDTO, userId);
             await this.blogCommentRepository.saveBlogComment(null, comment);
         }
         catch (e) {
@@ -126,9 +126,9 @@ let FeedService = FeedService_1 = class FeedService {
             }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async getFeed({ id }) {
+    async getFeed({ id }, userId) {
         try {
-            const post = await this.blogPostRepository.getBlogPostById(id);
+            const post = await this.blogPostRepository.getBlogPostById(id, userId);
             const promotions = await this.blogPromotionRepository.getBlogPromotionByPostId(id);
             const challenges = await this.blogChallengesRepository.getBlogChallengesByPostId(id);
             const images = await this.blogImageRepository.getBlogImageByPostId(id);
@@ -248,8 +248,16 @@ let FeedService = FeedService_1 = class FeedService {
         return {
             feeds: blogPosts.items.map((blogPost) => {
                 var _a, _b;
+                const defaultImageRatio = '1:1';
                 const writer = findUsers.find(user => user.id === blogPost.userId);
-                return new feed_dto_1.GetFeedResDTO(blogPost.id, writer.nickname, writer.image, blogPost.content, (0, utils_1.convertTimeToStr)(blogPost.regDate), '1:1', (0, utils_1.commafy)(((_a = feedsLikeCount.find(like => like.postId === blogPost.id)) === null || _a === void 0 ? void 0 : _a.likeCount) || 0), userId ? likes.some(like => like.postId === blogPost.id) : false, (0, utils_1.commafy)(((_b = feedsCommentCount.find(comment => comment.postId === blogPost.id)) === null || _b === void 0 ? void 0 : _b.commentCount) || 0), blogImages.filter(bi => bi.postId === blogPost.id));
+                const commentCount = ((_a = feedsCommentCount.find(comment => comment.postId === blogPost.id)) === null || _a === void 0 ? void 0 : _a.commentCount) || 0;
+                const likeCount = ((_b = feedsLikeCount.find(like => like.postId === blogPost.id)) === null || _b === void 0 ? void 0 : _b.likeCount) ||
+                    0;
+                const isLike = userId
+                    ? likes.some(like => like.postId === blogPost.id)
+                    : false;
+                const images = blogImages.filter(bi => bi.postId === blogPost.id);
+                return new feed_dto_1.GetFeedResDTO(blogPost.id, writer.nickname, writer.image, blogPost.content, (0, utils_1.convertTimeToStr)(blogPost.regDate), defaultImageRatio, (0, utils_1.commafy)(likeCount), isLike, (0, utils_1.commafy)(commentCount), images);
             }),
             isNext: true,
             total: blogPosts.pagination.total,

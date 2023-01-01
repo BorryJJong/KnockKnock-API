@@ -25,14 +25,14 @@ let LikeController = class LikeController {
         this.userService = userService;
     }
     async feedLike(id, req) {
-        const requestUser = req.user;
-        const user = await this.userService.getUser(requestUser.id);
+        const user = req.user;
+        await this.userService.getUser(user.id);
         await this.likeService.feedLike(id, user.id);
         return true;
     }
     async feedUnLike(id, req) {
-        const requestUser = req.user;
-        const user = await this.userService.getUser(requestUser.id);
+        const user = req.user;
+        await this.userService.getUser(user.id);
         await this.likeService.feedUnLike(id, user.id);
         return true;
     }
@@ -55,6 +55,8 @@ let LikeController = class LikeController {
 };
 __decorate([
     (0, common_1.Post)('/feed/:id'),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: '피드 좋아요' }),
     (0, swagger_1.ApiCreatedResponse)({
         description: '성공',
@@ -69,6 +71,8 @@ __decorate([
 ], LikeController.prototype, "feedLike", null);
 __decorate([
     (0, common_1.Delete)('/feed/:id'),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: '피드 좋아요 취소' }),
     (0, swagger_1.ApiCreatedResponse)({
         description: '성공',
@@ -96,8 +100,6 @@ __decorate([
 LikeController = __decorate([
     (0, swagger_1.ApiTags)('like'),
     (0, common_1.Controller)('like'),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
-    (0, swagger_1.ApiBearerAuth)(),
     __metadata("design:paramtypes", [like_service_1.LikeService,
         users_service_1.UsersService])
 ], LikeController);
