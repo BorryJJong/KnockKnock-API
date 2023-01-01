@@ -1,18 +1,12 @@
 import {User} from '@entities/User';
-import {
-  Body,
-  Controller,
-  Delete,
-  Post,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
+import {Body, Controller, Delete, Post, UseGuards} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import {UserDeco} from '@shared/decorator/user.decorator';
 import {SOCIAL_TYPE} from '@shared/enums/enum';
 import {UserInfoResponseDTO} from 'src/api/users/dto/users.dto';
 import {UserValidator} from 'src/api/users/users.validator';
@@ -143,8 +137,7 @@ export class UsersController {
     status: 200,
     description: '로그아웃 성공',
   })
-  async logout(@Request() req): Promise<boolean> {
-    const user: User = req.user;
+  async logout(@UserDeco() user): Promise<boolean> {
     await this.userService.getUser(user.id);
     await this.userService.logout(user.id);
 
@@ -162,8 +155,7 @@ export class UsersController {
     status: 200,
     description: '회원탈퇴 성공',
   })
-  async deleteUser(@Request() req): Promise<boolean> {
-    const user: User = req.user;
+  async deleteUser(@UserDeco() user): Promise<boolean> {
     const findeUser = await this.userService.getUser(user.id);
     await this.userService.deleteUser(
       findeUser.id,

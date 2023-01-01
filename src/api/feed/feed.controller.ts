@@ -9,7 +9,6 @@ import {
   UploadedFiles,
   Query,
   UseGuards,
-  Request,
 } from '@nestjs/common';
 import {FeedService} from './feed.service';
 import {
@@ -46,6 +45,7 @@ import {User} from '@entities/User';
 import {JwtOptionalGuard} from 'src/auth/jwt/jwtNoneRequired.guard';
 import {FeedValidator} from 'src/api/feed/feed.validator';
 import {JwtGuard} from 'src/auth/jwt/jwt.guard';
+import {UserDeco} from '@shared/decorator/user.decorator';
 
 // TODO: 400,401,403,404등 공통 사용 응답코드는 컨트롤러에 붙이기
 // @ApiBadRequestResponse({
@@ -103,9 +103,8 @@ export class FeedController {
   })
   public async getListFeed(
     @Query() query: GetListFeedReqQueryDTO,
-    @Request() req,
+    @UserDeco() user: User,
   ): Promise<GetListFeedResDTO> {
-    const user: User = req.user;
     return this.feedService.getListFeed(query, user.id);
   }
 
@@ -121,9 +120,8 @@ export class FeedController {
   async create(
     @UploadedFiles() files: Express.Multer.File[],
     @Body() createFeedDTO: CreateFeedDTO,
-    @Request() req,
+    @UserDeco() user,
   ) {
-    const user: User = req.user;
     await this.feedValidator.checkPermissionCreateFeed(user.id);
     const status = await this.feedService.create(files, createFeedDTO, user.id);
     const result: FeedCreateResponse = {
@@ -144,8 +142,7 @@ export class FeedController {
     description: '',
     type: GetFeedViewResponse,
   })
-  async getFeed(@Param() param: GetFeedViewReqDTO, @Request() req) {
-    const user: User = req.user;
+  async getFeed(@Param() param: GetFeedViewReqDTO, @UserDeco() user) {
     const result: GetFeedViewResponse = {
       code: 200,
       message: 'success',
@@ -175,7 +172,7 @@ export class FeedController {
     type: FeedCreateResponse,
   })
   async insertBlogComment(
-    @Request() req,
+    @UserDeco() user,
     @Body() insBlogCommentDTO: InsBlogCommentDTO,
   ) {
     const result: FeedCreateResponse = {
@@ -187,7 +184,6 @@ export class FeedController {
     };
 
     try {
-      const user: User = req.user;
       await this.feedService.saveBlogComment(insBlogCommentDTO, user.id);
     } catch (e) {
       result.code = 500;
@@ -232,7 +228,7 @@ export class FeedController {
     type: DeleteBlogCommentResponse,
   })
   async deleteBlogComment(
-    @Request() req,
+    @UserDeco() user,
     @Param() param: DelBlogCommentReqDTO,
   ) {
     const result: DeleteBlogCommentResponse = {
@@ -244,7 +240,6 @@ export class FeedController {
     };
 
     try {
-      const user: User = req.user;
       await this.feedValidator.checkFeedCommentAuthor(param.id, user.id);
       await this.feedService.deleteBlogComment(param);
     } catch (e) {
@@ -264,8 +259,7 @@ export class FeedController {
     description: '성공',
     type: UpdateFeedResponse,
   })
-  async update(@Body() updateFeedDTO: UpdateFeedDTO, @Request() req) {
-    const user: User = req.user;
+  async update(@Body() updateFeedDTO: UpdateFeedDTO, @UserDeco() user) {
     await this.feedValidator.checkPermissionUpdateFeed(
       updateFeedDTO.id,
       user.id,
@@ -291,9 +285,8 @@ export class FeedController {
   })
   async delete(
     @Param() param: DeleteFeedReqDTO,
-    @Request() req,
+    @UserDeco() user,
   ): Promise<boolean> {
-    const user: User = req.user;
     await this.feedValidator.checkFeedAuthor(param.id, user.id);
     await this.feedService.delete(param);
 
