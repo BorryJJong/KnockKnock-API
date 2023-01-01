@@ -1,13 +1,4 @@
-import {User} from '@entities/User';
-import {
-  Controller,
-  Param,
-  Post,
-  Delete,
-  UseGuards,
-  Request,
-  Get,
-} from '@nestjs/common';
+import {Controller, Param, Post, Delete, UseGuards, Get} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -19,6 +10,7 @@ import {JwtGuard} from 'src/auth/jwt/jwt.guard';
 import {GetListFeedLikeResponse} from '@shared/response_entities/feed/temp.response';
 import {GetListFeedLikeResDTO} from '../feed/dto/feed.dto';
 import {LikeService} from './like.service';
+import {UserDeco} from '@shared/decorator/user.decorator';
 
 @ApiTags('like')
 @Controller('like')
@@ -37,8 +29,7 @@ export class LikeController {
     status: 200,
     type: Boolean,
   })
-  async feedLike(@Param('id') id: number, @Request() req): Promise<boolean> {
-    const user: User = req.user;
+  async feedLike(@Param('id') id: number, @UserDeco() user): Promise<boolean> {
     await this.userService.getUser(user.id);
     await this.likeService.feedLike(id, user.id);
 
@@ -54,8 +45,10 @@ export class LikeController {
     status: 200,
     type: Boolean,
   })
-  async feedUnLike(@Param('id') id: number, @Request() req): Promise<boolean> {
-    const user: User = req.user;
+  async feedUnLike(
+    @Param('id') id: number,
+    @UserDeco() user,
+  ): Promise<boolean> {
     await this.userService.getUser(user.id);
     await this.likeService.feedUnLike(id, user.id);
     return true;
