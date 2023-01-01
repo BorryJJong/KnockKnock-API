@@ -39,12 +39,14 @@ let UsersService = class UsersService {
     async logout(userId) {
         await this.userRepository.updateRefreshToken(userId, null);
     }
-    async deleteUser(userId, socialUuid) {
+    async deleteUser(userId, socialUuid, isKakao) {
         const queryRunner = this.connection.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            await this.kakaoService.unlink(socialUuid);
+            if (isKakao) {
+                await this.kakaoService.unlink(socialUuid);
+            }
             await this.userRepository.updateUserDeletedAt(userId, queryRunner);
             await this.userRepository.updateRefreshToken(userId, null, queryRunner);
             await this.userRepository.deleteUserInfo(userId, queryRunner);

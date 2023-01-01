@@ -62,15 +62,15 @@ let UsersController = class UsersController {
         return new auth_dto_1.SocialLoginResponseDTO(false, new users_dto_1.UserInfoResponseDTO(newUser.nickname, newUser.socialType, newUser.image, newUser.regDate, newUser.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
     }
     async logout(req) {
-        const requestUser = req.user;
-        const user = await this.userService.getUser(requestUser.id);
+        const user = req.user;
+        await this.userService.getUser(user.id);
         await this.userService.logout(user.id);
         return true;
     }
     async deleteUser(req) {
-        const requestUser = req.user;
-        const user = await this.userService.getUser(requestUser.id);
-        await this.userService.deleteUser(user.id, user.socialUuid);
+        const user = req.user;
+        const findeUser = await this.userService.getUser(user.id);
+        await this.userService.deleteUser(findeUser.id, findeUser.socialUuid, findeUser.socialType === enum_1.SOCIAL_TYPE.KAKAO);
         return true;
     }
     async getSocialLoginAttributes(socialType, socialUuid) {
@@ -88,6 +88,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '성공',
+        type: users_dto_1.UserInfoResponseDTO,
     }),
     (0, swagger_1.ApiResponse)({
         status: 401,
@@ -104,6 +105,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '성공',
+        type: users_dto_1.UserInfoResponseDTO,
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),

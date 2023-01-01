@@ -31,11 +31,13 @@ let FeedController = class FeedController {
         return this.feedService.getFeedsByChallengesFilter(query);
     }
     async getListFeed(query, req) {
-        const requestUser = req.user;
-        return this.feedService.getListFeed(query, requestUser.id);
+        const user = req.user;
+        return this.feedService.getListFeed(query, user.id);
     }
-    async create(files, createFeedDTO) {
-        const status = await this.feedService.create(files, createFeedDTO);
+    async create(files, createFeedDTO, req) {
+        const user = req.user;
+        await this.feedValidator.checkPermissionCreateFeed(user.id);
+        const status = await this.feedService.create(files, createFeedDTO, user.id);
         const result = {
             code: status ? 201 : 500,
             message: status ? '성공' : '실패',
@@ -45,14 +47,15 @@ let FeedController = class FeedController {
         };
         return result;
     }
-    async getFeed(param) {
+    async getFeed(param, req) {
+        const user = req.user;
         const result = {
             code: 200,
             message: 'success',
             data: null,
         };
         try {
-            const feed = await this.feedService.getFeed(param);
+            const feed = await this.feedService.getFeed(param, user.id);
             result.data = feed;
         }
         catch (e) {
@@ -61,7 +64,7 @@ let FeedController = class FeedController {
         }
         return result;
     }
-    async insertBlogComment(insBlogCommentDTO) {
+    async insertBlogComment(req, insBlogCommentDTO) {
         const result = {
             code: 201,
             message: 'success',
@@ -70,7 +73,8 @@ let FeedController = class FeedController {
             },
         };
         try {
-            await this.feedService.saveBlogComment(insBlogCommentDTO);
+            const user = req.user;
+            await this.feedService.saveBlogComment(insBlogCommentDTO, user.id);
         }
         catch (e) {
             result.code = 500;
@@ -95,7 +99,7 @@ let FeedController = class FeedController {
         }
         return result;
     }
-    async deleteBlogComment(delBlogCommentReqDTO) {
+    async deleteBlogComment(req, param) {
         const result = {
             code: 200,
             message: 'success',
@@ -104,7 +108,9 @@ let FeedController = class FeedController {
             },
         };
         try {
-            await this.feedService.deleteBlogComment(delBlogCommentReqDTO);
+            const user = req.user;
+            await this.feedValidator.checkFeedCommentAuthor(param.id, user.id);
+            await this.feedService.deleteBlogComment(param);
         }
         catch (e) {
             result.code = 500;
@@ -113,7 +119,9 @@ let FeedController = class FeedController {
         }
         return result;
     }
-    async update(updateFeedDTO) {
+    async update(updateFeedDTO, req) {
+        const user = req.user;
+        await this.feedValidator.checkPermissionUpdateFeed(updateFeedDTO.id, user.id);
         const status = await this.feedService.update(updateFeedDTO);
         const result = {
             code: status ? 201 : 500,
@@ -125,8 +133,8 @@ let FeedController = class FeedController {
         return result;
     }
     async delete(param, req) {
-        const requestUser = req.user;
-        await this.feedValidator.checkFeedAuthor(param.id, requestUser.id);
+        const user = req.user;
+        await this.feedValidator.checkFeedAuthor(param.id, user.id);
         await this.feedService.delete(param);
         return true;
     }
@@ -177,6 +185,8 @@ __decorate([
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: '피드 등록' }),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiCreatedResponse)({
         description: '성공',
         type: temp_response_1.FeedCreateResponse,
@@ -184,32 +194,39 @@ __decorate([
     (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images')),
     __param(0, (0, common_1.UploadedFiles)()),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array, feed_dto_1.CreateFeedDTO]),
+    __metadata("design:paramtypes", [Array, feed_dto_1.CreateFeedDTO, Object]),
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, common_1.UseGuards)(jwtNoneRequired_guard_1.JwtOptionalGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: '피드 상세 조회' }),
     (0, swagger_1.ApiResponse)({
         description: '',
         type: temp_response_1.GetFeedViewResponse,
     }),
     __param(0, (0, common_1.Param)()),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [feed_dto_1.GetFeedViewReqDTO]),
+    __metadata("design:paramtypes", [feed_dto_1.GetFeedViewReqDTO, Object]),
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "getFeed", null);
 __decorate([
     (0, common_1.Post)('/comment'),
     (0, swagger_1.ApiOperation)({ summary: '댓글 등록' }),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiCreatedResponse)({
         description: '성공',
         type: temp_response_1.FeedCreateResponse,
     }),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [feed_dto_1.InsBlogCommentDTO]),
+    __metadata("design:paramtypes", [Object, feed_dto_1.InsBlogCommentDTO]),
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "insertBlogComment", null);
 __decorate([
@@ -225,27 +242,33 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "getListFeedComment", null);
 __decorate([
-    (0, common_1.Delete)('/comment'),
+    (0, common_1.Delete)('/comment/:id'),
     (0, swagger_1.ApiOperation)({ summary: '댓글 삭제' }),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiResponse)({
         description: '성공',
         type: temp_response_1.DeleteBlogCommentResponse,
     }),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [feed_dto_1.DelBlogCommentReqDTO]),
+    __metadata("design:paramtypes", [Object, feed_dto_1.DelBlogCommentReqDTO]),
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "deleteBlogComment", null);
 __decorate([
     (0, common_1.Post)('/update'),
     (0, swagger_1.ApiOperation)({ summary: '피드 수정' }),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiCreatedResponse)({
         description: '성공',
         type: temp_response_1.UpdateFeedResponse,
     }),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [feed_dto_1.UpdateFeedDTO]),
+    __metadata("design:paramtypes", [feed_dto_1.UpdateFeedDTO, Object]),
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "update", null);
 __decorate([

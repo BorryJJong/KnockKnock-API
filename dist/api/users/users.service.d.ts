@@ -14,5 +14,5 @@ export declare class UsersService {
     getSocialUser({ socialUuid, socialType, }: SocialLoginRequestDTO): Promise<User | undefined>;
     getUser(userId: number): Promise<User | undefined>;
     logout(userId: number): Promise<void>;
-    deleteUser(userId: number, socialUuid: string): Promise<void>;
+    deleteUser(userId: number, socialUuid: string, isKakao: boolean): Promise<void>;
 }
