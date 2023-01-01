@@ -111,6 +111,8 @@ export class FeedController {
 
   @Post()
   @ApiOperation({summary: '피드 등록'})
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   @ApiCreatedResponse({
     description: '성공',
     type: FeedCreateResponse,
@@ -119,8 +121,11 @@ export class FeedController {
   async create(
     @UploadedFiles() files: Express.Multer.File[],
     @Body() createFeedDTO: CreateFeedDTO,
+    @Request() req,
   ) {
-    const status = await this.feedService.create(files, createFeedDTO);
+    const user: User = req.user;
+    await this.feedValidator.checkPermissionCreateFeed(user.id);
+    const status = await this.feedService.create(files, createFeedDTO, user.id);
     const result: FeedCreateResponse = {
       code: status ? 201 : 500,
       message: status ? '성공' : '실패',
@@ -259,7 +264,12 @@ export class FeedController {
     description: '성공',
     type: UpdateFeedResponse,
   })
-  async update(@Body() updateFeedDTO: UpdateFeedDTO) {
+  async update(@Body() updateFeedDTO: UpdateFeedDTO, @Request() req) {
+    const user: User = req.user;
+    await this.feedValidator.checkPermissionUpdateFeed(
+      updateFeedDTO.id,
+      user.id,
+    );
     const status = await this.feedService.update(updateFeedDTO);
     const result: UpdateFeedResponse = {
       code: status ? 201 : 500,

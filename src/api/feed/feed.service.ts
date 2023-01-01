@@ -68,7 +68,11 @@ export class FeedService {
     private userRepository: UserRepository,
   ) {}
 
-  async create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO) {
+  async create(
+    files: Express.Multer.File[],
+    createFeedDTO: CreateFeedDTO,
+    userId: number,
+  ) {
     const queryRunner = this.connection.createQueryRunner();
     let result = false;
 
@@ -77,7 +81,7 @@ export class FeedService {
 
     try {
       // 1. 포스트 저장
-      const post = await this.savePost(queryRunner, createFeedDTO);
+      const post = await this.savePost(queryRunner, createFeedDTO, userId);
       const postId: number = post.id;
 
       // 2. 챌린지 저장
@@ -112,8 +116,12 @@ export class FeedService {
   async savePost(
     queryRunner: QueryRunner,
     createBlogPostDTO: CreateBlogPostDTO,
+    userId: number,
   ) {
-    const post = this.blogPostRepository.createBlogPost(createBlogPostDTO);
+    const post = this.blogPostRepository.createBlogPost(
+      createBlogPostDTO,
+      userId,
+    );
     const returned = await this.blogPostRepository.saveBlogPost(
       queryRunner,
       post,

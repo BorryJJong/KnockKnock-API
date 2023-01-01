@@ -9,6 +9,7 @@ import {
 export interface IBlogPostRepository {
   createBlogPost(
     createBlogPostDTO: CreateBlogPostDTO | UpdateBlogPostDTO,
+    userId?: number,
   ): BlogPost;
   updateBlogPost(
     queryRunner: QueryRunner | null,

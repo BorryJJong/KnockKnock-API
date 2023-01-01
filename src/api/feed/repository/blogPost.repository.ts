@@ -22,8 +22,9 @@ export class BlogPostRepository
 {
   createBlogPost(
     createBlogPostDTO: CreateBlogPostDTO | UpdateBlogPostDTO,
+    userId?: number,
   ): BlogPost {
-    return this.create({...createBlogPostDTO});
+    return this.create({...createBlogPostDTO, userId});
   }
 
   async saveBlogPost(
