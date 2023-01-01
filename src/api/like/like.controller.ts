@@ -38,8 +38,8 @@ export class LikeController {
     type: Boolean,
   })
   async feedLike(@Param('id') id: number, @Request() req): Promise<boolean> {
-    const requestUser: User = req.user;
-    const user = await this.userService.getUser(requestUser.id);
+    const user: User = req.user;
+    await this.userService.getUser(user.id);
     await this.likeService.feedLike(id, user.id);
 
     return true;
@@ -55,8 +55,8 @@ export class LikeController {
     type: Boolean,
   })
   async feedUnLike(@Param('id') id: number, @Request() req): Promise<boolean> {
-    const requestUser: User = req.user;
-    const user = await this.userService.getUser(requestUser.id);
+    const user: User = req.user;
+    await this.userService.getUser(user.id);
     await this.likeService.feedUnLike(id, user.id);
     return true;
   }

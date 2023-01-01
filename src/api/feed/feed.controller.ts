@@ -105,8 +105,8 @@ export class FeedController {
     @Query() query: GetListFeedReqQueryDTO,
     @Request() req,
   ): Promise<GetListFeedResDTO> {
-    const requestUser: User = req.user;
-    return this.feedService.getListFeed(query, requestUser.id);
+    const user: User = req.user;
+    return this.feedService.getListFeed(query, user.id);
   }
 
   @Post()
@@ -140,7 +140,7 @@ export class FeedController {
     type: GetFeedViewResponse,
   })
   async getFeed(@Param() param: GetFeedViewReqDTO, @Request() req) {
-    const requestUser: User = req.user;
+    const user: User = req.user;
     const result: GetFeedViewResponse = {
       code: 200,
       message: 'success',
@@ -150,7 +150,7 @@ export class FeedController {
     try {
       const feed: GetFeedViewResDTO = await this.feedService.getFeed(
         param,
-        requestUser.id,
+        user.id,
       );
       result.data = feed;
     } catch (e) {
@@ -182,8 +182,8 @@ export class FeedController {
     };
 
     try {
-      const requestUser: User = req.user;
-      await this.feedService.saveBlogComment(insBlogCommentDTO, requestUser.id);
+      const user: User = req.user;
+      await this.feedService.saveBlogComment(insBlogCommentDTO, user.id);
     } catch (e) {
       result.code = 500;
       result.message = e.message;
@@ -218,13 +218,18 @@ export class FeedController {
     return result;
   }
 
-  @Delete('/comment')
+  @Delete('/comment/:id')
   @ApiOperation({summary: '댓글 삭제'})
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     description: '성공',
     type: DeleteBlogCommentResponse,
   })
-  async deleteBlogComment(@Body() delBlogCommentReqDTO: DelBlogCommentReqDTO) {
+  async deleteBlogComment(
+    @Request() req,
+    @Param() param: DelBlogCommentReqDTO,
+  ) {
     const result: DeleteBlogCommentResponse = {
       code: 200,
       message: 'success',
@@ -234,7 +239,9 @@ export class FeedController {
     };
 
     try {
-      await this.feedService.deleteBlogComment(delBlogCommentReqDTO);
+      const user: User = req.user;
+      await this.feedValidator.checkFeedCommentAuthor(param.id, user.id);
+      await this.feedService.deleteBlogComment(param);
     } catch (e) {
       result.code = 500;
       result.message = e.message;
@@ -246,6 +253,8 @@ export class FeedController {
 
   @Post('/update')
   @ApiOperation({summary: '피드 수정'})
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   @ApiCreatedResponse({
     description: '성공',
     type: UpdateFeedResponse,
@@ -274,8 +283,8 @@ export class FeedController {
     @Param() param: DeleteFeedReqDTO,
     @Request() req,
   ): Promise<boolean> {
-    const requestUser: User = req.user;
-    await this.feedValidator.checkFeedAuthor(param.id, requestUser.id);
+    const user: User = req.user;
+    await this.feedValidator.checkFeedAuthor(param.id, user.id);
     await this.feedService.delete(param);
 
     return true;
