@@ -144,8 +144,8 @@ export class UsersController {
     description: '로그아웃 성공',
   })
   async logout(@Request() req): Promise<boolean> {
-    const requestUser: User = req.user;
-    const user = await this.userService.getUser(requestUser.id);
+    const user: User = req.user;
+    await this.userService.getUser(user.id);
     await this.userService.logout(user.id);
 
     return true;
@@ -163,12 +163,12 @@ export class UsersController {
     description: '회원탈퇴 성공',
   })
   async deleteUser(@Request() req): Promise<boolean> {
-    const requestUser: User = req.user;
-    const user = await this.userService.getUser(requestUser.id);
+    const user: User = req.user;
+    const findeUser = await this.userService.getUser(user.id);
     await this.userService.deleteUser(
-      user.id,
-      user.socialUuid,
-      requestUser.socialType === SOCIAL_TYPE.KAKAO,
+      findeUser.id,
+      findeUser.socialUuid,
+      findeUser.socialType === SOCIAL_TYPE.KAKAO,
     );
 
     return true;
