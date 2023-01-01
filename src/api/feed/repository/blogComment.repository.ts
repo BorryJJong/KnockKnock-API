@@ -125,4 +125,18 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       .groupBy('blogComment.postId')
       .getRawMany<IGetFeedsByCommentCountResponse>();
   }
+
+  async selectBlogPostCommentByUser(
+    id: number,
+    userId: number,
+  ): Promise<BlogComment | undefined> {
+    return await this.createQueryBuilder('blogComment')
+      .where('blogComment.id = :id', {
+        id,
+      })
+      .andWhere('blogComment.userId = :userId', {
+        userId,
+      })
+      .getOne();
+  }
 }

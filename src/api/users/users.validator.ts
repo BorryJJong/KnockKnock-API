@@ -23,7 +23,7 @@ export class UserValidator {
     if (user) {
       throw new HttpException(
         {
-          message: '이미 존재하는 회원입니다.',
+          message: '이미 존재하는 회원입니다',
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );

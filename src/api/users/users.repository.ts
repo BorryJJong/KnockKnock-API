@@ -6,7 +6,7 @@ import {
   IUpdateUser,
   IUserRepository,
 } from 'src/api/users/users.interface';
-import {EntityRepository, In, QueryRunner, Repository} from 'typeorm';
+import {EntityRepository, QueryRunner, Repository} from 'typeorm';
 
 @Injectable()
 @EntityRepository(User)
