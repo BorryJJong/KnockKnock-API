@@ -18,6 +18,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
+    console.log('Test Response Message', exception.getResponse());
     const res: any = exception.getResponse();
 
     const method: string = request.method;
@@ -25,7 +26,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const error: string = res.error;
     const now = new Date().toLocaleString();
 
-    const errorLogFormat = `[${method}] ${url} [error]: ${error} [KST time] ${now}`;
+    const errorLogFormat = `[${method}] ${url} [error|response]: ${error} [KST time] ${now}`;
     console.error('ERROR! ', errorLogFormat);
 
     response.status(status).json({
