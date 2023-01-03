@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
+const user_decorator_1 = require("../../shared/decorator/user.decorator");
 const enum_1 = require("../../shared/enums/enum");
 const users_dto_1 = require("./dto/users.dto");
 const users_validator_1 = require("./users.validator");
@@ -61,14 +62,12 @@ let UsersController = class UsersController {
         await this.authService.updateRefreshToken(newUser.id, refreshToken);
         return new auth_dto_1.SocialLoginResponseDTO(false, new users_dto_1.UserInfoResponseDTO(newUser.nickname, newUser.socialType, newUser.image, newUser.regDate, newUser.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
     }
-    async logout(req) {
-        const user = req.user;
+    async logout(user) {
         await this.userService.getUser(user.id);
         await this.userService.logout(user.id);
         return true;
     }
-    async deleteUser(req) {
-        const user = req.user;
+    async deleteUser(user) {
         const findeUser = await this.userService.getUser(user.id);
         await this.userService.deleteUser(findeUser.id, findeUser.socialUuid, findeUser.socialType === enum_1.SOCIAL_TYPE.KAKAO);
         return true;
@@ -124,7 +123,7 @@ __decorate([
         status: 200,
         description: '로그아웃 성공',
     }),
-    __param(0, (0, common_1.Request)()),
+    __param(0, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
@@ -141,7 +140,7 @@ __decorate([
         status: 200,
         description: '회원탈퇴 성공',
     }),
-    __param(0, (0, common_1.Request)()),
+    __param(0, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)

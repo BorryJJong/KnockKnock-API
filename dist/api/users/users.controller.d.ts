@@ -1,3 +1,4 @@
+import { IUser } from 'src/api/users/users.interface';
 import { UserValidator } from 'src/api/users/users.validator';
 import { AppleService } from 'src/auth/apple.service';
 import { AuthService } from 'src/auth/auth.service';
@@ -13,7 +14,7 @@ export declare class UsersController {
     constructor(userService: UsersService, authService: AuthService, userValidator: UserValidator, kakaoService: KakaoService, appleService: AppleService);
     socialLogin(body: SocialLoginRequestDTO): Promise<SocialLoginResponseDTO>;
     signUp(body: SignUpRequestDTO): Promise<SocialLoginResponseDTO>;
-    logout(req: any): Promise<boolean>;
-    deleteUser(req: any): Promise<boolean>;
+    logout(user: IUser): Promise<boolean>;
+    deleteUser(user: IUser): Promise<boolean>;
     private getSocialLoginAttributes;
 }

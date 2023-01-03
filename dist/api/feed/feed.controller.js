@@ -22,6 +22,7 @@ const temp_response_1 = require("../../shared/response_entities/feed/temp.respon
 const jwtNoneRequired_guard_1 = require("../../auth/jwt/jwtNoneRequired.guard");
 const feed_validator_1 = require("./feed.validator");
 const jwt_guard_1 = require("../../auth/jwt/jwt.guard");
+const user_decorator_1 = require("../../shared/decorator/user.decorator");
 let FeedController = class FeedController {
     constructor(feedService, feedValidator) {
         this.feedService = feedService;
@@ -30,12 +31,10 @@ let FeedController = class FeedController {
     async getFeedsByChallengesFilter(query) {
         return this.feedService.getFeedsByChallengesFilter(query);
     }
-    async getListFeed(query, req) {
-        const user = req.user;
+    async getListFeed(query, user) {
         return this.feedService.getListFeed(query, user.id);
     }
-    async create(files, createFeedDTO, req) {
-        const user = req.user;
+    async create(files, createFeedDTO, user) {
         await this.feedValidator.checkPermissionCreateFeed(user.id);
         const status = await this.feedService.create(files, createFeedDTO, user.id);
         const result = {
@@ -47,8 +46,7 @@ let FeedController = class FeedController {
         };
         return result;
     }
-    async getFeed(param, req) {
-        const user = req.user;
+    async getFeed(param, user) {
         const result = {
             code: 200,
             message: 'success',
@@ -64,7 +62,7 @@ let FeedController = class FeedController {
         }
         return result;
     }
-    async insertBlogComment(req, insBlogCommentDTO) {
+    async insertBlogComment(user, insBlogCommentDTO) {
         const result = {
             code: 201,
             message: 'success',
@@ -73,7 +71,6 @@ let FeedController = class FeedController {
             },
         };
         try {
-            const user = req.user;
             await this.feedService.saveBlogComment(insBlogCommentDTO, user.id);
         }
         catch (e) {
@@ -83,14 +80,14 @@ let FeedController = class FeedController {
         }
         return result;
     }
-    async getListFeedComment(param) {
+    async getListFeedComment(user, param) {
         const result = {
             code: 200,
             message: 'success',
             data: null,
         };
         try {
-            const comments = await this.feedService.getListFeedComment(param);
+            const comments = await this.feedService.getListFeedComment(param, user.id);
             result.data = comments;
         }
         catch (e) {
@@ -99,7 +96,7 @@ let FeedController = class FeedController {
         }
         return result;
     }
-    async deleteBlogComment(req, param) {
+    async deleteBlogComment(user, param) {
         const result = {
             code: 200,
             message: 'success',
@@ -108,7 +105,6 @@ let FeedController = class FeedController {
             },
         };
         try {
-            const user = req.user;
             await this.feedValidator.checkFeedCommentAuthor(param.id, user.id);
             await this.feedService.deleteBlogComment(param);
         }
@@ -119,8 +115,7 @@ let FeedController = class FeedController {
         }
         return result;
     }
-    async update(updateFeedDTO, req) {
-        const user = req.user;
+    async update(updateFeedDTO, user) {
         await this.feedValidator.checkPermissionUpdateFeed(updateFeedDTO.id, user.id);
         const status = await this.feedService.update(updateFeedDTO);
         const result = {
@@ -132,8 +127,7 @@ let FeedController = class FeedController {
         };
         return result;
     }
-    async delete(param, req) {
-        const user = req.user;
+    async delete(param, user) {
         await this.feedValidator.checkFeedAuthor(param.id, user.id);
         await this.feedService.delete(param);
         return true;
@@ -177,7 +171,7 @@ __decorate([
         type: [feed_dto_1.GetListFeedResDTO],
     }),
     __param(0, (0, common_1.Query)()),
-    __param(1, (0, common_1.Request)()),
+    __param(1, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [feed_dto_1.GetListFeedReqQueryDTO, Object]),
     __metadata("design:returntype", Promise)
@@ -194,7 +188,7 @@ __decorate([
     (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images')),
     __param(0, (0, common_1.UploadedFiles)()),
     __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.Request)()),
+    __param(2, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Array, feed_dto_1.CreateFeedDTO, Object]),
     __metadata("design:returntype", Promise)
@@ -209,7 +203,7 @@ __decorate([
         type: temp_response_1.GetFeedViewResponse,
     }),
     __param(0, (0, common_1.Param)()),
-    __param(1, (0, common_1.Request)()),
+    __param(1, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [feed_dto_1.GetFeedViewReqDTO, Object]),
     __metadata("design:returntype", Promise)
@@ -223,7 +217,7 @@ __decorate([
         description: '성공',
         type: temp_response_1.FeedCreateResponse,
     }),
-    __param(0, (0, common_1.Request)()),
+    __param(0, (0, user_decorator_1.UserDeco)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, feed_dto_1.InsBlogCommentDTO]),
@@ -231,14 +225,17 @@ __decorate([
 ], FeedController.prototype, "insertBlogComment", null);
 __decorate([
     (0, common_1.Get)(':id/comment'),
+    (0, common_1.UseGuards)(jwtNoneRequired_guard_1.JwtOptionalGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: '댓글 목록 조회' }),
     (0, swagger_1.ApiResponse)({
         description: '성공',
         type: temp_response_1.GetFeedCommentResponse,
     }),
-    __param(0, (0, common_1.Param)()),
+    __param(0, (0, user_decorator_1.UserDeco)()),
+    __param(1, (0, common_1.Param)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [feed_dto_1.GetListFeedCommentReqDTO]),
+    __metadata("design:paramtypes", [Object, feed_dto_1.GetListFeedCommentReqDTO]),
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "getListFeedComment", null);
 __decorate([
@@ -250,7 +247,7 @@ __decorate([
         description: '성공',
         type: temp_response_1.DeleteBlogCommentResponse,
     }),
-    __param(0, (0, common_1.Request)()),
+    __param(0, (0, user_decorator_1.UserDeco)()),
     __param(1, (0, common_1.Param)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, feed_dto_1.DelBlogCommentReqDTO]),
@@ -266,7 +263,7 @@ __decorate([
         type: temp_response_1.UpdateFeedResponse,
     }),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Request)()),
+    __param(1, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [feed_dto_1.UpdateFeedDTO, Object]),
     __metadata("design:returntype", Promise)
@@ -281,7 +278,7 @@ __decorate([
         type: Boolean,
     }),
     __param(0, (0, common_1.Param)()),
-    __param(1, (0, common_1.Request)()),
+    __param(1, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [feed_dto_1.DeleteFeedReqDTO, Object]),
     __metadata("design:returntype", Promise)

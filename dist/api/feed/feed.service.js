@@ -257,7 +257,8 @@ let FeedService = FeedService_1 = class FeedService {
                     ? likes.some(like => like.postId === blogPost.id)
                     : false;
                 const images = blogImages.filter(bi => bi.postId === blogPost.id);
-                return new feed_dto_1.GetFeedResDTO(blogPost.id, writer.nickname, writer.image, blogPost.content, (0, utils_1.convertTimeToStr)(blogPost.regDate), defaultImageRatio, (0, utils_1.commafy)(likeCount), isLike, (0, utils_1.commafy)(commentCount), images);
+                const isWriter = userId === blogPost.userId;
+                return new feed_dto_1.GetFeedResDTO(blogPost.id, writer.nickname, writer.image, blogPost.content, (0, utils_1.convertTimeToStr)(blogPost.regDate), defaultImageRatio, (0, utils_1.commafy)(likeCount), isLike, (0, utils_1.commafy)(commentCount), images, isWriter);
             }),
             isNext: true,
             total: blogPosts.pagination.total,
@@ -280,15 +281,16 @@ let FeedService = FeedService_1 = class FeedService {
     async getFeedListByUserInfo(userIds) {
         return await this.userRepository.selectUsers(userIds);
     }
-    async getListFeedComment({ id, }) {
+    async getListFeedComment({ id }, userId) {
         try {
-            let comment = await this.blogCommentRepository.getBlogCommentByPostId(id);
-            comment = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetListFeedCommentResDTO, comment);
-            const result = await Promise.all(comment.map(async (c) => {
+            let comments = await this.blogCommentRepository.getBlogCommentByPostId(id);
+            comments = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetListFeedCommentResDTO, comments);
+            const result = await Promise.all(comments.map(async (c) => {
                 if (c.replyCnt != 0) {
                     const reply = await this.blogCommentRepository.getBlogCommentByCommentId(c.id);
                     c.reply = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetBlogCommentDTO, reply);
                 }
+                c.isWriter = c.userId === userId;
                 return c;
             }));
             return result;

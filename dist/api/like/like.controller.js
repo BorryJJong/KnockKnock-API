@@ -19,19 +19,18 @@ const users_service_1 = require("../users/users.service");
 const jwt_guard_1 = require("../../auth/jwt/jwt.guard");
 const temp_response_1 = require("../../shared/response_entities/feed/temp.response");
 const like_service_1 = require("./like.service");
+const user_decorator_1 = require("../../shared/decorator/user.decorator");
 let LikeController = class LikeController {
     constructor(likeService, userService) {
         this.likeService = likeService;
         this.userService = userService;
     }
-    async feedLike(id, req) {
-        const user = req.user;
+    async feedLike(id, user) {
         await this.userService.getUser(user.id);
         await this.likeService.feedLike(id, user.id);
         return true;
     }
-    async feedUnLike(id, req) {
-        const user = req.user;
+    async feedUnLike(id, user) {
         await this.userService.getUser(user.id);
         await this.likeService.feedUnLike(id, user.id);
         return true;
@@ -64,7 +63,7 @@ __decorate([
         type: Boolean,
     }),
     __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Request)()),
+    __param(1, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
@@ -80,7 +79,7 @@ __decorate([
         type: Boolean,
     }),
     __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Request)()),
+    __param(1, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
