@@ -32,3 +32,15 @@ export interface IUpdateUser {
   nickname: string;
   image: string;
 }
+
+export interface IUser {
+  id: number;
+  nickname: string;
+  socialUuid: string;
+  socialType: SOCIAL_TYPE;
+  image: string;
+  serviceConnectionDate?: Date;
+  regDate: Date;
+  refreshToken?: string;
+  deletedAt: Date | null;
+}

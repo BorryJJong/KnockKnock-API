@@ -192,6 +192,9 @@ export class GetFeedResDTO {
   @ApiProperty({description: '댓글 개수', example: '2,456'})
   private blogCommentCount: string;
 
+  @ApiProperty({description: '피드 작성 여부', example: 'true'})
+  private isWriter: boolean;
+
   constructor(
     id: number,
     userName: string,
@@ -203,6 +206,7 @@ export class GetFeedResDTO {
     isLike: boolean,
     blogCommentCount: string,
     blogImages: IGetBlogImagesByBlogPost[],
+    isWriter: boolean,
   ) {
     this.id = id;
     this.userName = userName;
@@ -216,6 +220,7 @@ export class GetFeedResDTO {
     this.blogImages = blogImages.map(
       blogImage => new GetFeedImageResDTO(blogImage.id, blogImage.fileUrl),
     );
+    this.isWriter = isWriter;
   }
 }
 
@@ -488,6 +493,14 @@ export class GetBlogCommentDTO {
   })
   @Transform(({value}) => value === 'true' || value === true || value === 1)
   isDeleted: boolean;
+
+  @Expose()
+  @Type(() => Boolean)
+  @ApiProperty({
+    description: '댓글 작성 여부',
+    example: 'true',
+  })
+  isWriter: boolean;
 }
 
 @Exclude()

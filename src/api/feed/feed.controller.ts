@@ -41,11 +41,11 @@ import {
   DeleteBlogCommentResponse,
   UpdateFeedResponse,
 } from 'src/shared/response_entities/feed/temp.response';
-import {User} from '@entities/User';
 import {JwtOptionalGuard} from 'src/auth/jwt/jwtNoneRequired.guard';
 import {FeedValidator} from 'src/api/feed/feed.validator';
 import {JwtGuard} from 'src/auth/jwt/jwt.guard';
 import {UserDeco} from '@shared/decorator/user.decorator';
+import {IUser} from 'src/api/users/users.interface';
 
 // TODO: 400,401,403,404등 공통 사용 응답코드는 컨트롤러에 붙이기
 // @ApiBadRequestResponse({
@@ -103,7 +103,7 @@ export class FeedController {
   })
   public async getListFeed(
     @Query() query: GetListFeedReqQueryDTO,
-    @UserDeco() user: User,
+    @UserDeco() user: IUser,
   ): Promise<GetListFeedResDTO> {
     return this.feedService.getListFeed(query, user.id);
   }
@@ -120,7 +120,7 @@ export class FeedController {
   async create(
     @UploadedFiles() files: Express.Multer.File[],
     @Body() createFeedDTO: CreateFeedDTO,
-    @UserDeco() user,
+    @UserDeco() user: IUser,
   ) {
     await this.feedValidator.checkPermissionCreateFeed(user.id);
     const status = await this.feedService.create(files, createFeedDTO, user.id);
@@ -142,7 +142,7 @@ export class FeedController {
     description: '',
     type: GetFeedViewResponse,
   })
-  async getFeed(@Param() param: GetFeedViewReqDTO, @UserDeco() user) {
+  async getFeed(@Param() param: GetFeedViewReqDTO, @UserDeco() user: IUser) {
     const result: GetFeedViewResponse = {
       code: 200,
       message: 'success',
@@ -172,7 +172,7 @@ export class FeedController {
     type: FeedCreateResponse,
   })
   async insertBlogComment(
-    @UserDeco() user,
+    @UserDeco() user: IUser,
     @Body() insBlogCommentDTO: InsBlogCommentDTO,
   ) {
     const result: FeedCreateResponse = {
@@ -195,12 +195,17 @@ export class FeedController {
   }
 
   @Get(':id/comment')
+  @UseGuards(JwtOptionalGuard)
+  @ApiBearerAuth()
   @ApiOperation({summary: '댓글 목록 조회'})
   @ApiResponse({
     description: '성공',
     type: GetFeedCommentResponse,
   })
-  async getListFeedComment(@Param() param: GetListFeedCommentReqDTO) {
+  async getListFeedComment(
+    @UserDeco() user: IUser,
+    @Param() param: GetListFeedCommentReqDTO,
+  ) {
     const result: GetFeedCommentResponse = {
       code: 200,
       message: 'success',
@@ -209,7 +214,7 @@ export class FeedController {
 
     try {
       const comments: GetListFeedCommentResDTO[] =
-        await this.feedService.getListFeedComment(param);
+        await this.feedService.getListFeedComment(param, user.id);
       result.data = comments;
     } catch (e) {
       result.code = 500;
@@ -228,7 +233,7 @@ export class FeedController {
     type: DeleteBlogCommentResponse,
   })
   async deleteBlogComment(
-    @UserDeco() user,
+    @UserDeco() user: IUser,
     @Param() param: DelBlogCommentReqDTO,
   ) {
     const result: DeleteBlogCommentResponse = {
@@ -285,7 +290,7 @@ export class FeedController {
   })
   async delete(
     @Param() param: DeleteFeedReqDTO,
-    @UserDeco() user,
+    @UserDeco() user: IUser,
   ): Promise<boolean> {
     await this.feedValidator.checkFeedAuthor(param.id, user.id);
     await this.feedService.delete(param);

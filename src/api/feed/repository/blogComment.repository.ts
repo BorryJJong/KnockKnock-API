@@ -41,9 +41,11 @@ export class BlogCommentRepository extends Repository<BlogComment> {
    * 리댓글 없는 댓글이 삭제된 경우 가져오지 않음.
    * 리댓글 있는 댓글이 삭제된 경우 내용을 '삭제된 댓글입니다.'로 변경하여 가져옴.
    * @param id postId
-   * @returns GetFeedCommentResDTO
+   * @returns GetFeedCommentResDTO[]
    */
-  async getBlogCommentByPostId(id: number) {
+  async getBlogCommentByPostId(
+    id: number,
+  ): Promise<GetListFeedCommentResDTO[]> {
     const cntQb = getManager()
       .createQueryBuilder()
       .select('comment_id', 'reply_id')
