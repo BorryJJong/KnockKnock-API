@@ -38,7 +38,7 @@ export declare class FeedService {
     private getFeedListTake;
     private getFeedListByUserLikes;
     private getFeedListByUserInfo;
-    getListFeedComment({ id, }: GetListFeedCommentReqDTO): Promise<GetListFeedCommentResDTO[]>;
+    getListFeedComment({ id }: GetListFeedCommentReqDTO, userId: number): Promise<GetListFeedCommentResDTO[]>;
     deleteBlogComment({ id }: DelBlogCommentReqDTO): Promise<void>;
     delete({ id }: DeleteFeedReqDTO): Promise<void>;
 }
