@@ -1,4 +1,3 @@
-import {User} from '@entities/User';
 import {Body, Controller, Delete, Post, UseGuards} from '@nestjs/common';
 import {
   ApiBearerAuth,
