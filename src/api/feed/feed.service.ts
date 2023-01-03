@@ -480,6 +480,7 @@ export class FeedService {
           ? likes.some(like => like.postId === blogPost.id)
           : false;
         const images = blogImages.filter(bi => bi.postId === blogPost.id);
+        const isWriter = userId === blogPost.userId;
 
         return new GetFeedResDTO(
           blogPost.id,
@@ -492,6 +493,7 @@ export class FeedService {
           isLike,
           commafy(commentCount),
           images,
+          isWriter,
         );
       }),
       // SELECT절의 random()이 아니기 때문에, total과 상관없이 무한 스크롤 가능하게 수정
@@ -530,20 +532,25 @@ export class FeedService {
     return await this.userRepository.selectUsers(userIds);
   }
 
-  async getListFeedComment({
-    id,
-  }: GetListFeedCommentReqDTO): Promise<GetListFeedCommentResDTO[]> {
+  async getListFeedComment(
+    {id}: GetListFeedCommentReqDTO,
+    userId: number,
+  ): Promise<GetListFeedCommentResDTO[]> {
     try {
-      let comment = await this.blogCommentRepository.getBlogCommentByPostId(id);
-      comment = plainToInstance(GetListFeedCommentResDTO, comment);
+      let comments = await this.blogCommentRepository.getBlogCommentByPostId(
+        id,
+      );
+      comments = plainToInstance(GetListFeedCommentResDTO, comments);
 
       const result: GetListFeedCommentResDTO[] = await Promise.all(
-        comment.map(async c => {
+        comments.map(async c => {
           if (c.replyCnt != 0) {
             const reply: GetBlogCommentDTO[] =
               await this.blogCommentRepository.getBlogCommentByCommentId(c.id);
             c.reply = plainToInstance(GetBlogCommentDTO, reply);
           }
+          c.isWriter = c.userId === userId;
+
           return c;
         }),
       );

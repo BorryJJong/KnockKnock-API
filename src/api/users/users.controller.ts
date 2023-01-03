@@ -8,6 +8,7 @@ import {
 import {UserDeco} from '@shared/decorator/user.decorator';
 import {SOCIAL_TYPE} from '@shared/enums/enum';
 import {UserInfoResponseDTO} from 'src/api/users/dto/users.dto';
+import {IUser} from 'src/api/users/users.interface';
 import {UserValidator} from 'src/api/users/users.validator';
 import {AppleService} from 'src/auth/apple.service';
 import {IUserPropertiesResponse} from 'src/auth/auth.interface';
@@ -136,7 +137,7 @@ export class UsersController {
     status: 200,
     description: '로그아웃 성공',
   })
-  async logout(@UserDeco() user): Promise<boolean> {
+  async logout(@UserDeco() user: IUser): Promise<boolean> {
     await this.userService.getUser(user.id);
     await this.userService.logout(user.id);
 
@@ -154,7 +155,7 @@ export class UsersController {
     status: 200,
     description: '회원탈퇴 성공',
   })
-  async deleteUser(@UserDeco() user): Promise<boolean> {
+  async deleteUser(@UserDeco() user: IUser): Promise<boolean> {
     const findeUser = await this.userService.getUser(user.id);
     await this.userService.deleteUser(
       findeUser.id,

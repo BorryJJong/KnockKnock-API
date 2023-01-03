@@ -11,6 +11,7 @@ import {GetListFeedLikeResponse} from '@shared/response_entities/feed/temp.respo
 import {GetListFeedLikeResDTO} from '../feed/dto/feed.dto';
 import {LikeService} from './like.service';
 import {UserDeco} from '@shared/decorator/user.decorator';
+import {IUser} from 'src/api/users/users.interface';
 
 @ApiTags('like')
 @Controller('like')
@@ -29,7 +30,10 @@ export class LikeController {
     status: 200,
     type: Boolean,
   })
-  async feedLike(@Param('id') id: number, @UserDeco() user): Promise<boolean> {
+  async feedLike(
+    @Param('id') id: number,
+    @UserDeco() user: IUser,
+  ): Promise<boolean> {
     await this.userService.getUser(user.id);
     await this.likeService.feedLike(id, user.id);
 
@@ -47,7 +51,7 @@ export class LikeController {
   })
   async feedUnLike(
     @Param('id') id: number,
-    @UserDeco() user,
+    @UserDeco() user: IUser,
   ): Promise<boolean> {
     await this.userService.getUser(user.id);
     await this.likeService.feedUnLike(id, user.id);

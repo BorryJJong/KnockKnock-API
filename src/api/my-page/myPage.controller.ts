@@ -7,6 +7,7 @@ import {
 } from '@nestjs/swagger';
 import {UserDeco} from '@shared/decorator/user.decorator';
 import {MyPageService} from 'src/api/my-page/myPage.service';
+import {IUser} from 'src/api/users/users.interface';
 import {JwtGuard} from 'src/auth/jwt/jwt.guard';
 
 @ApiTags('my-page')
@@ -29,7 +30,7 @@ export class MyPageController {
     status: 401,
     description: '회원탈퇴유저',
   })
-  async isLogin(@UserDeco() user): Promise<boolean> {
+  async isLogin(@UserDeco() user: IUser): Promise<boolean> {
     return this.myPageService.isLogin(user.id);
   }
 }
