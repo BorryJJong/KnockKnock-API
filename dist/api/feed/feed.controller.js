@@ -23,6 +23,7 @@ const jwtNoneRequired_guard_1 = require("../../auth/jwt/jwtNoneRequired.guard");
 const feed_validator_1 = require("./feed.validator");
 const jwt_guard_1 = require("../../auth/jwt/jwt.guard");
 const user_decorator_1 = require("../../shared/decorator/user.decorator");
+const enum_1 = require("../../shared/enums/enum");
 let FeedController = class FeedController {
     constructor(feedService, feedValidator) {
         this.feedService = feedService;
@@ -47,20 +48,16 @@ let FeedController = class FeedController {
         return result;
     }
     async getFeed(param, user) {
-        const result = {
-            code: 200,
-            message: 'success',
-            data: null,
-        };
         try {
             const feed = await this.feedService.getFeed(param, user.id);
-            result.data = feed;
+            return new temp_response_1.APIBaseResponse(200, enum_1.API_RESPONSE_MEESAGE.SUCCESS, feed);
         }
         catch (e) {
-            result.code = 500;
-            result.message = e.message;
+            throw new common_1.HttpException({
+                error: e.message,
+                message: e.message,
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return result;
     }
     async insertBlogComment(user, insBlogCommentDTO) {
         const result = {
@@ -81,20 +78,16 @@ let FeedController = class FeedController {
         return result;
     }
     async getListFeedComment(user, param) {
-        const result = {
-            code: 200,
-            message: 'success',
-            data: null,
-        };
         try {
             const comments = await this.feedService.getListFeedComment(param, user.id);
-            result.data = comments;
+            return new temp_response_1.APIBaseResponse(200, enum_1.API_RESPONSE_MEESAGE.SUCCESS, comments);
         }
         catch (e) {
-            result.code = 500;
-            result.message = e.message;
+            throw new common_1.HttpException({
+                error: e.message,
+                message: e.message,
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return result;
     }
     async deleteBlogComment(user, param) {
         const result = {
@@ -116,21 +109,24 @@ let FeedController = class FeedController {
         return result;
     }
     async update(updateFeedDTO, user) {
-        await this.feedValidator.checkPermissionUpdateFeed(updateFeedDTO.id, user.id);
-        const status = await this.feedService.update(updateFeedDTO);
-        const result = {
-            code: status ? 201 : 500,
-            message: status ? '성공' : '실패',
-            data: {
-                status: status,
-            },
-        };
-        return result;
+        try {
+            await this.feedValidator.checkPermissionUpdateFeed(updateFeedDTO.id, user.id);
+            const status = await this.feedService.update(updateFeedDTO);
+            return new temp_response_1.APIBaseResponse(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, status);
+        }
+        catch (error) {
+            return new temp_response_1.APIBaseResponse(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL);
+        }
     }
     async delete(param, user) {
-        await this.feedValidator.checkFeedAuthor(param.id, user.id);
-        await this.feedService.delete(param);
-        return true;
+        try {
+            await this.feedValidator.checkFeedAuthor(param.id, user.id);
+            await this.feedService.delete(param);
+            return new temp_response_1.APIBaseResponse(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, true);
+        }
+        catch (error) {
+            return new temp_response_1.APIBaseResponse(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
     }
 };
 __decorate([

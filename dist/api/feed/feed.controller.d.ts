@@ -1,7 +1,7 @@
 /// <reference types="multer" />
 import { FeedService } from './feed.service';
-import { CreateFeedDTO, UpdateFeedDTO, GetListFeedMainResDTO, GetListFeedMainReqDTO, GetListFeedReqQueryDTO, GetListFeedResDTO, InsBlogCommentDTO, GetFeedViewReqDTO, GetListFeedCommentReqDTO, DelBlogCommentReqDTO, DeleteFeedReqDTO } from './dto/feed.dto';
-import { FeedCreateResponse, GetFeedViewResponse, GetFeedCommentResponse, DeleteBlogCommentResponse, UpdateFeedResponse } from 'src/shared/response_entities/feed/temp.response';
+import { CreateFeedDTO, UpdateFeedDTO, GetListFeedMainResDTO, GetListFeedMainReqDTO, GetListFeedReqQueryDTO, GetListFeedResDTO, InsBlogCommentDTO, GetFeedViewReqDTO, GetFeedViewResDTO, GetListFeedCommentReqDTO, GetListFeedCommentResDTO, DelBlogCommentReqDTO, DeleteFeedReqDTO } from './dto/feed.dto';
+import { FeedCreateResponse, DeleteBlogCommentResponse, APIBaseResponse } from 'src/shared/response_entities/feed/temp.response';
 import { FeedValidator } from 'src/api/feed/feed.validator';
 import { IUser } from 'src/api/users/users.interface';
 export declare class FeedController {
@@ -11,10 +11,10 @@ export declare class FeedController {
     getFeedsByChallengesFilter(query: GetListFeedMainReqDTO): Promise<GetListFeedMainResDTO>;
     getListFeed(query: GetListFeedReqQueryDTO, user: IUser): Promise<GetListFeedResDTO>;
     create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO, user: IUser): Promise<FeedCreateResponse>;
-    getFeed(param: GetFeedViewReqDTO, user: IUser): Promise<GetFeedViewResponse>;
+    getFeed(param: GetFeedViewReqDTO, user: IUser): Promise<APIBaseResponse<GetFeedViewResDTO>>;
     insertBlogComment(user: IUser, insBlogCommentDTO: InsBlogCommentDTO): Promise<FeedCreateResponse>;
-    getListFeedComment(user: IUser, param: GetListFeedCommentReqDTO): Promise<GetFeedCommentResponse>;
+    getListFeedComment(user: IUser, param: GetListFeedCommentReqDTO): Promise<APIBaseResponse<GetListFeedCommentResDTO[]>>;
     deleteBlogComment(user: IUser, param: DelBlogCommentReqDTO): Promise<DeleteBlogCommentResponse>;
-    update(updateFeedDTO: UpdateFeedDTO, user: any): Promise<UpdateFeedResponse>;
-    delete(param: DeleteFeedReqDTO, user: IUser): Promise<boolean>;
+    update(updateFeedDTO: UpdateFeedDTO, user: any): Promise<APIBaseResponse<boolean>>;
+    delete(param: DeleteFeedReqDTO, user: IUser): Promise<APIBaseResponse<boolean>>;
 }

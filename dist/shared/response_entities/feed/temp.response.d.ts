@@ -1,3 +1,4 @@
+import { API_RESPONSE_MEESAGE } from '@shared/enums/enum';
 import { GetFeedViewResDTO, GetListFeedCommentResDTO, GetListFeedLikeResDTO } from 'src/api/feed/dto/feed.dto';
 import { BaseResponse } from '../base.response';
 export declare abstract class FeedResponseData {
@@ -26,4 +27,14 @@ export declare abstract class DeleteBlogCommentResponse extends BaseResponse {
 export declare abstract class UpdateFeedResponse extends BaseResponse {
     constructor();
     data: FeedResponseData;
+}
+export declare class ErrorMessage {
+    private data;
+    constructor(data: string);
+}
+export declare class APIBaseResponse<T = void> {
+    private code;
+    private message;
+    private data?;
+    constructor(code: number, message: API_RESPONSE_MEESAGE, data?: T);
 }
