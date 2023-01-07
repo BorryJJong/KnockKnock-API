@@ -9,6 +9,7 @@ import {
   GetChallengeDetailResDTO,
   ChallengeContentDTO,
   ChallengeSubContentDTO,
+  GetChallengeListReqQueryDTO,
 } from './dto/challenges.dto';
 
 export type ChallengeSubContentJsonType = {
@@ -92,17 +93,22 @@ export class ChallengesService {
     return challenge;
   }
 
-  async getChallengeList(): Promise<GetListChallengeResDTO[]> {
-    const challengeList = await this.challengesRepository.getChallengeList();
+  async getChallengeList(
+    query: GetChallengeListReqQueryDTO,
+  ): Promise<GetListChallengeResDTO[]> {
+    const {sort} = query;
+    const challengeList = await this.challengesRepository.getChallengeList(
+      sort,
+    );
 
-    for (let index = 0; index < (await challengeList).length; index++) {
-      const element = challengeList[index];
-      const challengeId = element.id;
+    // for (let index = 0; index < (await challengeList).length; index++) {
+    //   const element = challengeList[index];
+    //   const challengeId = element.id;
 
-      const participantList =
-        await this.challengesRepository.getParticipantList(challengeId);
-      challengeList[index].participants = participantList;
-    }
+    //   const participantList =
+    //     await this.challengesRepository.getParticipantList(challengeId);
+    //   challengeList[index].participants = participantList;
+    // }
 
     return challengeList;
   }

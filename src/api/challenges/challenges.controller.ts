@@ -1,4 +1,4 @@
-import {Controller, Get, Param} from '@nestjs/common';
+import {Controller, Get, Param, Query} from '@nestjs/common';
 import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
 import {ChallengesService} from './challenges.service';
 import {
@@ -7,6 +7,7 @@ import {
   GetChallengeResDTO,
   GetChallengeTitleReqDTO,
   GetChallengeDetailResDTO,
+  GetChallengeListReqQueryDTO,
 } from './dto/challenges.dto';
 
 @ApiTags('challenges')
@@ -53,7 +54,9 @@ export class ChallengesController {
     description: '성공',
     type: GetChallengeResDTO,
   })
-  public async getChallengeList(): Promise<GetListChallengeResDTO[]> {
-    return this.challengesService.getChallengeList();
+  public async getChallengeList(
+    @Query() query: GetChallengeListReqQueryDTO,
+  ): Promise<GetListChallengeResDTO[]> {
+    return this.challengesService.getChallengeList(query);
   }
 }

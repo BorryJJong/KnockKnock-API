@@ -16,3 +16,8 @@ export enum ERRPR_CODE {
   UNAUTHENTICATED = 'UNAUTHENTICATED', // 토큰 만료
   UNAUTHORIZED = 'UNAUTHORIZED', // 권한 없음
 }
+
+export enum CHALLENGES_SORT {
+  BRAND_NEW = 'BRAND_NEW',
+  POPLUAR = 'POPLUAR ',
+}
