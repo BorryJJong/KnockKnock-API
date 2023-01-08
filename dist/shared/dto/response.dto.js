@@ -9,23 +9,37 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BaseResponse = void 0;
+exports.ApiResponseDTO = void 0;
 const swagger_1 = require("@nestjs/swagger");
-class BaseResponse {
+const enum_1 = require("../enums/enum");
+class ApiResponseDTO {
+    constructor(code, message, data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
 }
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: 'Ground Rule Http status',
+        description: 'Ground Rule(nestjs/common Http status)',
         example: '성공시 200',
     }),
     __metadata("design:type", Number)
-], BaseResponse.prototype, "code", void 0);
+], ApiResponseDTO.prototype, "code", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '응답에 대한 결과 메세지',
-        example: 'success or fail',
+        example: 'SUCCESS or FAIL',
+        enum: enum_1.API_RESPONSE_MEESAGE,
     }),
     __metadata("design:type", String)
-], BaseResponse.prototype, "message", void 0);
-exports.BaseResponse = BaseResponse;
-//# sourceMappingURL=base.response.js.map
+], ApiResponseDTO.prototype, "message", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '응답값에 필요한 데이터',
+        nullable: true,
+    }),
+    __metadata("design:type", Object)
+], ApiResponseDTO.prototype, "data", void 0);
+exports.ApiResponseDTO = ApiResponseDTO;
+//# sourceMappingURL=response.dto.js.map

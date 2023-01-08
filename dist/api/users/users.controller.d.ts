@@ -1,3 +1,4 @@
+import { ApiResponseDTO } from '@shared/dto/response.dto';
 import { IUser } from 'src/api/users/users.interface';
 import { UserValidator } from 'src/api/users/users.validator';
 import { AppleService } from 'src/auth/apple.service';
@@ -12,9 +13,9 @@ export declare class UsersController {
     private readonly kakaoService;
     private readonly appleService;
     constructor(userService: UsersService, authService: AuthService, userValidator: UserValidator, kakaoService: KakaoService, appleService: AppleService);
-    socialLogin(body: SocialLoginRequestDTO): Promise<SocialLoginResponseDTO>;
-    signUp(body: SignUpRequestDTO): Promise<SocialLoginResponseDTO>;
-    logout(user: IUser): Promise<boolean>;
-    deleteUser(user: IUser): Promise<boolean>;
+    socialLogin(body: SocialLoginRequestDTO): Promise<ApiResponseDTO<SocialLoginResponseDTO | boolean>>;
+    signUp(body: SignUpRequestDTO): Promise<ApiResponseDTO<SocialLoginResponseDTO>>;
+    logout(user: IUser): Promise<ApiResponseDTO<boolean>>;
+    deleteUser(user: IUser): Promise<ApiResponseDTO<boolean>>;
     private getSocialLoginAttributes;
 }

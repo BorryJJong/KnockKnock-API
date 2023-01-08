@@ -16,6 +16,7 @@ exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const user_decorator_1 = require("../../shared/decorator/user.decorator");
+const response_dto_1 = require("../../shared/dto/response.dto");
 const enum_1 = require("../../shared/enums/enum");
 const users_dto_1 = require("./dto/users.dto");
 const users_validator_1 = require("./users.validator");
@@ -34,43 +35,65 @@ let UsersController = class UsersController {
         this.appleService = appleService;
     }
     async socialLogin(body) {
-        const { socialType, socialUuid } = body;
-        const userProperties = await this.getSocialLoginAttributes(socialType, socialUuid);
-        const user = await this.userService.getSocialUser({
-            socialUuid: userProperties.id.toString(),
-            socialType,
-        });
-        if (user) {
-            const { accessToken, refreshToken } = await this.authService.makeJwtToken(user.id);
-            await this.authService.updateRefreshToken(user.id, refreshToken);
-            return new auth_dto_1.SocialLoginResponseDTO(true, new users_dto_1.UserInfoResponseDTO(user.nickname, user.socialType, user.image, user.regDate, user.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
+        try {
+            const { socialType, socialUuid } = body;
+            const userProperties = await this.getSocialLoginAttributes(socialType, socialUuid);
+            const user = await this.userService.getSocialUser({
+                socialUuid: userProperties.id.toString(),
+                socialType,
+            });
+            if (user) {
+                const { accessToken, refreshToken } = await this.authService.makeJwtToken(user.id);
+                await this.authService.updateRefreshToken(user.id, refreshToken);
+                const result = new auth_dto_1.SocialLoginResponseDTO(true, new users_dto_1.UserInfoResponseDTO(user.nickname, user.socialType, user.image, user.regDate, user.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
+                return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, result);
+            }
+            else {
+                return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, false);
+            }
         }
-        else {
-            return new auth_dto_1.SocialLoginResponseDTO(false);
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
         }
     }
     async signUp(body) {
-        const { socialUuid, socialType, nickname } = body;
-        const userProperties = await this.getSocialLoginAttributes(socialType, socialUuid);
-        await this.userValidator.checkExistSocialUser(userProperties.id.toString(), socialType);
-        const newUser = await this.userService.saveUser({
-            socialType,
-            socialUuid: userProperties.id.toString(),
-            nickname,
-        });
-        const { accessToken, refreshToken } = await this.authService.makeJwtToken(newUser.id);
-        await this.authService.updateRefreshToken(newUser.id, refreshToken);
-        return new auth_dto_1.SocialLoginResponseDTO(false, new users_dto_1.UserInfoResponseDTO(newUser.nickname, newUser.socialType, newUser.image, newUser.regDate, newUser.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
+        try {
+            const { socialUuid, socialType, nickname } = body;
+            const userProperties = await this.getSocialLoginAttributes(socialType, socialUuid);
+            await this.userValidator.checkExistSocialUser(userProperties.id.toString(), socialType);
+            const newUser = await this.userService.saveUser({
+                socialType,
+                socialUuid: userProperties.id.toString(),
+                nickname,
+            });
+            const { accessToken, refreshToken } = await this.authService.makeJwtToken(newUser.id);
+            await this.authService.updateRefreshToken(newUser.id, refreshToken);
+            const result = new auth_dto_1.SocialLoginResponseDTO(false, new users_dto_1.UserInfoResponseDTO(newUser.nickname, newUser.socialType, newUser.image, newUser.regDate, newUser.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, result);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
     }
     async logout(user) {
-        await this.userService.getUser(user.id);
-        await this.userService.logout(user.id);
-        return true;
+        try {
+            await this.userService.getUser(user.id);
+            await this.userService.logout(user.id);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, true);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
     }
     async deleteUser(user) {
-        const findeUser = await this.userService.getUser(user.id);
-        await this.userService.deleteUser(findeUser.id, findeUser.socialUuid, findeUser.socialType === enum_1.SOCIAL_TYPE.KAKAO);
-        return true;
+        try {
+            const findeUser = await this.userService.getUser(user.id);
+            await this.userService.deleteUser(findeUser.id, findeUser.socialUuid, findeUser.socialType === enum_1.SOCIAL_TYPE.KAKAO);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, true);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
     }
     async getSocialLoginAttributes(socialType, socialUuid) {
         switch (socialType) {
@@ -87,11 +110,20 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '성공',
-        type: users_dto_1.UserInfoResponseDTO,
+        type: auth_dto_1.SocialLoginResponseDTO,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '회원가입필요 여부',
+        type: Boolean,
     }),
     (0, swagger_1.ApiResponse)({
         status: 401,
         description: '인증 에러',
+    }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -104,7 +136,11 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '성공',
-        type: users_dto_1.UserInfoResponseDTO,
+        type: auth_dto_1.SocialLoginResponseDTO,
+    }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -122,6 +158,11 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '로그아웃 성공',
+        type: Boolean,
+    }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
     }),
     __param(0, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
@@ -139,6 +180,11 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '회원탈퇴 성공',
+        type: Boolean,
+    }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
     }),
     __param(0, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
