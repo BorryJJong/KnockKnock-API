@@ -10,6 +10,7 @@ import {
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiDefaultResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -37,6 +38,10 @@ export class LikeController {
   @ApiCreatedResponse({
     description: '성공',
     status: HttpStatus.OK,
+    type: ApiResponseDTO,
+  })
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
     type: ApiResponseDTO,
   })
   async feedLike(
@@ -68,6 +73,10 @@ export class LikeController {
     status: 200,
     type: Boolean,
   })
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
+  })
   async feedUnLike(
     @Param('id') id: number,
     @UserDeco() user: IUser,
@@ -94,6 +103,10 @@ export class LikeController {
   @ApiCreatedResponse({
     description: '성공',
     type: GetListFeedLikeResDTO,
+  })
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
   })
   async getListFeedLike(
     @Param('id') id: number,

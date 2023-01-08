@@ -1,5 +1,12 @@
-import {Controller, Get, Param} from '@nestjs/common';
-import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
+import {Controller, Get, HttpStatus, Param} from '@nestjs/common';
+import {
+  ApiDefaultResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import {ApiResponseDTO} from '@shared/dto/response.dto';
+import {API_RESPONSE_MEESAGE} from '@shared/enums/enum';
 import {ChallengesService} from './challenges.service';
 import {
   GetListChallengeResDTO,
@@ -29,8 +36,28 @@ export class ChallengesController {
     description: '성공!!!',
     type: [GetChallengeTitleReqDTO],
   })
-  public async getChallengeTitles(): Promise<GetChallengeTitleReqDTO[]> {
-    return this.challengesService.getChallengeTitles();
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
+  })
+  public async getChallengeTitles(): Promise<
+    ApiResponseDTO<GetChallengeTitleReqDTO[]>
+  > {
+    try {
+      const challengeTitles = await this.challengesService.getChallengeTitles();
+
+      return new ApiResponseDTO<GetChallengeTitleReqDTO[]>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        challengeTitles,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
+    }
   }
 
   @Get('/:id')
@@ -40,10 +67,28 @@ export class ChallengesController {
     description: '성공',
     type: GetChallengeResDTO,
   })
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
+  })
   public async getChallenge(
     @Param() param: GetChallengeReqDTO,
-  ): Promise<GetChallengeDetailResDTO> {
-    return this.challengesService.getChallengeDetail(param);
+  ): Promise<ApiResponseDTO<GetChallengeDetailResDTO>> {
+    try {
+      const challenge = await this.challengesService.getChallengeDetail(param);
+
+      return new ApiResponseDTO<GetChallengeDetailResDTO>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        challenge,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
+    }
   }
 
   @Get('/')
@@ -51,9 +96,28 @@ export class ChallengesController {
   @ApiResponse({
     status: 200,
     description: '성공',
-    type: GetChallengeResDTO,
+    type: [GetChallengeResDTO],
   })
-  public async getChallengeList(): Promise<GetListChallengeResDTO[]> {
-    return this.challengesService.getChallengeList();
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
+  })
+  public async getChallengeList(): Promise<
+    ApiResponseDTO<GetListChallengeResDTO[]>
+  > {
+    try {
+      const challenges = await this.challengesService.getChallengeList();
+      return new ApiResponseDTO<GetListChallengeResDTO[]>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        challenges,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
+    }
   }
 }
