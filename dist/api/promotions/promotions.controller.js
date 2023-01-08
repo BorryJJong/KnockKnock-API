@@ -14,12 +14,20 @@ const common_1 = require("@nestjs/common");
 const promotions_service_1 = require("./promotions.service");
 const swagger_1 = require("@nestjs/swagger");
 const Promotions_1 = require("../../entities/Promotions");
+const response_dto_1 = require("../../shared/dto/response.dto");
+const enum_1 = require("../../shared/enums/enum");
 let PromotionsController = class PromotionsController {
     constructor(promotionsService) {
         this.promotionsService = promotionsService;
     }
-    findAll() {
-        return this.promotionsService.findAll();
+    async findAll() {
+        try {
+            const promotions = await this.promotionsService.findAll();
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, promotions);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
     }
 };
 __decorate([
@@ -27,11 +35,15 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: '프로모션 리스트' }),
     (0, swagger_1.ApiOkResponse)({
         description: '성공',
-        type: Promotions_1.Promotions,
+        type: [Promotions_1.Promotions],
+    }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], PromotionsController.prototype, "findAll", null);
 PromotionsController = __decorate([
     (0, swagger_1.ApiTags)('promotions'),

@@ -16,6 +16,8 @@ exports.MyPageController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const user_decorator_1 = require("../../shared/decorator/user.decorator");
+const response_dto_1 = require("../../shared/dto/response.dto");
+const enum_1 = require("../../shared/enums/enum");
 const myPage_service_1 = require("./myPage.service");
 const jwt_guard_1 = require("../../auth/jwt/jwt.guard");
 let MyPageController = class MyPageController {
@@ -23,7 +25,13 @@ let MyPageController = class MyPageController {
         this.myPageService = myPageService;
     }
     async isLogin(user) {
-        return this.myPageService.isLogin(user.id);
+        try {
+            await this.myPageService.isLogin(user.id);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, true);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
     }
 };
 __decorate([
@@ -39,6 +47,10 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 401,
         description: '회원탈퇴유저',
+    }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
     }),
     __param(0, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),

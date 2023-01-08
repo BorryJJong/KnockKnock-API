@@ -17,39 +17,44 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const users_service_1 = require("../users/users.service");
 const jwt_guard_1 = require("../../auth/jwt/jwt.guard");
-const temp_response_1 = require("../../shared/response_entities/feed/temp.response");
+const feed_dto_1 = require("../feed/dto/feed.dto");
 const like_service_1 = require("./like.service");
 const user_decorator_1 = require("../../shared/decorator/user.decorator");
+const response_dto_1 = require("../../shared/dto/response.dto");
+const enum_1 = require("../../shared/enums/enum");
 let LikeController = class LikeController {
     constructor(likeService, userService) {
         this.likeService = likeService;
         this.userService = userService;
     }
     async feedLike(id, user) {
-        await this.userService.getUser(user.id);
-        await this.likeService.feedLike(id, user.id);
-        return true;
+        try {
+            await this.userService.getUser(user.id);
+            await this.likeService.feedLike(id, user.id);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
     }
     async feedUnLike(id, user) {
-        await this.userService.getUser(user.id);
-        await this.likeService.feedUnLike(id, user.id);
-        return true;
+        try {
+            await this.userService.getUser(user.id);
+            await this.likeService.feedUnLike(id, user.id);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
     }
     async getListFeedLike(id) {
-        const result = {
-            code: 200,
-            message: 'success',
-            data: null,
-        };
         try {
             const likes = await this.likeService.getListFeedLike(id);
-            result.data = likes;
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, likes);
         }
-        catch (e) {
-            result.code = 500;
-            result.message = e.message;
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
         }
-        return result;
     }
 };
 __decorate([
@@ -59,8 +64,12 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: '피드 좋아요' }),
     (0, swagger_1.ApiCreatedResponse)({
         description: '성공',
-        status: 200,
-        type: Boolean,
+        status: common_1.HttpStatus.OK,
+        type: response_dto_1.ApiResponseDTO,
+    }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
     }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, user_decorator_1.UserDeco)()),
@@ -78,6 +87,10 @@ __decorate([
         status: 200,
         type: Boolean,
     }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
@@ -89,7 +102,11 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: '피드 좋아요 목록' }),
     (0, swagger_1.ApiCreatedResponse)({
         description: '성공',
-        type: temp_response_1.GetListFeedLikeResponse,
+        type: feed_dto_1.GetListFeedLikeResDTO,
+    }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
     }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),

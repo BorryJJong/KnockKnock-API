@@ -35,7 +35,9 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             .select('comment_id', 'reply_id')
             .addSelect('COUNT(*)', 'cnt')
             .from(BlogComment_1.BlogComment, 'b')
+            .innerJoin(User_1.User, 'u', 'b.user_id = u.id')
             .where('b.comment_id IS NOT NULL')
+            .andWhere('b.isDeleted = false')
             .groupBy('b.comment_id');
         const comment = await (0, typeorm_1.getManager)()
             .createQueryBuilder()
