@@ -9,6 +9,7 @@ import {
   UploadedFiles,
   Query,
   UseGuards,
+  HttpStatus,
 } from '@nestjs/common';
 import {FeedService} from './feed.service';
 import {
@@ -29,33 +30,19 @@ import {
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiDefaultResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import {FilesInterceptor} from '@nestjs/platform-express';
-import {
-  FeedCreateResponse,
-  GetFeedViewResponse,
-  GetFeedCommentResponse,
-  DeleteBlogCommentResponse,
-  UpdateFeedResponse,
-} from 'src/shared/response_entities/feed/temp.response';
+import {ApiResponseDTO} from '@shared/dto/response.dto';
 import {JwtOptionalGuard} from 'src/auth/jwt/jwtNoneRequired.guard';
 import {FeedValidator} from 'src/api/feed/feed.validator';
 import {JwtGuard} from 'src/auth/jwt/jwt.guard';
 import {UserDeco} from '@shared/decorator/user.decorator';
 import {IUser} from 'src/api/users/users.interface';
-
-// TODO: 400,401,403,404등 공통 사용 응답코드는 컨트롤러에 붙이기
-// @ApiBadRequestResponse({
-//   description: '필수 인자가 없습니다.',
-//   type: HttpError4xxDto,
-// })
-// @ApiUnauthorizedResponse({ description: '인증실패', type: HttpError4xxDto })
-// @ApiForbiddenResponse({ description: '권한(인가)부족', type: HttpError4xxDto })
-// @ApiNotFoundResponse({ description: '해당 리소스 없음', type: HttpError4xxDto })
-// @ApiBearerAuth('accesskey')
+import {API_RESPONSE_MEESAGE} from '@shared/enums/enum';
 
 @ApiTags('feed')
 @Controller('feed')
@@ -79,10 +66,27 @@ export class FeedController {
     description: '성공!!!',
     type: GetListFeedMainResDTO,
   })
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
+  })
   public async getFeedsByChallengesFilter(
     @Query() query: GetListFeedMainReqDTO,
-  ): Promise<GetListFeedMainResDTO> {
-    return this.feedService.getFeedsByChallengesFilter(query);
+  ): Promise<ApiResponseDTO<GetListFeedMainResDTO>> {
+    try {
+      const result = await this.feedService.getFeedsByChallengesFilter(query);
+      return new ApiResponseDTO<GetListFeedMainResDTO>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        result,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
+    }
   }
 
   @Get('/blog-post')
@@ -99,13 +103,30 @@ export class FeedController {
   @ApiResponse({
     status: 200,
     description: '성공!!!',
-    type: [GetListFeedResDTO],
+    type: GetListFeedResDTO,
+  })
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
   })
   public async getListFeed(
     @Query() query: GetListFeedReqQueryDTO,
     @UserDeco() user: IUser,
-  ): Promise<GetListFeedResDTO> {
-    return this.feedService.getListFeed(query, user.id);
+  ): Promise<ApiResponseDTO<GetListFeedResDTO>> {
+    try {
+      const feeds = await this.feedService.getListFeed(query, user.id);
+      return new ApiResponseDTO<GetListFeedResDTO>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        feeds,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
+    }
   }
 
   @Post()
@@ -114,24 +135,37 @@ export class FeedController {
   @ApiBearerAuth()
   @ApiCreatedResponse({
     description: '성공',
-    type: FeedCreateResponse,
+    type: Boolean,
+  })
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
   })
   @UseInterceptors(FilesInterceptor('images'))
   async create(
     @UploadedFiles() files: Express.Multer.File[],
     @Body() createFeedDTO: CreateFeedDTO,
     @UserDeco() user: IUser,
-  ) {
-    await this.feedValidator.checkPermissionCreateFeed(user.id);
-    const status = await this.feedService.create(files, createFeedDTO, user.id);
-    const result: FeedCreateResponse = {
-      code: status ? 201 : 500,
-      message: status ? '성공' : '실패',
-      data: {
-        status: status,
-      },
-    };
-    return result;
+  ): Promise<ApiResponseDTO<boolean>> {
+    try {
+      await this.feedValidator.checkPermissionCreateFeed(user.id);
+      const status = await this.feedService.create(
+        files,
+        createFeedDTO,
+        user.id,
+      );
+      return new ApiResponseDTO(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        status,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
+    }
   }
 
   @Get(':id')
@@ -140,27 +174,33 @@ export class FeedController {
   @ApiOperation({summary: '피드 상세 조회'})
   @ApiResponse({
     description: '',
-    type: GetFeedViewResponse,
+    type: GetFeedViewResDTO,
   })
-  async getFeed(@Param() param: GetFeedViewReqDTO, @UserDeco() user: IUser) {
-    const result: GetFeedViewResponse = {
-      code: 200,
-      message: 'success',
-      data: null,
-    };
-
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
+  })
+  async getFeed(
+    @Param() param: GetFeedViewReqDTO,
+    @UserDeco() user: IUser,
+  ): Promise<ApiResponseDTO<GetFeedViewResDTO>> {
     try {
       const feed: GetFeedViewResDTO = await this.feedService.getFeed(
         param,
         user.id,
       );
-      result.data = feed;
-    } catch (e) {
-      result.code = 500;
-      result.message = e.message;
+      return new ApiResponseDTO<GetFeedViewResDTO>(
+        200,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        feed,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
     }
-
-    return result;
   }
 
   @Post('/comment')
@@ -169,29 +209,30 @@ export class FeedController {
   @ApiBearerAuth()
   @ApiCreatedResponse({
     description: '성공',
-    type: FeedCreateResponse,
+    type: Boolean,
+  })
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
   })
   async insertBlogComment(
     @UserDeco() user: IUser,
     @Body() insBlogCommentDTO: InsBlogCommentDTO,
   ) {
-    const result: FeedCreateResponse = {
-      code: 201,
-      message: 'success',
-      data: {
-        status: true,
-      },
-    };
-
     try {
       await this.feedService.saveBlogComment(insBlogCommentDTO, user.id);
-    } catch (e) {
-      result.code = 500;
-      result.message = e.message;
-      result.data.status = false;
+      return new ApiResponseDTO(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        true,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
     }
-
-    return result;
   }
 
   @Get(':id/comment')
@@ -200,28 +241,31 @@ export class FeedController {
   @ApiOperation({summary: '댓글 목록 조회'})
   @ApiResponse({
     description: '성공',
-    type: GetFeedCommentResponse,
+    type: [GetListFeedCommentResDTO],
+  })
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
   })
   async getListFeedComment(
     @UserDeco() user: IUser,
     @Param() param: GetListFeedCommentReqDTO,
-  ) {
-    const result: GetFeedCommentResponse = {
-      code: 200,
-      message: 'success',
-      data: null,
-    };
-
+  ): Promise<ApiResponseDTO<GetListFeedCommentResDTO[]>> {
     try {
       const comments: GetListFeedCommentResDTO[] =
         await this.feedService.getListFeedComment(param, user.id);
-      result.data = comments;
-    } catch (e) {
-      result.code = 500;
-      result.message = e.message;
+      return new ApiResponseDTO<GetListFeedCommentResDTO[]>(
+        200,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        comments,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
     }
-
-    return result;
   }
 
   @Delete('/comment/:id')
@@ -230,54 +274,70 @@ export class FeedController {
   @ApiBearerAuth()
   @ApiResponse({
     description: '성공',
-    type: DeleteBlogCommentResponse,
+    type: Boolean,
+  })
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
   })
   async deleteBlogComment(
     @UserDeco() user: IUser,
     @Param() param: DelBlogCommentReqDTO,
-  ) {
-    const result: DeleteBlogCommentResponse = {
-      code: 200,
-      message: 'success',
-      data: {
-        status: true,
-      },
-    };
-
+  ): Promise<ApiResponseDTO<boolean>> {
     try {
       await this.feedValidator.checkFeedCommentAuthor(param.id, user.id);
       await this.feedService.deleteBlogComment(param);
-    } catch (e) {
-      result.code = 500;
-      result.message = e.message;
-      result.data.status = false;
+      return new ApiResponseDTO<boolean>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        true,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
     }
-
-    return result;
   }
 
   @Post('/update')
   @ApiOperation({summary: '피드 수정'})
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
+  })
   @ApiCreatedResponse({
     description: '성공',
-    type: UpdateFeedResponse,
+    type: Boolean,
   })
-  async update(@Body() updateFeedDTO: UpdateFeedDTO, @UserDeco() user) {
-    await this.feedValidator.checkPermissionUpdateFeed(
-      updateFeedDTO.id,
-      user.id,
-    );
-    const status = await this.feedService.update(updateFeedDTO);
-    const result: UpdateFeedResponse = {
-      code: status ? 201 : 500,
-      message: status ? '성공' : '실패',
-      data: {
-        status: status,
-      },
-    };
-    return result;
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
+  })
+  async update(
+    @Body() updateFeedDTO: UpdateFeedDTO,
+    @UserDeco() user,
+  ): Promise<ApiResponseDTO<boolean>> {
+    try {
+      await this.feedValidator.checkPermissionUpdateFeed(
+        updateFeedDTO.id,
+        user.id,
+      );
+      const status = await this.feedService.update(updateFeedDTO);
+      return new ApiResponseDTO<boolean>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        status,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+      );
+    }
   }
 
   @Delete(':id')
@@ -288,13 +348,28 @@ export class FeedController {
     description: '성공',
     type: Boolean,
   })
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
+  })
   async delete(
     @Param() param: DeleteFeedReqDTO,
     @UserDeco() user: IUser,
-  ): Promise<boolean> {
-    await this.feedValidator.checkFeedAuthor(param.id, user.id);
-    await this.feedService.delete(param);
-
-    return true;
+  ): Promise<ApiResponseDTO<boolean>> {
+    try {
+      await this.feedValidator.checkFeedAuthor(param.id, user.id);
+      await this.feedService.delete(param);
+      return new ApiResponseDTO<boolean>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        true,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
+    }
   }
 }

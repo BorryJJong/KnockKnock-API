@@ -16,3 +16,8 @@ export enum ERRPR_CODE {
   UNAUTHENTICATED = 'UNAUTHENTICATED', // 토큰 만료
   UNAUTHORIZED = 'UNAUTHORIZED', // 권한 없음
 }
+
+export enum API_RESPONSE_MEESAGE {
+  SUCCESS = 'SUCCESS ',
+  FAIL = 'FAIL',
+}

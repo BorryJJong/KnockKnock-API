@@ -9,8 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateFeedResponse = exports.DeleteBlogCommentResponse = exports.GetListFeedLikeResponse = exports.GetFeedCommentResponse = exports.GetFeedViewResponse = exports.FeedCreateResponse = exports.FeedResponseData = void 0;
+exports.APIBaseResponse = exports.ErrorMessage = exports.UpdateFeedResponse = exports.DeleteBlogCommentResponse = exports.GetListFeedLikeResponse = exports.GetFeedCommentResponse = exports.GetFeedViewResponse = exports.FeedCreateResponse = exports.FeedResponseData = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const enum_1 = require("../../enums/enum");
 const feed_dto_1 = require("../../../api/feed/dto/feed.dto");
 const base_response_1 = require("../base.response");
 class FeedResponseData {
@@ -80,4 +81,40 @@ __decorate([
     __metadata("design:type", FeedResponseData)
 ], UpdateFeedResponse.prototype, "data", void 0);
 exports.UpdateFeedResponse = UpdateFeedResponse;
+class ErrorMessage {
+    constructor(data) {
+        this.data = data;
+    }
+}
+exports.ErrorMessage = ErrorMessage;
+class APIBaseResponse {
+    constructor(code, message, data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Ground Rule Http status',
+        example: '성공시 200',
+    }),
+    __metadata("design:type", Number)
+], APIBaseResponse.prototype, "code", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '응답에 대한 결과 메세지',
+        example: 'SUCCESS or FAIL',
+        enum: enum_1.API_RESPONSE_MEESAGE,
+    }),
+    __metadata("design:type", String)
+], APIBaseResponse.prototype, "message", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '응답값에 필요한 데이터',
+        nullable: true,
+    }),
+    __metadata("design:type", Object)
+], APIBaseResponse.prototype, "data", void 0);
+exports.APIBaseResponse = APIBaseResponse;
 //# sourceMappingURL=temp.response.js.map

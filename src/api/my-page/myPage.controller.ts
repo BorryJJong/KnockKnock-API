@@ -1,11 +1,14 @@
-import {Controller, Get, UseGuards} from '@nestjs/common';
+import {Controller, Get, HttpStatus, UseGuards} from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiDefaultResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import {UserDeco} from '@shared/decorator/user.decorator';
+import {ApiResponseDTO} from '@shared/dto/response.dto';
+import {API_RESPONSE_MEESAGE} from '@shared/enums/enum';
 import {MyPageService} from 'src/api/my-page/myPage.service';
 import {IUser} from 'src/api/users/users.interface';
 import {JwtGuard} from 'src/auth/jwt/jwt.guard';
@@ -30,7 +33,25 @@ export class MyPageController {
     status: 401,
     description: '회원탈퇴유저',
   })
-  async isLogin(@UserDeco() user: IUser): Promise<boolean> {
-    return this.myPageService.isLogin(user.id);
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
+  })
+  async isLogin(@UserDeco() user: IUser): Promise<ApiResponseDTO<boolean>> {
+    try {
+      await this.myPageService.isLogin(user.id);
+
+      return new ApiResponseDTO<boolean>(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        true,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
+    }
   }
 }

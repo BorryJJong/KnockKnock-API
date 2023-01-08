@@ -14,11 +14,17 @@ const swagger_1 = require("@nestjs/swagger");
 class BaseResponse {
 }
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({
+        description: 'Ground Rule Http status',
+        example: '성공시 200',
+    }),
     __metadata("design:type", Number)
 ], BaseResponse.prototype, "code", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({
+        description: '응답에 대한 결과 메세지',
+        example: 'success or fail',
+    }),
     __metadata("design:type", String)
 ], BaseResponse.prototype, "message", void 0);
 exports.BaseResponse = BaseResponse;
