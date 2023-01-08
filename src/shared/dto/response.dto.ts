@@ -22,6 +22,7 @@ export class ApiResponseDTO<T = void> {
   private data?: T;
 
   constructor(code: number, message: API_RESPONSE_MEESAGE, data?: T) {
+    console.log('test log');
     this.code = code;
     this.message = message;
     this.data = data;
