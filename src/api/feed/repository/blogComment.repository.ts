@@ -51,7 +51,9 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       .select('comment_id', 'reply_id')
       .addSelect('COUNT(*)', 'cnt')
       .from(BlogComment, 'b')
+      .innerJoin(User, 'u', 'b.user_id = u.id')
       .where('b.comment_id IS NOT NULL')
+      .andWhere('b.isDeleted = false')
       .groupBy('b.comment_id');
 
     const comment: GetListFeedCommentResDTO[] = await getManager()
