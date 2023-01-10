@@ -91,4 +91,13 @@ export class UserRepository
       socialType: SOCIAL_TYPE.NONE,
     });
   }
+
+  public async selectUserNickname(nickname: string): Promise<string> {
+    return this.findOne({
+      select: ['nickname'],
+      where: {
+        nickname,
+      },
+    }).then(user => user.nickname);
+  }
 }

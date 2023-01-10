@@ -20,6 +20,8 @@ export interface IUserRepository {
   ): Promise<void>;
   selectUser(userId: number): Promise<User | undefined>;
   updateUserDeletedAt(userId: number, queryRunner?: QueryRunner);
+  deleteUserInfo(userId: number, queryRunner?: QueryRunner): Promise<void>;
+  selectUserNickname(nickname: string): Promise<string>;
 }
 
 export interface ICreateUser {
