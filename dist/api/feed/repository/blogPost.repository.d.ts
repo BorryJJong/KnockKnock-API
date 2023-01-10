@@ -2,6 +2,7 @@ import { BlogPost } from '../../../entities/BlogPost';
 import { IBlogPostRepository, IGetBlogPostItems } from '../interface/blogPost.interface';
 import { QueryRunner, Repository } from 'typeorm';
 import { CreateBlogPostDTO, GetBlogPostDTO, UpdateBlogPostDTO } from '../dto/feed.dto';
+import { GetListHotFeedResDTO } from 'src/api/home/dto/home.dto';
 export declare class BlogPostRepository extends Repository<BlogPost> implements IBlogPostRepository {
     createBlogPost(createBlogPostDTO: CreateBlogPostDTO | UpdateBlogPostDTO, userId?: number): BlogPost;
     saveBlogPost(queryRunner: QueryRunner | null, blogPost: BlogPost): Promise<BlogPost>;
@@ -13,4 +14,5 @@ export declare class BlogPostRepository extends Repository<BlogPost> implements 
     updateBlogPostHits(id: number): Promise<void>;
     deleteBlogPost(id: number, queryRunner?: QueryRunner): Promise<void>;
     selectBlogPostByUser(id: number, userId: number): Promise<BlogPost | undefined>;
+    selectBlogPostByHotFeeds(): Promise<GetListHotFeedResDTO[]>;
 }

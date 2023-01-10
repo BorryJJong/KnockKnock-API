@@ -13,6 +13,8 @@ const typeorm_1 = require("typeorm");
 const User_1 = require("../../../entities/User");
 const utils_1 = require("../../../shared/utils");
 const BlogLike_1 = require("../../../entities/BlogLike");
+const home_dto_1 = require("../../home/dto/home.dto");
+const BlogImage_1 = require("../../../entities/BlogImage");
 let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
     createBlogPost(createBlogPostDTO, userId) {
         return this.create(Object.assign(Object.assign({}, createBlogPostDTO), { userId }));
@@ -133,6 +135,33 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             .where('id = :id', { id })
             .andWhere('blogPost.userId = :userId', { userId })
             .getOne();
+    }
+    async selectBlogPostByHotFeeds() {
+        let queryBuilder = this.createQueryBuilder('blogPost')
+            .select('blogPost.id', 'postId')
+            .addSelect('blogPost.scale', 'scale')
+            .addSelect('user.nickname', 'nickname')
+            .addSelect('count(*)', 'blogLikeCount')
+            .innerJoin(User_1.User, 'user', 'user.id = blogPost.id')
+            .innerJoin(BlogImage_1.BlogImage, 'bi', 'bi.post_id = blogPost.id')
+            .leftJoin(BlogLike_1.BlogLike, 'blogLike', 'blogLike.post_id = blogPost.id')
+            .where('blogPost.delDate IS NULL')
+            .orderBy('blogPost.hits', 'DESC')
+            .addOrderBy('blogLikeCount', 'DESC')
+            .addOrderBy('blogPost.regDate', 'DESC')
+            .groupBy('blogPost.id')
+            .addGroupBy('fileUrl');
+        queryBuilder = queryBuilder.addSelect(sq => {
+            return sq
+                .select('bi.file_url')
+                .from(BlogImage_1.BlogImage, 'bi')
+                .where('bi.postId = blogPost.id')
+                .limit(1);
+        }, 'fileUrl');
+        const hotFeeds = await queryBuilder.getRawMany();
+        return hotFeeds.map(feed => {
+            return new home_dto_1.GetListHotFeedResDTO(feed.postId, feed.scale, feed.nickname, feed.fileUrl);
+        });
     }
 };
 BlogPostRepository = __decorate([

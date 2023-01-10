@@ -23,3 +23,8 @@ export interface IPagenationResponse {
     take: number;
     total: number;
 }
+export interface IGetHotFeedsResponse {
+    id: number;
+    scale: string;
+    nickname: string;
+}

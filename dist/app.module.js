@@ -19,6 +19,7 @@ const feed_module_1 = require("./api/feed/feed.module");
 const promotions_module_1 = require("./api/promotions/promotions.module");
 const like_module_1 = require("./api/like/like.module");
 const myPage_module_1 = require("./api/my-page/myPage.module");
+const home_module_1 = require("./api/home/home.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -32,6 +33,7 @@ AppModule = __decorate([
             challenges_module_1.ChallengesModule,
             like_module_1.LikeModule,
             myPage_module_1.MyPageModule,
+            home_module_1.HomeModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
