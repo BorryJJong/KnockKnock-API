@@ -143,6 +143,7 @@ export class UsersController {
         userProperties.id.toString(),
         socialType,
       );
+      await this.userValidator.checkDuplicateNickname(nickname);
 
       const newUser = await this.userService.saveUser({
         socialType,
