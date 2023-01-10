@@ -543,15 +543,24 @@ export class FeedService {
       comments = plainToInstance(GetListFeedCommentResDTO, comments);
 
       const result: GetListFeedCommentResDTO[] = await Promise.all(
-        comments.map(async c => {
-          if (c.replyCnt != 0) {
+        comments.map(async comment => {
+          if (comment.replyCnt != 0) {
             const reply: GetBlogCommentDTO[] =
-              await this.blogCommentRepository.getBlogCommentByCommentId(c.id);
-            c.reply = plainToInstance(GetBlogCommentDTO, reply);
+              await this.blogCommentRepository.getBlogCommentByCommentId(
+                comment.id,
+              );
+            reply.map(
+              (r, index) =>
+                (reply[index].isWriter = this.isFeedCommentWriter(
+                  r.userId,
+                  userId,
+                )),
+            );
+            comment.reply = plainToInstance(GetBlogCommentDTO, reply);
           }
-          c.isWriter = c.userId === userId;
+          comment.isWriter = this.isFeedCommentWriter(comment.userId, userId);
 
-          return c;
+          return comment;
         }),
       );
 
@@ -565,6 +574,13 @@ export class FeedService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  private isFeedCommentWriter(
+    writerId: number,
+    requestUserId: number,
+  ): boolean {
+    return writerId === requestUserId;
   }
 
   async deleteBlogComment({id}: DelBlogCommentReqDTO) {
