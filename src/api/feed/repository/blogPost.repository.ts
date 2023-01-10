@@ -13,6 +13,8 @@ import {
 import {User} from '../../../entities/User';
 import {getCurrentPageCount} from '../../../shared/utils';
 import {BlogLike} from '@entities/BlogLike';
+import {GetListHotFeedResDTO} from 'src/api/home/dto/home.dto';
+import {BlogImage} from '@entities/BlogImage';
 
 @Injectable()
 @EntityRepository(BlogPost)
@@ -179,5 +181,42 @@ export class BlogPostRepository
       .where('id = :id', {id})
       .andWhere('blogPost.userId = :userId', {userId})
       .getOne();
+  }
+
+  // TODO: 데이터가 확장될 경우, 날짜를 Today로 제한
+  async selectBlogPostByHotFeeds(): Promise<GetListHotFeedResDTO[]> {
+    let queryBuilder = this.createQueryBuilder('blogPost')
+      .select('blogPost.id', 'postId')
+      .addSelect('blogPost.scale', 'scale')
+      .addSelect('user.nickname', 'nickname')
+      .addSelect('count(*)', 'blogLikeCount')
+      .innerJoin(User, 'user', 'user.id = blogPost.id')
+      .innerJoin(BlogImage, 'bi', 'bi.post_id = blogPost.id')
+      .leftJoin(BlogLike, 'blogLike', 'blogLike.post_id = blogPost.id')
+      .where('blogPost.delDate IS NULL')
+      .orderBy('blogPost.hits', 'DESC')
+      .addOrderBy('blogLikeCount', 'DESC')
+      .addOrderBy('blogPost.regDate', 'DESC')
+      .groupBy('blogPost.id')
+      .addGroupBy('fileUrl');
+
+    queryBuilder = queryBuilder.addSelect(sq => {
+      return sq
+        .select('bi.file_url')
+        .from(BlogImage, 'bi')
+        .where('bi.postId = blogPost.id')
+        .limit(1);
+    }, 'fileUrl');
+
+    const hotFeeds = await queryBuilder.getRawMany<GetListHotFeedResDTO>();
+
+    return hotFeeds.map(feed => {
+      return new GetListHotFeedResDTO(
+        feed.postId,
+        feed.scale,
+        feed.nickname,
+        feed.fileUrl,
+      );
+    });
   }
 }
