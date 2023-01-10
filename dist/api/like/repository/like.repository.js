@@ -54,6 +54,16 @@ let BlogLikeRepository = class BlogLikeRepository extends typeorm_1.Repository {
             .groupBy('blogLike.postId')
             .getRawMany();
     }
+    async selectFeedByUser(postId, userId) {
+        return await this.createQueryBuilder('blogLike')
+            .where('blogLike.postId = :postId', {
+            postId,
+        })
+            .andWhere('blogLike.userId = :userId', {
+            userId,
+        })
+            .getCount();
+    }
 };
 BlogLikeRepository = __decorate([
     (0, common_1.Injectable)(),

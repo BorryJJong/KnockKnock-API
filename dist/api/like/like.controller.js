@@ -22,14 +22,16 @@ const like_service_1 = require("./like.service");
 const user_decorator_1 = require("../../shared/decorator/user.decorator");
 const response_dto_1 = require("../../shared/dto/response.dto");
 const enum_1 = require("../../shared/enums/enum");
+const like_validator_1 = require("./like.validator");
 let LikeController = class LikeController {
-    constructor(likeService, userService) {
+    constructor(likeService, userService, likeValidator) {
         this.likeService = likeService;
         this.userService = userService;
+        this.likeValidator = likeValidator;
     }
     async feedLike(id, user) {
         try {
-            await this.userService.getUser(user.id);
+            await this.likeValidator.validLike(id, user.id, true);
             await this.likeService.feedLike(id, user.id);
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
@@ -39,7 +41,7 @@ let LikeController = class LikeController {
     }
     async feedUnLike(id, user) {
         try {
-            await this.userService.getUser(user.id);
+            await this.likeValidator.validLike(id, user.id, false);
             await this.likeService.feedUnLike(id, user.id);
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
@@ -117,7 +119,8 @@ LikeController = __decorate([
     (0, swagger_1.ApiTags)('like'),
     (0, common_1.Controller)('like'),
     __metadata("design:paramtypes", [like_service_1.LikeService,
-        users_service_1.UsersService])
+        users_service_1.UsersService,
+        like_validator_1.LikeValidator])
 ], LikeController);
 exports.LikeController = LikeController;
 //# sourceMappingURL=like.controller.js.map

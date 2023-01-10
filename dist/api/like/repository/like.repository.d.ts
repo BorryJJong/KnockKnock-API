@@ -8,4 +8,5 @@ export declare class BlogLikeRepository extends Repository<BlogLike> {
     getListFeedLike(postId: number): Promise<GetFeedLikeDTO[]>;
     selectFeedListByUserLikes(postIds: number[], userId: number): Promise<BlogLike[]>;
     selectFeedsByLikeCount(postIds: number[]): Promise<IGetFeedsByLikeCountResponse[]>;
+    selectFeedByUser(postId: number, userId: number): Promise<number>;
 }

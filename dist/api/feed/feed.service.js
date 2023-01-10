@@ -285,13 +285,14 @@ let FeedService = FeedService_1 = class FeedService {
         try {
             let comments = await this.blogCommentRepository.getBlogCommentByPostId(id);
             comments = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetListFeedCommentResDTO, comments);
-            const result = await Promise.all(comments.map(async (c) => {
-                if (c.replyCnt != 0) {
-                    const reply = await this.blogCommentRepository.getBlogCommentByCommentId(c.id);
-                    c.reply = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetBlogCommentDTO, reply);
+            const result = await Promise.all(comments.map(async (comment) => {
+                if (comment.replyCnt != 0) {
+                    const reply = await this.blogCommentRepository.getBlogCommentByCommentId(comment.id);
+                    reply.map((r, index) => (reply[index].isWriter = this.isFeedCommentWriter(r.userId, userId)));
+                    comment.reply = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetBlogCommentDTO, reply);
                 }
-                c.isWriter = c.userId === userId;
-                return c;
+                comment.isWriter = this.isFeedCommentWriter(comment.userId, userId);
+                return comment;
             }));
             return result;
         }
@@ -301,6 +302,9 @@ let FeedService = FeedService_1 = class FeedService {
                 message: e.message,
             }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    isFeedCommentWriter(writerId, requestUserId) {
+        return writerId === requestUserId;
     }
     async deleteBlogComment({ id }) {
         try {
