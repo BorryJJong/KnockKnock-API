@@ -18,6 +18,6 @@ export enum ERRPR_CODE {
 }
 
 export enum API_RESPONSE_MEESAGE {
-  SUCCESS = 'SUCCESS ',
+  SUCCESS = 'SUCCESS',
   FAIL = 'FAIL',
 }
