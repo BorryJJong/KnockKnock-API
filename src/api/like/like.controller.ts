@@ -22,6 +22,7 @@ import {UserDeco} from '@shared/decorator/user.decorator';
 import {IUser} from 'src/api/users/users.interface';
 import {ApiResponseDTO} from '@shared/dto/response.dto';
 import {API_RESPONSE_MEESAGE} from '@shared/enums/enum';
+import {LikeValidator} from 'src/api/like/like.validator';
 
 @ApiTags('like')
 @Controller('like')
@@ -29,6 +30,7 @@ export class LikeController {
   constructor(
     private readonly likeService: LikeService,
     private readonly userService: UsersService,
+    private readonly likeValidator: LikeValidator,
   ) {}
 
   @Post('/feed/:id')
@@ -49,7 +51,7 @@ export class LikeController {
     @UserDeco() user: IUser,
   ): Promise<ApiResponseDTO<void>> {
     try {
-      await this.userService.getUser(user.id);
+      await this.likeValidator.validLike(id, user.id, true);
       await this.likeService.feedLike(id, user.id);
       return new ApiResponseDTO<void>(
         HttpStatus.OK,
@@ -82,7 +84,7 @@ export class LikeController {
     @UserDeco() user: IUser,
   ): Promise<ApiResponseDTO<void>> {
     try {
-      await this.userService.getUser(user.id);
+      await this.likeValidator.validLike(id, user.id, false);
       await this.likeService.feedUnLike(id, user.id);
 
       return new ApiResponseDTO<void>(
