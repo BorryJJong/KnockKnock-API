@@ -254,6 +254,7 @@ export class FeedController {
     try {
       const comments: GetListFeedCommentResDTO[] =
         await this.feedService.getListFeedComment(param, user.id);
+
       return new ApiResponseDTO<GetListFeedCommentResDTO[]>(
         200,
         API_RESPONSE_MEESAGE.SUCCESS,
