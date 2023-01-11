@@ -78,7 +78,7 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
         return comment;
     }
     async getBlogComment(id) {
-        return await this.findOne(id);
+        return await this.findOneOrFail(id);
     }
     async selectFeedsByCommentCount(postIds) {
         return await this.createQueryBuilder('blogComment')

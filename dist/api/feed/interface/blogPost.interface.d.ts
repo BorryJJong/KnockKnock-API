@@ -6,9 +6,9 @@ export interface IBlogPostRepository {
     updateBlogPost(queryRunner: QueryRunner | null, postId: number, updateBlogPostDTO: UpdateBlogPostDTO): any;
     saveBlogPost(queryRunner: QueryRunner | null, blogPost: BlogPost): Promise<BlogPost>;
     getBlogPosts(page: number, take: number, blogPostIds: number[]): Promise<IGetBlogPostItems>;
-    getListBlogPost(page: number, take: number, blogPostIds: number[], excludeBlogPostId: number, userId: number): Promise<IGetBlogPostItems>;
+    getListBlogPost(page: number, take: number, blogPostIds: number[], excludeBlogPostId: number): Promise<IGetBlogPostItems>;
     getBlogPost(blogPostId: number): Promise<BlogPost>;
-    getBlogPostById(id: number, userId?: number): Promise<GetBlogPostDTO>;
+    getBlogPostById(id: number, userId?: number): Promise<GetBlogPostDTO | undefined>;
     updateBlogPostHits(id: number): Promise<void>;
     deleteBlogPost(id: number, queryRunner?: QueryRunner): Promise<void>;
     selectBlogPostByUser(id: number, userId: number): Promise<BlogPost | undefined>;

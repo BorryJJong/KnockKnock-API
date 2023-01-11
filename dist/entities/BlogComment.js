@@ -75,7 +75,7 @@ __decorate([
         nullable: true,
         comment: 'null || 리댓글 대상 댓글 pk',
     }),
-    __metadata("design:type", Number)
+    __metadata("design:type", Object)
 ], BlogComment.prototype, "commentId", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({

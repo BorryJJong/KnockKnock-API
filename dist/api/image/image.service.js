@@ -34,21 +34,20 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const AWS = __importStar(require("aws-sdk"));
 require("dotenv/config");
-const s3 = new AWS.S3();
 let ImageService = ImageService_1 = class ImageService {
     constructor(configService) {
         this.configService = configService;
         this.logger = new common_1.Logger(ImageService_1.name);
         AWS.config.update({
             credentials: {
-                accessKeyId: configService.get('AWS_ACCESS_KEY_ID'),
-                secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY'),
+                accessKeyId: configService.get('AWS_ACCESS_KEY_ID') || '',
+                secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY') || '',
             },
             region: configService.get('AWS_REGION'),
         });
         this.S3 = new AWS.S3();
-        this.buketName = configService.get('AWS_S3_BUCKET_NAME');
-        this.region = configService.get('AWS_REGION');
+        this.buketName = configService.get('AWS_S3_BUCKET_NAME') || '';
+        this.region = configService.get('AWS_REGION') || '';
         this.ACL = 'public-read';
     }
     async __createBucket() {

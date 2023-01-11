@@ -22,7 +22,7 @@ let MyPageService = class MyPageService {
     }
     async isLogin(userId) {
         const user = await this.userRepository.selectUser(userId);
-        return user.refreshToken ? true : false;
+        return user && user.refreshToken ? true : false;
     }
 };
 MyPageService = __decorate([

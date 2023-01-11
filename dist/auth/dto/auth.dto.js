@@ -46,11 +46,11 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '회원 정보',
-        example: users_dto_1.UserInfoResponseDTO,
-        type: users_dto_1.UserInfoResponseDTO,
+        example: users_dto_1.UserInfoResDTO,
+        type: users_dto_1.UserInfoResDTO,
         required: false,
     }),
-    __metadata("design:type", users_dto_1.UserInfoResponseDTO)
+    __metadata("design:type", users_dto_1.UserInfoResDTO)
 ], SocialLoginResponseDTO.prototype, "userInfo", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
