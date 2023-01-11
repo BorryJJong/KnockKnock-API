@@ -111,7 +111,7 @@ export class BlogCommentRepository extends Repository<BlogComment> {
   }
 
   async getBlogComment(id: number): Promise<BlogComment> {
-    return await this.findOne(id);
+    return await this.findOneOrFail(id);
   }
 
   async selectFeedsByCommentCount(

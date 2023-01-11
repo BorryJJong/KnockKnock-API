@@ -13,6 +13,6 @@ export class MyPageService {
     const user = await this.userRepository.selectUser(userId);
 
     // 로그아웃 여부
-    return user.refreshToken ? true : false;
+    return user && user.refreshToken ? true : false;
   }
 }

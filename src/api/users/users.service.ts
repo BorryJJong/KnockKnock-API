@@ -1,7 +1,8 @@
 import {User} from '@entities/User';
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {ICreateUser, IUpdateUser} from 'src/api/users/users.interface';
+import {UpdateUserReqDTO} from 'src/api/users/dto/users.dto';
+import {ICreateUser} from 'src/api/users/users.interface';
 import {SocialLoginRequestDTO} from 'src/auth/dto/auth.dto';
 import {KakaoService} from 'src/auth/kakao.service';
 import {Connection, QueryRunner} from 'typeorm';
@@ -20,10 +21,6 @@ export class UsersService {
     return await this.userRepository.insertUser(request);
   }
 
-  async updateUser(request: IUpdateUser): Promise<void> {
-    return await this.userRepository.updateUser(request);
-  }
-
   async getSocialUser({
     socialUuid,
     socialType,
@@ -35,8 +32,12 @@ export class UsersService {
     return await this.userRepository.selectUser(userId);
   }
 
+  async getUserFindOrFail(userId: number): Promise<User> {
+    return await this.userRepository.selectUserFindOneOrFail(userId);
+  }
+
   async logout(userId: number): Promise<void> {
-    await this.userRepository.updateRefreshToken(userId, null);
+    await this.userRepository.updateRefreshToken(userId, undefined);
   }
 
   async deleteUser(
@@ -54,7 +55,11 @@ export class UsersService {
       }
 
       await this.userRepository.updateUserDeletedAt(userId, queryRunner);
-      await this.userRepository.updateRefreshToken(userId, null, queryRunner);
+      await this.userRepository.updateRefreshToken(
+        userId,
+        undefined,
+        queryRunner,
+      );
       await this.userRepository.deleteUserInfo(userId, queryRunner);
 
       await queryRunner.commitTransaction();
@@ -71,5 +76,13 @@ export class UsersService {
         await queryRunner.release();
       }
     }
+  }
+
+  async profileUpdate(
+    userId: number,
+    updateUserReqDTO: UpdateUserReqDTO,
+  ): Promise<void> {
+    const {nickname} = updateUserReqDTO;
+    return await this.userRepository.updateUser(userId, nickname);
   }
 }

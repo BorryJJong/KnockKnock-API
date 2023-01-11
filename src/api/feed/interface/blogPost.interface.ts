@@ -30,10 +30,12 @@ export interface IBlogPostRepository {
     take: number,
     blogPostIds: number[],
     excludeBlogPostId: number,
-    userId: number,
   ): Promise<IGetBlogPostItems>;
   getBlogPost(blogPostId: number): Promise<BlogPost>;
-  getBlogPostById(id: number, userId?: number): Promise<GetBlogPostDTO>;
+  getBlogPostById(
+    id: number,
+    userId?: number,
+  ): Promise<GetBlogPostDTO | undefined>;
   updateBlogPostHits(id: number): Promise<void>;
   deleteBlogPost(id: number, queryRunner?: QueryRunner): Promise<void>;
   selectBlogPostByUser(

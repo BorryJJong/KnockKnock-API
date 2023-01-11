@@ -4,7 +4,7 @@ import {QueryRunner} from 'typeorm';
 
 export interface IUserRepository {
   insertUser(request: ICreateUser): Promise<User>;
-  updateUser(request: IUpdateUser): Promise<void>;
+  updateUser(userId: number, nickname?: string): Promise<void>;
   selectSocialUser(
     socialUuid: string,
     socialType: SOCIAL_TYPE,
@@ -19,9 +19,10 @@ export interface IUserRepository {
     queryRunner?: QueryRunner,
   ): Promise<void>;
   selectUser(userId: number): Promise<User | undefined>;
+  selectUserFindOneOrFail(userId: number): Promise<User>;
   updateUserDeletedAt(userId: number, queryRunner?: QueryRunner);
   deleteUserInfo(userId: number, queryRunner?: QueryRunner): Promise<void>;
-  selectUserNickname(nickname: string): Promise<string>;
+  selectUserNickname(nickname: string): Promise<string | undefined>;
 }
 
 export interface ICreateUser {

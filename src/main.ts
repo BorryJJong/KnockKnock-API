@@ -11,7 +11,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   // app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(process.env.APP_PORT, () => {
+  await app.listen(process.env.APP_PORT || '', () => {
     console.log(`[ 녹녹 ] Server listening on port : ${process.env.APP_PORT}`);
   });
 }

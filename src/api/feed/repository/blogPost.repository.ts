@@ -122,7 +122,10 @@ export class BlogPostRepository
       .getOneOrFail();
   }
 
-  async getBlogPostById(id: number, userId?: number): Promise<GetBlogPostDTO> {
+  async getBlogPostById(
+    id: number,
+    userId?: number,
+  ): Promise<GetBlogPostDTO | undefined> {
     let queryBuilder = getManager()
       .createQueryBuilder()
       .select('bp.id', 'id')
@@ -155,7 +158,7 @@ export class BlogPostRepository
       }, 'isLike');
     }
 
-    return await queryBuilder.getRawOne();
+    return await queryBuilder.getRawOne<GetBlogPostDTO>();
   }
 
   async updateBlogPostHits(id: number): Promise<void> {

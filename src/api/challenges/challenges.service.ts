@@ -60,7 +60,7 @@ export class ChallengesService {
     const challengeContentJson: ChallengeContentType = JSON.parse(
       challengeDTO.content,
     ) as ChallengeContentType;
-    const subContents = [];
+    const subContents: ChallengeSubContentDTO[] = [];
 
     if (challengeContentJson.subContents !== undefined) {
       challengeContentJson.subContents.forEach((_, index) => {
