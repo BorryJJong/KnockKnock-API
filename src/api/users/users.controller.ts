@@ -4,6 +4,7 @@ import {
   Delete,
   HttpStatus,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -16,7 +17,7 @@ import {
 import {UserDeco} from '@shared/decorator/user.decorator';
 import {ApiResponseDTO} from '@shared/dto/response.dto';
 import {API_RESPONSE_MEESAGE, SOCIAL_TYPE} from '@shared/enums/enum';
-import {UserInfoResponseDTO} from 'src/api/users/dto/users.dto';
+import {UpdateUserReqDTO, UserInfoResDTO} from 'src/api/users/dto/users.dto';
 import {IUser} from 'src/api/users/users.interface';
 import {UserValidator} from 'src/api/users/users.validator';
 import {AppleService} from 'src/auth/apple.service';
@@ -87,7 +88,7 @@ export class UsersController {
 
         const result = new SocialLoginResponseDTO(
           true,
-          new UserInfoResponseDTO(
+          new UserInfoResDTO(
             user.nickname,
             user.socialType,
             user.image,
@@ -158,7 +159,7 @@ export class UsersController {
       await this.authService.updateRefreshToken(newUser.id, refreshToken);
       const result = new SocialLoginResponseDTO(
         false,
-        new UserInfoResponseDTO(
+        new UserInfoResDTO(
           newUser.nickname,
           newUser.socialType,
           newUser.image,
@@ -234,7 +235,7 @@ export class UsersController {
   })
   async deleteUser(@UserDeco() user: IUser): Promise<ApiResponseDTO<boolean>> {
     try {
-      const findeUser = await this.userService.getUser(user.id);
+      const findeUser = await this.userService.getUserFindOrFail(user.id);
       await this.userService.deleteUser(
         findeUser.id,
         findeUser.socialUuid,
@@ -260,11 +261,45 @@ export class UsersController {
     socialType: SOCIAL_TYPE,
     socialUuid: string,
   ): Promise<IUserPropertiesResponse> {
-    switch (socialType) {
-      case SOCIAL_TYPE.APPLE:
-        return await this.appleService.getUserProperties(socialUuid);
-      case SOCIAL_TYPE.KAKAO:
-        return await this.kakaoService.getUserProperties(socialUuid);
+    if (socialType === SOCIAL_TYPE.APPLE) {
+      return await this.appleService.getUserProperties(socialUuid);
+    } else {
+      return await this.kakaoService.getUserProperties(socialUuid);
+    }
+  }
+
+  @Put()
+  @ApiOperation({summary: '회원 프로필 수정'})
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
+  })
+  async profileUpdate(
+    @Body() updateUserReqDTO: UpdateUserReqDTO,
+    @UserDeco() user,
+  ): Promise<ApiResponseDTO<boolean>> {
+    try {
+      if (updateUserReqDTO.nickname) {
+        await this.userValidator.checkDuplicateNickname(
+          updateUserReqDTO.nickname,
+        );
+      }
+
+      await this.userService.profileUpdate(user.id, updateUserReqDTO);
+
+      return new ApiResponseDTO<boolean>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        true,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
     }
   }
 }

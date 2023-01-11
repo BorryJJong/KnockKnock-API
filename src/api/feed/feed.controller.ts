@@ -314,10 +314,6 @@ export class FeedController {
     description: '성공',
     type: Boolean,
   })
-  @ApiDefaultResponse({
-    description: '기본 응답 형태',
-    type: ApiResponseDTO,
-  })
   async update(
     @Body() updateFeedDTO: UpdateFeedDTO,
     @UserDeco() user,

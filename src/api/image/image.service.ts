@@ -3,8 +3,12 @@ import {ConfigService} from '@nestjs/config';
 import * as AWS from 'aws-sdk';
 import 'dotenv/config';
 
-const s3 = new AWS.S3();
-
+export interface IUploadS3Response {
+  ok: boolean;
+  ETag?: string | undefined;
+  Key?: string;
+  url?: string;
+}
 @Injectable()
 export class ImageService {
   private readonly S3: AWS.S3;
@@ -17,15 +21,15 @@ export class ImageService {
     // (1) Region + Key 설정
     AWS.config.update({
       credentials: {
-        accessKeyId: configService.get('AWS_ACCESS_KEY_ID'),
-        secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY'),
+        accessKeyId: configService.get('AWS_ACCESS_KEY_ID') || '',
+        secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY') || '',
       },
       region: configService.get('AWS_REGION'),
     });
     // (2) S3객체,엑세스레밸 , 버킷이름+지역
     this.S3 = new AWS.S3();
-    this.buketName = configService.get('AWS_S3_BUCKET_NAME');
-    this.region = configService.get('AWS_REGION');
+    this.buketName = configService.get('AWS_S3_BUCKET_NAME') || '';
+    this.region = configService.get('AWS_REGION') || '';
     this.ACL = 'public-read';
   }
 
@@ -42,7 +46,10 @@ export class ImageService {
   }
 
   // (1) 폴더 업로드 - 폴더 미지정시 common
-  async uploadS3(file: Express.Multer.File, folder?: string) {
+  async uploadS3(
+    file: Express.Multer.File,
+    folder?: string,
+  ): Promise<IUploadS3Response> {
     const Key = this.rename(file.originalname, file.mimetype);
     folder = folder ? folder : 'common';
     try {
@@ -53,6 +60,7 @@ export class ImageService {
         Key,
         Body: file.buffer,
       }).promise();
+
       return {
         ok: true,
         ETag: result.ETag,

@@ -97,7 +97,7 @@ export class ChallengesRepository extends Repository<Challenges> {
         newYn: s.newYn,
         postCnt: s.postCnt,
         rnk: s.rnk,
-        participants: null,
+        participants: [],
       };
       return item;
     });
