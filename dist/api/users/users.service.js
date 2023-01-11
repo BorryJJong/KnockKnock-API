@@ -27,17 +27,17 @@ let UsersService = class UsersService {
     async saveUser(request) {
         return await this.userRepository.insertUser(request);
     }
-    async updateUser(request) {
-        return await this.userRepository.updateUser(request);
-    }
     async getSocialUser({ socialUuid, socialType, }) {
         return await this.userRepository.selectSocialUser(socialUuid, socialType);
     }
     async getUser(userId) {
         return await this.userRepository.selectUser(userId);
     }
+    async getUserFindOrFail(userId) {
+        return await this.userRepository.selectUserFindOneOrFail(userId);
+    }
     async logout(userId) {
-        await this.userRepository.updateRefreshToken(userId, null);
+        await this.userRepository.updateRefreshToken(userId, undefined);
     }
     async deleteUser(userId, socialUuid, isKakao) {
         const queryRunner = this.connection.createQueryRunner();
@@ -48,7 +48,7 @@ let UsersService = class UsersService {
                 await this.kakaoService.unlink(socialUuid);
             }
             await this.userRepository.updateUserDeletedAt(userId, queryRunner);
-            await this.userRepository.updateRefreshToken(userId, null, queryRunner);
+            await this.userRepository.updateRefreshToken(userId, undefined, queryRunner);
             await this.userRepository.deleteUserInfo(userId, queryRunner);
             await queryRunner.commitTransaction();
         }
@@ -63,6 +63,10 @@ let UsersService = class UsersService {
                 await queryRunner.release();
             }
         }
+    }
+    async profileUpdate(userId, updateUserReqDTO) {
+        const { nickname } = updateUserReqDTO;
+        return await this.userRepository.updateUser(userId, nickname);
     }
 };
 UsersService = __decorate([

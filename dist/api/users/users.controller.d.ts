@@ -1,4 +1,5 @@
 import { ApiResponseDTO } from '@shared/dto/response.dto';
+import { UpdateUserReqDTO } from 'src/api/users/dto/users.dto';
 import { IUser } from 'src/api/users/users.interface';
 import { UserValidator } from 'src/api/users/users.validator';
 import { AppleService } from 'src/auth/apple.service';
@@ -18,4 +19,5 @@ export declare class UsersController {
     logout(user: IUser): Promise<ApiResponseDTO<boolean>>;
     deleteUser(user: IUser): Promise<ApiResponseDTO<boolean>>;
     private getSocialLoginAttributes;
+    profileUpdate(updateUserReqDTO: UpdateUserReqDTO, user: any): Promise<ApiResponseDTO<boolean>>;
 }

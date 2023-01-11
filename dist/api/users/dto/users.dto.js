@@ -9,10 +9,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserInfoResponseDTO = void 0;
+exports.UpdateUserReqDTO = exports.UserInfoResDTO = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const enum_1 = require("../../../shared/enums/enum");
-class UserInfoResponseDTO {
+class UserInfoResDTO {
     constructor(nickname, socialType, image, regDate, deletedAt) {
         this.nickname = nickname;
         this.socialType = socialType;
@@ -24,19 +24,19 @@ class UserInfoResponseDTO {
 __decorate([
     (0, swagger_1.ApiProperty)({ type: String, example: 'jerry', description: '닉네임' }),
     __metadata("design:type", String)
-], UserInfoResponseDTO.prototype, "nickname", void 0);
+], UserInfoResDTO.prototype, "nickname", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ enum: enum_1.SOCIAL_TYPE, example: 'KAKAO', description: '소셜 종류' }),
     __metadata("design:type", String)
-], UserInfoResponseDTO.prototype, "socialType", void 0);
+], UserInfoResDTO.prototype, "socialType", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ type: String, example: '', description: '회원 프로필 이미지' }),
     __metadata("design:type", String)
-], UserInfoResponseDTO.prototype, "image", void 0);
+], UserInfoResDTO.prototype, "image", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ type: Date, example: '', description: '등록 날짜' }),
     __metadata("design:type", Date)
-], UserInfoResponseDTO.prototype, "regDate", void 0);
+], UserInfoResDTO.prototype, "regDate", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         type: Date,
@@ -44,7 +44,22 @@ __decorate([
         example: '',
         description: '회원탈퇴 날짜',
     }),
-    __metadata("design:type", Date)
-], UserInfoResponseDTO.prototype, "deletedAt", void 0);
-exports.UserInfoResponseDTO = UserInfoResponseDTO;
+    __metadata("design:type", Object)
+], UserInfoResDTO.prototype, "deletedAt", void 0);
+exports.UserInfoResDTO = UserInfoResDTO;
+class UpdateUserReqDTO {
+    constructor(nickname) {
+        this.nickname = nickname;
+    }
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        type: String,
+        nullable: true,
+        example: 'jerry',
+        description: '닉네임',
+    }),
+    __metadata("design:type", String)
+], UpdateUserReqDTO.prototype, "nickname", void 0);
+exports.UpdateUserReqDTO = UpdateUserReqDTO;
 //# sourceMappingURL=users.dto.js.map

@@ -45,7 +45,7 @@ let UsersController = class UsersController {
             if (user) {
                 const { accessToken, refreshToken } = await this.authService.makeJwtToken(user.id);
                 await this.authService.updateRefreshToken(user.id, refreshToken);
-                const result = new auth_dto_1.SocialLoginResponseDTO(true, new users_dto_1.UserInfoResponseDTO(user.nickname, user.socialType, user.image, user.regDate, user.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
+                const result = new auth_dto_1.SocialLoginResponseDTO(true, new users_dto_1.UserInfoResDTO(user.nickname, user.socialType, user.image, user.regDate, user.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
                 return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, result);
             }
             else {
@@ -61,6 +61,7 @@ let UsersController = class UsersController {
             const { socialUuid, socialType, nickname } = body;
             const userProperties = await this.getSocialLoginAttributes(socialType, socialUuid);
             await this.userValidator.checkExistSocialUser(userProperties.id.toString(), socialType);
+            await this.userValidator.checkDuplicateNickname(nickname);
             const newUser = await this.userService.saveUser({
                 socialType,
                 socialUuid: userProperties.id.toString(),
@@ -68,7 +69,7 @@ let UsersController = class UsersController {
             });
             const { accessToken, refreshToken } = await this.authService.makeJwtToken(newUser.id);
             await this.authService.updateRefreshToken(newUser.id, refreshToken);
-            const result = new auth_dto_1.SocialLoginResponseDTO(false, new users_dto_1.UserInfoResponseDTO(newUser.nickname, newUser.socialType, newUser.image, newUser.regDate, newUser.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
+            const result = new auth_dto_1.SocialLoginResponseDTO(false, new users_dto_1.UserInfoResDTO(newUser.nickname, newUser.socialType, newUser.image, newUser.regDate, newUser.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, result);
         }
         catch (error) {
@@ -87,7 +88,7 @@ let UsersController = class UsersController {
     }
     async deleteUser(user) {
         try {
-            const findeUser = await this.userService.getUser(user.id);
+            const findeUser = await this.userService.getUserFindOrFail(user.id);
             await this.userService.deleteUser(findeUser.id, findeUser.socialUuid, findeUser.socialType === enum_1.SOCIAL_TYPE.KAKAO);
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, true);
         }
@@ -96,11 +97,23 @@ let UsersController = class UsersController {
         }
     }
     async getSocialLoginAttributes(socialType, socialUuid) {
-        switch (socialType) {
-            case enum_1.SOCIAL_TYPE.APPLE:
-                return await this.appleService.getUserProperties(socialUuid);
-            case enum_1.SOCIAL_TYPE.KAKAO:
-                return await this.kakaoService.getUserProperties(socialUuid);
+        if (socialType === enum_1.SOCIAL_TYPE.APPLE) {
+            return await this.appleService.getUserProperties(socialUuid);
+        }
+        else {
+            return await this.kakaoService.getUserProperties(socialUuid);
+        }
+    }
+    async profileUpdate(updateUserReqDTO, user) {
+        try {
+            if (updateUserReqDTO.nickname) {
+                await this.userValidator.checkDuplicateNickname(updateUserReqDTO.nickname);
+            }
+            await this.userService.profileUpdate(user.id, updateUserReqDTO);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, true);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
         }
     }
 };
@@ -191,6 +204,21 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "deleteUser", null);
+__decorate([
+    (0, common_1.Put)(),
+    (0, swagger_1.ApiOperation)({ summary: '회원 프로필 수정' }),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
+    }),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, user_decorator_1.UserDeco)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [users_dto_1.UpdateUserReqDTO, Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "profileUpdate", null);
 UsersController = __decorate([
     (0, swagger_1.ApiTags)('users'),
     (0, common_1.Controller)('users'),

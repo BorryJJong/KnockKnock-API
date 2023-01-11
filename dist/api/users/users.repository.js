@@ -15,13 +15,13 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
     async insertUser(request) {
         return await this.save(this.create(Object.assign({}, request)));
     }
-    async updateUser(request) {
+    async updateUser(userId, nickname) {
         await this.createQueryBuilder()
             .update(User_1.User)
             .set({
-            nickname: request.nickname,
+            nickname,
         })
-            .where('id = :id', { id: request.id })
+            .where('id = :id', { id: userId })
             .execute();
     }
     async selectSocialUser(socialUuid, socialType) {
@@ -46,20 +46,38 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
     async selectUser(userId) {
         return await this.findOne(userId);
     }
+    async selectUserFindOneOrFail(userId) {
+        return await this.findOneOrFail(userId);
+    }
     async selectUsers(userIds) {
         return await this.findByIds(userIds, {
             withDeleted: true,
         });
     }
     async updateUserDeletedAt(userId, queryRunner) {
-        await queryRunner.manager.softDelete(User_1.User, userId);
+        await this.createQueryBuilder('users', queryRunner)
+            .where('users.id = :id', {
+            id: userId,
+        })
+            .softDelete();
     }
     async deleteUserInfo(userId, queryRunner) {
-        await queryRunner.manager.update(User_1.User, userId, {
+        await this.createQueryBuilder('users', queryRunner)
+            .update()
+            .set({
             nickname: '',
             socialUuid: '',
             socialType: enum_1.SOCIAL_TYPE.NONE,
-        });
+        })
+            .where('id = :id', { id: userId })
+            .execute();
+    }
+    async selectUserNickname(nickname) {
+        return await this.findOne({
+            where: {
+                nickname,
+            },
+        }).then(user => user === null || user === void 0 ? void 0 : user.nickname);
     }
 };
 UserRepository = __decorate([

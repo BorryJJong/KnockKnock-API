@@ -79,7 +79,7 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
                 newYn: s.newYn,
                 postCnt: s.postCnt,
                 rnk: s.rnk,
-                participants: null,
+                participants: [],
             };
             return item;
         });

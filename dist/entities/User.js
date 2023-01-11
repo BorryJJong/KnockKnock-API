@@ -103,7 +103,7 @@ __decorate([
         nullable: true,
         comment: '회원탈퇴 날짜',
     }),
-    __metadata("design:type", Date)
+    __metadata("design:type", Object)
 ], User.prototype, "deletedAt", void 0);
 User = __decorate([
     (0, typeorm_1.Entity)('user', { schema: 'knockknock' })

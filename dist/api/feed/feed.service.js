@@ -26,6 +26,7 @@ const blogPost_repository_1 = require("./repository/blogPost.repository");
 const blogPromotion_repository_1 = require("./repository/blogPromotion.repository");
 const blogComment_repository_1 = require("./repository/blogComment.repository");
 const utils_1 = require("../../shared/utils");
+const BlogPost_1 = require("../../entities/BlogPost");
 const like_repository_1 = require("../like/repository/like.repository");
 const users_repository_1 = require("../users/users.repository");
 let FeedService = FeedService_1 = class FeedService {
@@ -90,7 +91,12 @@ let FeedService = FeedService_1 = class FeedService {
         }));
     }
     async savePostImage(queryRunner, postId, file) {
-        let resultS3 = null;
+        let resultS3 = {
+            ok: true,
+            ETag: undefined,
+            Key: undefined,
+            url: undefined,
+        };
         try {
             resultS3 = await this.imageService.uploadS3(file, 'feed');
             if (!resultS3.ok) {
@@ -100,13 +106,13 @@ let FeedService = FeedService_1 = class FeedService {
             }
             const image = this.blogImageRepository.createBlogImage({
                 postId: postId,
-                fileUrl: resultS3.url,
+                fileUrl: resultS3.url || '',
             });
             await this.blogImageRepository.saveBlogImage(queryRunner, image);
         }
         catch (e) {
             if (resultS3.ok) {
-                this.imageService.deleteS3(resultS3.Key);
+                this.imageService.deleteS3(resultS3.Key || '');
             }
             throw new common_1.HttpException({
                 error: e.message,
@@ -129,6 +135,11 @@ let FeedService = FeedService_1 = class FeedService {
     async getFeed({ id }, userId) {
         try {
             const post = await this.blogPostRepository.getBlogPostById(id, userId);
+            if (!post) {
+                throw new common_1.HttpException({
+                    message: '피드가 존재하지 않습니다',
+                }, common_1.HttpStatus.NOT_FOUND);
+            }
             const promotions = await this.blogPromotionRepository.getBlogPromotionByPostId(id);
             const challenges = await this.blogChallengesRepository.getBlogChallengesByPostId(id);
             const images = await this.blogImageRepository.getBlogImageByPostId(id);
@@ -218,18 +229,18 @@ let FeedService = FeedService_1 = class FeedService {
     }
     async getListFeed(query, userId) {
         const { feedId: blogPostId, challengeId, page: skip, take } = query;
-        let excludeBlogPostId;
-        let selectBlogPost;
+        let excludeBlogPostId = 0;
+        let selectBlogPost = new BlogPost_1.BlogPost();
         if (+skip === 1) {
             selectBlogPost = await this.blogPostRepository.getBlogPost(blogPostId);
             excludeBlogPostId = selectBlogPost.id;
         }
         let blogPostIds = [];
-        if (+challengeId) {
+        if (challengeId) {
             const blogChallenges = await this.blogChallengesRepository.getBlogChallengesByChallengeId(challengeId);
             blogPostIds = blogChallenges.map(bc => bc.postId);
         }
-        const blogPosts = await this.blogPostRepository.getListBlogPost(skip, this.getFeedListTake(skip, take), blogPostIds, excludeBlogPostId, userId);
+        const blogPosts = await this.blogPostRepository.getListBlogPost(skip, this.getFeedListTake(skip, take), blogPostIds, excludeBlogPostId);
         if (+skip === 1) {
             blogPosts.items.unshift(selectBlogPost);
         }
