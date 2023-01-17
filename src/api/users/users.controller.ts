@@ -5,10 +5,14 @@ import {
   HttpStatus,
   Post,
   Put,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import {FilesInterceptor} from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
+  ApiConsumes,
   ApiDefaultResponse,
   ApiOperation,
   ApiResponse,
@@ -130,7 +134,10 @@ export class UsersController {
     description: '기본 응답 형태',
     type: ApiResponseDTO,
   })
+  @UseInterceptors(FilesInterceptor('images'))
+  @ApiConsumes('multipart/form-data')
   async signUp(
+    @UploadedFile() file: Express.Multer.File,
     @Body() body: SignUpRequestDTO,
   ): Promise<ApiResponseDTO<SocialLoginResponseDTO>> {
     try {
@@ -146,11 +153,14 @@ export class UsersController {
       );
       await this.userValidator.checkDuplicateNickname(nickname);
 
-      const newUser = await this.userService.saveUser({
-        socialType,
-        socialUuid: userProperties.id.toString(),
-        nickname,
-      });
+      const newUser = await this.userService.saveUser(
+        {
+          socialType,
+          socialUuid: userProperties.id.toString(),
+          nickname,
+        },
+        file,
+      );
 
       const {accessToken, refreshToken} = await this.authService.makeJwtToken(
         newUser.id,
@@ -276,7 +286,10 @@ export class UsersController {
     description: '기본 응답 형태',
     type: ApiResponseDTO,
   })
+  @UseInterceptors(FilesInterceptor('images'))
+  @ApiConsumes('multipart/form-data')
   async profileUpdate(
+    @UploadedFile() file: Express.Multer.File,
     @Body() updateUserReqDTO: UpdateUserReqDTO,
     @UserDeco() user,
   ): Promise<ApiResponseDTO<boolean>> {
@@ -287,7 +300,7 @@ export class UsersController {
         );
       }
 
-      await this.userService.profileUpdate(user.id, updateUserReqDTO);
+      await this.userService.profileUpdate(user.id, updateUserReqDTO, file);
 
       return new ApiResponseDTO<boolean>(
         HttpStatus.OK,

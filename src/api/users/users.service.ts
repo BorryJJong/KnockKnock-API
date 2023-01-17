@@ -1,6 +1,7 @@
 import {User} from '@entities/User';
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
+import {ImageService, IUploadS3Response} from 'src/api/image/image.service';
 import {UpdateUserReqDTO} from 'src/api/users/dto/users.dto';
 import {ICreateUser} from 'src/api/users/users.interface';
 import {SocialLoginRequestDTO} from 'src/auth/dto/auth.dto';
@@ -14,11 +15,18 @@ export class UsersService {
     @InjectRepository(UserRepository)
     private readonly userRepository: UserRepository,
     private readonly kakaoService: KakaoService,
+    private readonly imageService: ImageService,
     private connection: Connection,
   ) {}
 
-  async saveUser(request: ICreateUser): Promise<User> {
-    return await this.userRepository.insertUser(request);
+  async saveUser(
+    request: ICreateUser,
+    file: Express.Multer.File,
+  ): Promise<User> {
+    console.log('file', file);
+    const fileUrl = await this.getUserProfileImageUrl(file);
+    console.log('fileUrl', fileUrl);
+    return await this.userRepository.insertUser(request, fileUrl);
   }
 
   async getSocialUser({
@@ -81,8 +89,50 @@ export class UsersService {
   async profileUpdate(
     userId: number,
     updateUserReqDTO: UpdateUserReqDTO,
+    file: Express.Multer.File,
   ): Promise<void> {
     const {nickname} = updateUserReqDTO;
+
+    console.log('file', file);
+    const fileUrl = await this.getUserProfileImageUrl(file);
+    console.log('fileUrl', fileUrl);
+
     return await this.userRepository.updateUser(userId, nickname);
+  }
+
+  async getUserProfileImageUrl(file: Express.Multer.File): Promise<string> {
+    let resultS3: IUploadS3Response = {
+      ok: true,
+      ETag: undefined,
+      Key: undefined,
+      url: undefined,
+    };
+    try {
+      // 1. image s3 upload
+      resultS3 = await this.imageService.uploadS3(file, 'user');
+
+      if (!resultS3.ok) {
+        throw new HttpException(
+          {
+            error: 'S3 image upload failed',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+      const fileUrl = resultS3.url || '';
+
+      return fileUrl;
+    } catch (e) {
+      if (resultS3.ok) {
+        this.imageService.deleteS3(resultS3.Key || '');
+      }
+      throw new HttpException(
+        {
+          error: e.message,
+          message: e.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

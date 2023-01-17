@@ -14,7 +14,6 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import {UsersService} from 'src/api/users/users.service';
 import {JwtGuard} from 'src/auth/jwt/jwt.guard';
 import {GetListFeedLikeResDTO} from '../feed/dto/feed.dto';
 import {LikeService} from './like.service';
@@ -29,7 +28,6 @@ import {LikeValidator} from 'src/api/like/like.validator';
 export class LikeController {
   constructor(
     private readonly likeService: LikeService,
-    private readonly userService: UsersService,
     private readonly likeValidator: LikeValidator,
   ) {}
 

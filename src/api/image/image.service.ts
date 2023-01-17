@@ -9,6 +9,7 @@ export interface IUploadS3Response {
   Key?: string;
   url?: string;
 }
+
 @Injectable()
 export class ImageService {
   private readonly S3: AWS.S3;

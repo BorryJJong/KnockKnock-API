@@ -10,19 +10,28 @@ export class UserRepository
   extends Repository<User>
   implements IUserRepository
 {
-  public async insertUser(request: ICreateUser): Promise<User> {
+  public async insertUser(
+    request: ICreateUser,
+    fileUrl: string,
+  ): Promise<User> {
     return await this.save(
       this.create({
         ...request,
+        image: fileUrl,
       }),
     );
   }
 
-  public async updateUser(userId: number, nickname?: string): Promise<void> {
+  public async updateUser(
+    userId: number,
+    nickname?: string,
+    fileUrl?: string,
+  ): Promise<void> {
     await this.createQueryBuilder()
       .update(User)
       .set({
         nickname,
+        image: fileUrl,
       })
       .where('id = :id', {id: userId})
       .execute();
