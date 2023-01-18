@@ -21,7 +21,7 @@ let ImageController = class ImageController {
     constructor(imageService) {
         this.imageService = imageService;
     }
-    async uploadImage(file, body) {
+    async uploadImage(file) {
         return this.imageService.uploadS3(file);
     }
 };
@@ -29,9 +29,8 @@ __decorate([
     (0, common_1.Post)(),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('images')),
     __param(0, (0, common_1.UploadedFile)()),
-    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ImageController.prototype, "uploadImage", null);
 ImageController = __decorate([

@@ -2,7 +2,7 @@ import { User } from '@entities/User';
 import { SOCIAL_TYPE } from '@shared/enums/enum';
 import { QueryRunner } from 'typeorm';
 export interface IUserRepository {
-    insertUser(request: ICreateUser): Promise<User>;
+    insertUser(request: ICreateUser, fileUrl: string): Promise<User>;
     updateUser(userId: number, nickname?: string): Promise<void>;
     selectSocialUser(socialUuid: string, socialType: SOCIAL_TYPE): Promise<User | undefined>;
     isExistSocialUser(socialUuid: string, socialType: SOCIAL_TYPE): Promise<number>;

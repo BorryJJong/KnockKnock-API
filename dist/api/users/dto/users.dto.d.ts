@@ -11,3 +11,7 @@ export declare class UpdateUserReqDTO {
     nickname?: string;
     constructor(nickname: string);
 }
+export declare class GetCheckDuplicateUserNicknameReqDTO {
+    nickname: string;
+    constructor(nickname: string);
+}

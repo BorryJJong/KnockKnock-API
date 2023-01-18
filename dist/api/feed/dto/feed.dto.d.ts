@@ -92,6 +92,7 @@ export declare class GetBlogPostDTO {
     userImage: string;
     scale: string;
     isLike: boolean;
+    isWriter: boolean;
 }
 export declare class GetBlogPromotionDTO {
     id: number;

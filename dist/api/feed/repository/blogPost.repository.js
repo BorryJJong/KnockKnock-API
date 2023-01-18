@@ -114,6 +114,14 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
                     postId: id,
                 });
             }, 'isLike');
+            queryBuilder = queryBuilder.addSelect(sq => {
+                return sq
+                    .from(BlogPost_1.BlogPost, 'bp')
+                    .select(`IF(bp.userId = ${userId}, true, false)`)
+                    .where('bp.id = :id', {
+                    id,
+                });
+            }, 'isWriter');
         }
         return await queryBuilder.getRawOne();
     }

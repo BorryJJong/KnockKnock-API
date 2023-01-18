@@ -3,8 +3,8 @@ import { SOCIAL_TYPE } from '@shared/enums/enum';
 import { ICreateUser, IUserRepository } from 'src/api/users/users.interface';
 import { QueryRunner, Repository } from 'typeorm';
 export declare class UserRepository extends Repository<User> implements IUserRepository {
-    insertUser(request: ICreateUser): Promise<User>;
-    updateUser(userId: number, nickname?: string): Promise<void>;
+    insertUser(request: ICreateUser, fileUrl: string): Promise<User>;
+    updateUser(userId: number, nickname?: string, fileUrl?: string): Promise<void>;
     selectSocialUser(socialUuid: string, socialType: SOCIAL_TYPE): Promise<User | undefined>;
     isExistSocialUser(socialUuid: string, socialType: SOCIAL_TYPE): Promise<number>;
     updateRefreshToken(userId: number, refreshToken?: string, queryRunner?: QueryRunner): Promise<void>;
