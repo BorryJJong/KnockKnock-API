@@ -7,6 +7,8 @@ import {AuthModule} from '../../auth/auth.module';
 import {UserValidator} from 'src/api/users/users.validator';
 import {KakaoService} from 'src/auth/kakao.service';
 import {AppleService} from 'src/auth/apple.service';
+import {ImageService} from 'src/api/image/image.service';
+import {ConfigService} from '@nestjs/config';
 
 @Module({
   imports: [
@@ -14,7 +16,14 @@ import {AppleService} from 'src/auth/apple.service';
     forwardRef(() => AuthModule),
   ],
   controllers: [UsersController],
-  providers: [UsersService, UserValidator, KakaoService, AppleService],
+  providers: [
+    UsersService,
+    UserValidator,
+    KakaoService,
+    AppleService,
+    ImageService,
+    ConfigService,
+  ],
   exports: [UsersService],
 })
 export class UsersModule {}
