@@ -156,6 +156,15 @@ export class BlogPostRepository
             postId: id,
           });
       }, 'isLike');
+
+      queryBuilder = queryBuilder.addSelect(sq => {
+        return sq
+          .from(BlogPost, 'bp')
+          .select(`IF(bp.userId = ${userId}, true, false)`)
+          .where('bp.id = :id', {
+            id,
+          });
+      }, 'isWriter');
     }
 
     return await queryBuilder.getRawOne<GetBlogPostDTO>();
