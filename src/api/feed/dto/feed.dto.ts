@@ -326,6 +326,14 @@ export class GetBlogPostDTO {
     example: true,
   })
   isLike: boolean;
+
+  @Expose()
+  @Transform(({value}) => dtoConvertBoolean(value))
+  @ApiProperty({
+    description: '피드 작성 여부',
+    example: 'true',
+  })
+  isWriter: boolean;
 }
 
 @Exclude()

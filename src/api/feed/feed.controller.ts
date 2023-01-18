@@ -189,6 +189,7 @@ export class FeedController {
         param,
         user.id,
       );
+
       return new ApiResponseDTO<GetFeedViewResDTO>(
         200,
         API_RESPONSE_MEESAGE.SUCCESS,
