@@ -2,7 +2,9 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpStatus,
+  Param,
   Post,
   Put,
   UploadedFile,
@@ -21,7 +23,11 @@ import {
 import {UserDeco} from '@shared/decorator/user.decorator';
 import {ApiResponseDTO} from '@shared/dto/response.dto';
 import {API_RESPONSE_MEESAGE, SOCIAL_TYPE} from '@shared/enums/enum';
-import {UpdateUserReqDTO, UserInfoResDTO} from 'src/api/users/dto/users.dto';
+import {
+  GetCheckDuplicateUserNicknameReqDTO,
+  UpdateUserReqDTO,
+  UserInfoResDTO,
+} from 'src/api/users/dto/users.dto';
 import {IUser} from 'src/api/users/users.interface';
 import {UserValidator} from 'src/api/users/users.validator';
 import {AppleService} from 'src/auth/apple.service';
@@ -306,6 +312,39 @@ export class UsersController {
         HttpStatus.OK,
         API_RESPONSE_MEESAGE.SUCCESS,
         true,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
+    }
+  }
+
+  @Get('/duplicate-nickname/:nickname')
+  @ApiOperation({summary: '회원 닉네임 중복 확인'})
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
+  })
+  @ApiResponse({
+    description: '닉네임 중복시 true, 아니면 false',
+    type: Boolean,
+  })
+  async checkDuplicateNickname(
+    @Param() param: GetCheckDuplicateUserNicknameReqDTO,
+  ): Promise<ApiResponseDTO<boolean>> {
+    try {
+      const {nickname} = param;
+      const isDuplicate = await this.userService.checkDuplicateNickname(
+        nickname,
+      );
+
+      return new ApiResponseDTO<boolean>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        isDuplicate,
       );
     } catch (error) {
       return new ApiResponseDTO(

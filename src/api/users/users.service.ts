@@ -135,4 +135,9 @@ export class UsersService {
       );
     }
   }
+
+  public async checkDuplicateNickname(nickname: string): Promise<boolean> {
+    const findNickname = await this.userRepository.selectUserNickname(nickname);
+    return findNickname ? true : false;
+  }
 }
