@@ -1,4 +1,4 @@
-import {Controller, Get, HttpStatus} from '@nestjs/common';
+import {Controller, Get, HttpStatus, Query} from '@nestjs/common';
 import {
   ApiDefaultResponse,
   ApiOperation,
@@ -7,7 +7,10 @@ import {
 } from '@nestjs/swagger';
 import {ApiResponseDTO} from '@shared/dto/response.dto';
 import {API_RESPONSE_MEESAGE} from '@shared/enums/enum';
-import {GetListHotFeedResDTO} from 'src/api/home/dto/home.dto';
+import {
+  GetListHotFeedReqDTO,
+  GetListHotFeedResDTO,
+} from 'src/api/home/dto/home.dto';
 import {HomeService} from 'src/api/home/home.service';
 
 @ApiTags('home')
@@ -26,9 +29,12 @@ export class HomeController {
     description: '기본 응답 형태',
     type: ApiResponseDTO,
   })
-  async getListHotFeed(): Promise<ApiResponseDTO<GetListHotFeedResDTO[]>> {
+  async getListHotFeed(
+    @Query() query: GetListHotFeedReqDTO,
+  ): Promise<ApiResponseDTO<GetListHotFeedResDTO[]>> {
     try {
-      const hotFeeds = await this.homeService.getListHotFeed();
+      const {challengeId} = query;
+      const hotFeeds = await this.homeService.getListHotFeed(challengeId);
 
       return new ApiResponseDTO<GetListHotFeedResDTO[]>(
         HttpStatus.OK,

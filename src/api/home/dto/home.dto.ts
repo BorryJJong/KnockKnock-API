@@ -31,3 +31,12 @@ export class GetListHotFeedResDTO {
     this.fileUrl = fileUrl;
   }
 }
+
+export class GetListHotFeedReqDTO {
+  @ApiProperty({description: '챌린지 id', example: '1'})
+  challengeId: number;
+
+  constructor(challengeId: number) {
+    this.challengeId = challengeId;
+  }
+}
