@@ -50,3 +50,17 @@ export class UpdateUserReqDTO {
     this.nickname = nickname;
   }
 }
+
+export class GetCheckDuplicateUserNicknameReqDTO {
+  @ApiProperty({
+    type: String,
+    nullable: false,
+    example: 'jerry',
+    description: '닉네임',
+  })
+  nickname: string;
+
+  constructor(nickname: string) {
+    this.nickname = nickname;
+  }
+}
