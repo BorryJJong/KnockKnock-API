@@ -12,14 +12,15 @@ const common_1 = require("@nestjs/common");
 const enum_1 = require("../../shared/enums/enum");
 const typeorm_1 = require("typeorm");
 let UserRepository = class UserRepository extends typeorm_1.Repository {
-    async insertUser(request) {
-        return await this.save(this.create(Object.assign({}, request)));
+    async insertUser(request, fileUrl) {
+        return await this.save(this.create(Object.assign(Object.assign({}, request), { image: fileUrl })));
     }
-    async updateUser(userId, nickname) {
+    async updateUser(userId, nickname, fileUrl) {
         await this.createQueryBuilder()
             .update(User_1.User)
             .set({
             nickname,
+            image: fileUrl,
         })
             .where('id = :id', { id: userId })
             .execute();

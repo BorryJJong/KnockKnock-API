@@ -15,17 +15,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const image_service_1 = require("../image/image.service");
 const kakao_service_1 = require("../../auth/kakao.service");
 const typeorm_2 = require("typeorm");
 const users_repository_1 = require("./users.repository");
 let UsersService = class UsersService {
-    constructor(userRepository, kakaoService, connection) {
+    constructor(userRepository, kakaoService, imageService, connection) {
         this.userRepository = userRepository;
         this.kakaoService = kakaoService;
+        this.imageService = imageService;
         this.connection = connection;
     }
-    async saveUser(request) {
-        return await this.userRepository.insertUser(request);
+    async saveUser(request, file) {
+        console.log('file', file);
+        const fileUrl = await this.getUserProfileImageUrl(file);
+        console.log('fileUrl', fileUrl);
+        return await this.userRepository.insertUser(request, fileUrl);
     }
     async getSocialUser({ socialUuid, socialType, }) {
         return await this.userRepository.selectSocialUser(socialUuid, socialType);
@@ -64,9 +69,43 @@ let UsersService = class UsersService {
             }
         }
     }
-    async profileUpdate(userId, updateUserReqDTO) {
+    async profileUpdate(userId, updateUserReqDTO, file) {
         const { nickname } = updateUserReqDTO;
+        console.log('file', file);
+        const fileUrl = await this.getUserProfileImageUrl(file);
+        console.log('fileUrl', fileUrl);
         return await this.userRepository.updateUser(userId, nickname);
+    }
+    async getUserProfileImageUrl(file) {
+        let resultS3 = {
+            ok: true,
+            ETag: undefined,
+            Key: undefined,
+            url: undefined,
+        };
+        try {
+            resultS3 = await this.imageService.uploadS3(file, 'user');
+            if (!resultS3.ok) {
+                throw new common_1.HttpException({
+                    error: 'S3 image upload failed',
+                }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            const fileUrl = resultS3.url || '';
+            return fileUrl;
+        }
+        catch (e) {
+            if (resultS3.ok) {
+                this.imageService.deleteS3(resultS3.Key || '');
+            }
+            throw new common_1.HttpException({
+                error: e.message,
+                message: e.message,
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async checkDuplicateNickname(nickname) {
+        const findNickname = await this.userRepository.selectUserNickname(nickname);
+        return findNickname ? true : false;
     }
 };
 UsersService = __decorate([
@@ -74,6 +113,7 @@ UsersService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(users_repository_1.UserRepository)),
     __metadata("design:paramtypes", [users_repository_1.UserRepository,
         kakao_service_1.KakaoService,
+        image_service_1.ImageService,
         typeorm_2.Connection])
 ], UsersService);
 exports.UsersService = UsersService;

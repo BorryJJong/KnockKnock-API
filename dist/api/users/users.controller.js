@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 const swagger_1 = require("@nestjs/swagger");
 const user_decorator_1 = require("../../shared/decorator/user.decorator");
 const response_dto_1 = require("../../shared/dto/response.dto");
@@ -56,7 +57,7 @@ let UsersController = class UsersController {
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
         }
     }
-    async signUp(body) {
+    async signUp(file, body) {
         try {
             const { socialUuid, socialType, nickname } = body;
             const userProperties = await this.getSocialLoginAttributes(socialType, socialUuid);
@@ -66,7 +67,7 @@ let UsersController = class UsersController {
                 socialType,
                 socialUuid: userProperties.id.toString(),
                 nickname,
-            });
+            }, file);
             const { accessToken, refreshToken } = await this.authService.makeJwtToken(newUser.id);
             await this.authService.updateRefreshToken(newUser.id, refreshToken);
             const result = new auth_dto_1.SocialLoginResponseDTO(false, new users_dto_1.UserInfoResDTO(newUser.nickname, newUser.socialType, newUser.image, newUser.regDate, newUser.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
@@ -104,13 +105,23 @@ let UsersController = class UsersController {
             return await this.kakaoService.getUserProperties(socialUuid);
         }
     }
-    async profileUpdate(updateUserReqDTO, user) {
+    async profileUpdate(file, updateUserReqDTO, user) {
         try {
             if (updateUserReqDTO.nickname) {
                 await this.userValidator.checkDuplicateNickname(updateUserReqDTO.nickname);
             }
-            await this.userService.profileUpdate(user.id, updateUserReqDTO);
+            await this.userService.profileUpdate(user.id, updateUserReqDTO, file);
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, true);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
+    }
+    async checkDuplicateNickname(param) {
+        try {
+            const { nickname } = param;
+            const isDuplicate = await this.userService.checkDuplicateNickname(nickname);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, isDuplicate);
         }
         catch (error) {
             return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
@@ -155,9 +166,12 @@ __decorate([
         description: '기본 응답 형태',
         type: response_dto_1.ApiResponseDTO,
     }),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images')),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [auth_dto_1.SignUpRequestDTO]),
+    __metadata("design:paramtypes", [Object, auth_dto_1.SignUpRequestDTO]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "signUp", null);
 __decorate([
@@ -213,12 +227,31 @@ __decorate([
         description: '기본 응답 형태',
         type: response_dto_1.ApiResponseDTO,
     }),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, user_decorator_1.UserDeco)()),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images')),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [users_dto_1.UpdateUserReqDTO, Object]),
+    __metadata("design:paramtypes", [Object, users_dto_1.UpdateUserReqDTO, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "profileUpdate", null);
+__decorate([
+    (0, common_1.Get)('/duplicate-nickname/:nickname'),
+    (0, swagger_1.ApiOperation)({ summary: '회원 닉네임 중복 확인' }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
+    }),
+    (0, swagger_1.ApiResponse)({
+        description: '닉네임 중복시 true, 아니면 false',
+        type: Boolean,
+    }),
+    __param(0, (0, common_1.Param)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [users_dto_1.GetCheckDuplicateUserNicknameReqDTO]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "checkDuplicateNickname", null);
 UsersController = __decorate([
     (0, swagger_1.ApiTags)('users'),
     (0, common_1.Controller)('users'),

@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LikeController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
-const users_service_1 = require("../users/users.service");
 const jwt_guard_1 = require("../../auth/jwt/jwt.guard");
 const feed_dto_1 = require("../feed/dto/feed.dto");
 const like_service_1 = require("./like.service");
@@ -24,9 +23,8 @@ const response_dto_1 = require("../../shared/dto/response.dto");
 const enum_1 = require("../../shared/enums/enum");
 const like_validator_1 = require("./like.validator");
 let LikeController = class LikeController {
-    constructor(likeService, userService, likeValidator) {
+    constructor(likeService, likeValidator) {
         this.likeService = likeService;
-        this.userService = userService;
         this.likeValidator = likeValidator;
     }
     async feedLike(id, user) {
@@ -119,7 +117,6 @@ LikeController = __decorate([
     (0, swagger_1.ApiTags)('like'),
     (0, common_1.Controller)('like'),
     __metadata("design:paramtypes", [like_service_1.LikeService,
-        users_service_1.UsersService,
         like_validator_1.LikeValidator])
 ], LikeController);
 exports.LikeController = LikeController;

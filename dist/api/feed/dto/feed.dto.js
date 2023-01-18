@@ -366,6 +366,15 @@ __decorate([
     }),
     __metadata("design:type", Boolean)
 ], GetBlogPostDTO.prototype, "isLike", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, class_transformer_1.Transform)(({ value }) => (0, utils_1.dtoConvertBoolean)(value)),
+    (0, swagger_1.ApiProperty)({
+        description: '피드 작성 여부',
+        example: 'true',
+    }),
+    __metadata("design:type", Boolean)
+], GetBlogPostDTO.prototype, "isWriter", void 0);
 GetBlogPostDTO = __decorate([
     (0, class_transformer_1.Exclude)()
 ], GetBlogPostDTO);
