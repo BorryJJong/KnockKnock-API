@@ -10,7 +10,7 @@ export class HomeService {
     private readonly blogPostRepository: BlogPostRepository,
   ) {}
 
-  async getListHotFeed(): Promise<GetListHotFeedResDTO[]> {
-    return this.blogPostRepository.selectBlogPostByHotFeeds();
+  async getListHotFeed(challengeId: number): Promise<GetListHotFeedResDTO[]> {
+    return this.blogPostRepository.selectBlogPostByHotFeeds(challengeId);
   }
 }

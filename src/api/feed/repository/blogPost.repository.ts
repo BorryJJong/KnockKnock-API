@@ -15,6 +15,7 @@ import {getCurrentPageCount} from '../../../shared/utils';
 import {BlogLike} from '@entities/BlogLike';
 import {GetListHotFeedResDTO} from 'src/api/home/dto/home.dto';
 import {BlogImage} from '@entities/BlogImage';
+import {BlogChallenges} from '@entities/BlogChallenges';
 
 @Injectable()
 @EntityRepository(BlogPost)
@@ -196,13 +197,15 @@ export class BlogPostRepository
   }
 
   // TODO: 데이터가 확장될 경우, 날짜를 Today로 제한
-  async selectBlogPostByHotFeeds(): Promise<GetListHotFeedResDTO[]> {
+  async selectBlogPostByHotFeeds(
+    challengeId: number,
+  ): Promise<GetListHotFeedResDTO[]> {
     let queryBuilder = this.createQueryBuilder('blogPost')
       .select('blogPost.id', 'postId')
       .addSelect('blogPost.scale', 'scale')
       .addSelect('user.nickname', 'nickname')
       .addSelect('count(*)', 'blogLikeCount')
-      .innerJoin(User, 'user', 'user.id = blogPost.id')
+      .innerJoin(User, 'user', 'user.id = blogPost.userId')
       .innerJoin(BlogImage, 'bi', 'bi.post_id = blogPost.id')
       .leftJoin(BlogLike, 'blogLike', 'blogLike.post_id = blogPost.id')
       .where('blogPost.delDate IS NULL')
@@ -219,6 +222,14 @@ export class BlogPostRepository
         .where('bi.postId = blogPost.id')
         .limit(1);
     }, 'fileUrl');
+
+    if (+challengeId !== 0) {
+      queryBuilder = queryBuilder
+        .innerJoin(BlogChallenges, 'bc', 'bc.post_id = blogPost.id')
+        .andWhere('bc.challengeId = :challengeId', {
+          challengeId,
+        });
+    }
 
     const hotFeeds = await queryBuilder.getRawMany<GetListHotFeedResDTO>();
 

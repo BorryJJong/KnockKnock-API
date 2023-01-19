@@ -28,7 +28,7 @@ export class BlogChallengesRepository extends Repository<BlogChallenges> {
     challengeId: number,
   ): Promise<BlogChallenges[]> {
     return this.createQueryBuilder('blogChallenges')
-      .where('blogChallenges.challengeId = :challengeId ', {challengeId})
+      .where('blogChallenges.challengeId = :challengeId', {challengeId})
       .getMany();
   }
 
@@ -46,9 +46,12 @@ export class BlogChallengesRepository extends Repository<BlogChallenges> {
     return challenges;
   }
 
-  async deleteBlogChallengesByPostId(queryRunner: QueryRunner | null, postId: number) {
+  async deleteBlogChallengesByPostId(
+    queryRunner: QueryRunner | null,
+    postId: number,
+  ) {
     if (queryRunner === null) {
-      return await this.delete({ postId: postId });
+      return await this.delete({postId: postId});
     } else {
       return await queryRunner.manager.delete(BlogChallenges, {postId: postId});
     }
