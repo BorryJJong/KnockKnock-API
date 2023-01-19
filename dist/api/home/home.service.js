@@ -20,8 +20,8 @@ let HomeService = class HomeService {
     constructor(blogPostRepository) {
         this.blogPostRepository = blogPostRepository;
     }
-    async getListHotFeed() {
-        return this.blogPostRepository.selectBlogPostByHotFeeds();
+    async getListHotFeed(challengeId) {
+        return this.blogPostRepository.selectBlogPostByHotFeeds(challengeId);
     }
 };
 HomeService = __decorate([

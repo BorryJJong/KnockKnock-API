@@ -143,6 +143,20 @@ __decorate([
     __metadata("design:type", Date)
 ], BlogPost.prototype, "modDate", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '숨기기 수',
+        example: '5',
+    }),
+    (0, typeorm_1.Column)({
+        name: 'hide_count',
+        type: 'int',
+        comment: '숨기기 수',
+        default: 0,
+        nullable: false,
+    }),
+    __metadata("design:type", Number)
+], BlogPost.prototype, "hideCount", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)({
         name: 'reg_date',
         type: 'timestamp',

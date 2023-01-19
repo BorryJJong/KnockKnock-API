@@ -23,6 +23,9 @@ let BlogImageRepository = class BlogImageRepository extends typeorm_1.Repository
         }
     }
     async getBlogImagesByBlogPost(blogPostIds) {
+        if (blogPostIds.length === 0) {
+            return [];
+        }
         const blogImages = await this.createQueryBuilder('blogImage')
             .where('blogImage.postId IN (:...postIds)', {
             postIds: blogPostIds,

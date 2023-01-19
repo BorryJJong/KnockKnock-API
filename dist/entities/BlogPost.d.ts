@@ -9,6 +9,7 @@ export declare class BlogPost {
     scale: string;
     hits: number;
     modDate?: Date;
+    hideCount: number;
     regDate: Date;
     delDate?: Date;
     beforeInsert(): void;

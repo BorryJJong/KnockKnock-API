@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetListHotFeedResDTO = void 0;
+exports.GetListHotFeedReqDTO = exports.GetListHotFeedResDTO = void 0;
 const swagger_1 = require("@nestjs/swagger");
 class GetListHotFeedResDTO {
     constructor(postId, scale, nickname, fileUrl) {
@@ -42,4 +42,14 @@ __decorate([
     __metadata("design:type", String)
 ], GetListHotFeedResDTO.prototype, "fileUrl", void 0);
 exports.GetListHotFeedResDTO = GetListHotFeedResDTO;
+class GetListHotFeedReqDTO {
+    constructor(challengeId) {
+        this.challengeId = challengeId;
+    }
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '챌린지 id', example: '1' }),
+    __metadata("design:type", Number)
+], GetListHotFeedReqDTO.prototype, "challengeId", void 0);
+exports.GetListHotFeedReqDTO = GetListHotFeedReqDTO;
 //# sourceMappingURL=home.dto.js.map
