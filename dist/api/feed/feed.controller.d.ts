@@ -8,13 +8,13 @@ export declare class FeedController {
     private readonly feedService;
     private readonly feedValidator;
     constructor(feedService: FeedService, feedValidator: FeedValidator);
-    getFeedsByChallengesFilter(query: GetListFeedMainReqDTO): Promise<ApiResponseDTO<GetListFeedMainResDTO>>;
+    getFeedsByChallengesFilter(query: GetListFeedMainReqDTO, user: IUser): Promise<ApiResponseDTO<GetListFeedMainResDTO>>;
     getListFeed(query: GetListFeedReqQueryDTO, user: IUser): Promise<ApiResponseDTO<GetListFeedResDTO>>;
     create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO, user: IUser): Promise<ApiResponseDTO<boolean>>;
     getFeed(param: GetFeedViewReqDTO, user: IUser): Promise<ApiResponseDTO<GetFeedViewResDTO>>;
     insertBlogComment(user: IUser, insBlogCommentDTO: InsBlogCommentDTO): Promise<ApiResponseDTO<any>>;
     getListFeedComment(user: IUser, param: GetListFeedCommentReqDTO): Promise<ApiResponseDTO<GetListFeedCommentResDTO[]>>;
     deleteBlogComment(user: IUser, param: DelBlogCommentReqDTO): Promise<ApiResponseDTO<boolean>>;
-    update(updateFeedDTO: UpdateFeedDTO, user: any): Promise<ApiResponseDTO<boolean>>;
+    update(updateFeedDTO: UpdateFeedDTO, user: IUser): Promise<ApiResponseDTO<boolean>>;
     delete(param: DeleteFeedReqDTO, user: IUser): Promise<ApiResponseDTO<boolean>>;
 }

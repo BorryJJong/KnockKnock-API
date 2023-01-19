@@ -3,5 +3,5 @@ import { GetListHotFeedResDTO } from 'src/api/home/dto/home.dto';
 export declare class HomeService {
     private readonly blogPostRepository;
     constructor(blogPostRepository: BlogPostRepository);
-    getListHotFeed(): Promise<GetListHotFeedResDTO[]>;
+    getListHotFeed(challengeId: number): Promise<GetListHotFeedResDTO[]>;
 }

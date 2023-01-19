@@ -150,4 +150,7 @@ export declare class GetListFeedLikeResDTO {
 export declare class DeleteFeedReqDTO {
     id: number;
 }
+export declare class PostFeedBlogPostHideReqDTO {
+    id: number;
+}
 export {};

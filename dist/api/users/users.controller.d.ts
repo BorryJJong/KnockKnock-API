@@ -1,5 +1,6 @@
 /// <reference types="multer" />
 import { ApiResponseDTO } from '@shared/dto/response.dto';
+import { PostFeedBlogPostHideReqDTO } from 'src/api/feed/dto/feed.dto';
 import { GetCheckDuplicateUserNicknameReqDTO, UpdateUserReqDTO } from 'src/api/users/dto/users.dto';
 import { IUser } from 'src/api/users/users.interface';
 import { UserValidator } from 'src/api/users/users.validator';
@@ -20,6 +21,7 @@ export declare class UsersController {
     logout(user: IUser): Promise<ApiResponseDTO<boolean>>;
     deleteUser(user: IUser): Promise<ApiResponseDTO<boolean>>;
     private getSocialLoginAttributes;
-    profileUpdate(file: Express.Multer.File, updateUserReqDTO: UpdateUserReqDTO, user: any): Promise<ApiResponseDTO<boolean>>;
+    profileUpdate(file: Express.Multer.File, updateUserReqDTO: UpdateUserReqDTO, user: IUser): Promise<ApiResponseDTO<boolean>>;
     checkDuplicateNickname(param: GetCheckDuplicateUserNicknameReqDTO): Promise<ApiResponseDTO<boolean>>;
+    hideBlogPost(param: PostFeedBlogPostHideReqDTO, user: IUser): Promise<ApiResponseDTO<void>>;
 }

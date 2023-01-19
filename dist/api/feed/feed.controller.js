@@ -29,9 +29,9 @@ let FeedController = class FeedController {
         this.feedService = feedService;
         this.feedValidator = feedValidator;
     }
-    async getFeedsByChallengesFilter(query) {
+    async getFeedsByChallengesFilter(query, user) {
         try {
-            const result = await this.feedService.getFeedsByChallengesFilter(query);
+            const result = await this.feedService.getFeedsByChallengesFilter(query, user.id);
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, result);
         }
         catch (error) {
@@ -134,9 +134,12 @@ __decorate([
         description: '기본 응답 형태',
         type: response_dto_1.ApiResponseDTO,
     }),
+    (0, common_1.UseGuards)(jwtNoneRequired_guard_1.JwtOptionalGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     __param(0, (0, common_1.Query)()),
+    __param(1, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [feed_dto_1.GetListFeedMainReqDTO]),
+    __metadata("design:paramtypes", [feed_dto_1.GetListFeedMainReqDTO, Object]),
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "getFeedsByChallengesFilter", null);
 __decorate([
@@ -160,6 +163,8 @@ __decorate([
         description: '기본 응답 형태',
         type: response_dto_1.ApiResponseDTO,
     }),
+    (0, common_1.UseGuards)(jwtNoneRequired_guard_1.JwtOptionalGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     __param(0, (0, common_1.Query)()),
     __param(1, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),

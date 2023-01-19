@@ -15,6 +15,7 @@ const utils_1 = require("../../../shared/utils");
 const BlogLike_1 = require("../../../entities/BlogLike");
 const home_dto_1 = require("../../home/dto/home.dto");
 const BlogImage_1 = require("../../../entities/BlogImage");
+const BlogChallenges_1 = require("../../../entities/BlogChallenges");
 let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
     createBlogPost(createBlogPostDTO, userId) {
         return this.create(Object.assign(Object.assign({}, createBlogPostDTO), { userId }));
@@ -35,10 +36,15 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             return await queryRunner.manager.update(BlogPost_1.BlogPost, postId, blogPost);
         }
     }
-    async getBlogPosts(page, take, blogPostIds) {
+    async getBlogPosts(page, take, blogPostIds, hideBlogPostIds) {
         let queryBuilder = await this.createQueryBuilder('blogPost');
         if (blogPostIds.length > 0) {
             queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
+        }
+        if (hideBlogPostIds.length > 0) {
+            queryBuilder = queryBuilder.andWhere('blogPost.id NOT IN (:...hideBlogPostIds)', {
+                hideBlogPostIds,
+            });
         }
         const [blogPosts, total] = await queryBuilder
             .skip((0, utils_1.getCurrentPageCount)(page, take))
@@ -57,8 +63,8 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
     }
     async getListBlogPost(page, take, blogPostIds, excludeBlogPostId) {
         let queryBuilder = await this.createQueryBuilder('blogPost');
-        if (excludeBlogPostId) {
-            queryBuilder = queryBuilder.where('blogPost.id != :id', {
+        if (excludeBlogPostId.length > 0) {
+            queryBuilder = queryBuilder.where('blogPost.id NOT IN (:...id)', {
                 id: excludeBlogPostId,
             });
         }
@@ -144,13 +150,13 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             .andWhere('blogPost.userId = :userId', { userId })
             .getOne();
     }
-    async selectBlogPostByHotFeeds() {
+    async selectBlogPostByHotFeeds(challengeId) {
         let queryBuilder = this.createQueryBuilder('blogPost')
             .select('blogPost.id', 'postId')
             .addSelect('blogPost.scale', 'scale')
             .addSelect('user.nickname', 'nickname')
             .addSelect('count(*)', 'blogLikeCount')
-            .innerJoin(User_1.User, 'user', 'user.id = blogPost.id')
+            .innerJoin(User_1.User, 'user', 'user.id = blogPost.userId')
             .innerJoin(BlogImage_1.BlogImage, 'bi', 'bi.post_id = blogPost.id')
             .leftJoin(BlogLike_1.BlogLike, 'blogLike', 'blogLike.post_id = blogPost.id')
             .where('blogPost.delDate IS NULL')
@@ -166,10 +172,26 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
                 .where('bi.postId = blogPost.id')
                 .limit(1);
         }, 'fileUrl');
+        if (+challengeId !== 0) {
+            queryBuilder = queryBuilder
+                .innerJoin(BlogChallenges_1.BlogChallenges, 'bc', 'bc.post_id = blogPost.id')
+                .andWhere('bc.challengeId = :challengeId', {
+                challengeId,
+            });
+        }
         const hotFeeds = await queryBuilder.getRawMany();
         return hotFeeds.map(feed => {
             return new home_dto_1.GetListHotFeedResDTO(feed.postId, feed.scale, feed.nickname, feed.fileUrl);
         });
+    }
+    async updateBlogPostHideCount(id, queryRunner) {
+        await this.createQueryBuilder('blogPost', queryRunner)
+            .update(BlogPost_1.BlogPost)
+            .set({
+            hideCount: () => 'hide_count+ 1',
+        })
+            .where('id = :id', { id })
+            .execute();
     }
 };
 BlogPostRepository = __decorate([

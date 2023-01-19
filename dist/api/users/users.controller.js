@@ -19,6 +19,7 @@ const swagger_1 = require("@nestjs/swagger");
 const user_decorator_1 = require("../../shared/decorator/user.decorator");
 const response_dto_1 = require("../../shared/dto/response.dto");
 const enum_1 = require("../../shared/enums/enum");
+const feed_dto_1 = require("../feed/dto/feed.dto");
 const users_dto_1 = require("./dto/users.dto");
 const users_validator_1 = require("./users.validator");
 const apple_service_1 = require("../../auth/apple.service");
@@ -122,6 +123,16 @@ let UsersController = class UsersController {
             const { nickname } = param;
             const isDuplicate = await this.userService.checkDuplicateNickname(nickname);
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, isDuplicate);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
+    }
+    async hideBlogPost(param, user) {
+        try {
+            const { id: postId } = param;
+            await this.userService.hideBlogPost(user.id, postId);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
         catch (error) {
             return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
@@ -252,6 +263,21 @@ __decorate([
     __metadata("design:paramtypes", [users_dto_1.GetCheckDuplicateUserNicknameReqDTO]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "checkDuplicateNickname", null);
+__decorate([
+    (0, common_1.Post)('/hide/blog-post/:id'),
+    (0, swagger_1.ApiOperation)({ summary: '피드 게시글 숨기기' }),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
+    }),
+    __param(0, (0, common_1.Param)()),
+    __param(1, (0, user_decorator_1.UserDeco)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [feed_dto_1.PostFeedBlogPostHideReqDTO, Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "hideBlogPost", null);
 UsersController = __decorate([
     (0, swagger_1.ApiTags)('users'),
     (0, common_1.Controller)('users'),

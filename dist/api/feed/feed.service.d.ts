@@ -10,6 +10,7 @@ import { IBlogPostRepository } from './interface/blogPost.interface';
 import { BlogPost } from '@entities/BlogPost';
 import { BlogLikeRepository } from 'src/api/like/repository/like.repository';
 import { UserRepository } from 'src/api/users/users.repository';
+import { UserToBlogPostHideRepository } from 'src/api/feed/repository/UserToBlogPostHide.repository';
 export declare class FeedService {
     private readonly imageService;
     private connection;
@@ -20,8 +21,9 @@ export declare class FeedService {
     private blogCommentRepository;
     private blogLikeRepository;
     private userRepository;
+    private userToBlogPostHideRepository;
     private readonly logger;
-    constructor(imageService: ImageService, connection: Connection, blogPostRepository: IBlogPostRepository, blogChallengesRepository: BlogChallengesRepository, blogPromotionRepository: BlogPromotionRepository, blogImageRepository: BlogImageRepository, blogCommentRepository: BlogCommentRepository, blogLikeRepository: BlogLikeRepository, userRepository: UserRepository);
+    constructor(imageService: ImageService, connection: Connection, blogPostRepository: IBlogPostRepository, blogChallengesRepository: BlogChallengesRepository, blogPromotionRepository: BlogPromotionRepository, blogImageRepository: BlogImageRepository, blogCommentRepository: BlogCommentRepository, blogLikeRepository: BlogLikeRepository, userRepository: UserRepository, userToBlogPostHideRepository: UserToBlogPostHideRepository);
     create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO, userId: number): Promise<boolean>;
     savePost(queryRunner: QueryRunner, createBlogPostDTO: CreateBlogPostDTO, userId: number): Promise<BlogPost>;
     saveChallenges(queryRunner: QueryRunner, postId: number, challenges: string): Promise<void>;
@@ -33,7 +35,7 @@ export declare class FeedService {
     updatePost(queryRunner: QueryRunner, postId: number, updateBlogPostDTO: UpdateBlogPostDTO): Promise<any>;
     updateChallenges(queryRunner: QueryRunner, postId: number, challenges: string): Promise<void>;
     updatePromotion(queryRunner: QueryRunner, postId: number, promotions: string): Promise<void>;
-    getFeedsByChallengesFilter(query: GetListFeedMainReqDTO): Promise<GetListFeedMainResDTO>;
+    getFeedsByChallengesFilter(query: GetListFeedMainReqDTO, userId?: number): Promise<GetListFeedMainResDTO>;
     getListFeed(query: GetListFeedReqQueryDTO, userId?: number): Promise<GetListFeedResDTO>;
     private getFeedListTake;
     private getFeedListByUserLikes;

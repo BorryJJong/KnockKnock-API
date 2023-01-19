@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HomeController = void 0;
 const common_1 = require("@nestjs/common");
@@ -20,9 +23,10 @@ let HomeController = class HomeController {
     constructor(homeService) {
         this.homeService = homeService;
     }
-    async getListHotFeed() {
+    async getListHotFeed(query) {
         try {
-            const hotFeeds = await this.homeService.getListHotFeed();
+            const { challengeId } = query;
+            const hotFeeds = await this.homeService.getListHotFeed(challengeId);
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, hotFeeds);
         }
         catch (error) {
@@ -42,8 +46,9 @@ __decorate([
         description: '기본 응답 형태',
         type: response_dto_1.ApiResponseDTO,
     }),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [home_dto_1.GetListHotFeedReqDTO]),
     __metadata("design:returntype", Promise)
 ], HomeController.prototype, "getListHotFeed", null);
 HomeController = __decorate([
