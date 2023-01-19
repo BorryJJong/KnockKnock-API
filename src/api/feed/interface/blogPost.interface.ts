@@ -24,12 +24,13 @@ export interface IBlogPostRepository {
     page: number,
     take: number,
     blogPostIds: number[],
+    hideBlogPostIds: number[],
   ): Promise<IGetBlogPostItems>;
   getListBlogPost(
     page: number,
     take: number,
     blogPostIds: number[],
-    excludeBlogPostId: number,
+    excludeBlogPostId: number[],
   ): Promise<IGetBlogPostItems>;
   getBlogPost(blogPostId: number): Promise<BlogPost>;
   getBlogPostById(
@@ -42,6 +43,7 @@ export interface IBlogPostRepository {
     id: number,
     userId: number,
   ): Promise<BlogPost | undefined>;
+  updateBlogPostHideCount(id: number, queryRunner?: QueryRunner): Promise<void>;
 }
 
 export interface IGetBlogPostItems {

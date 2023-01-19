@@ -70,11 +70,17 @@ export class FeedController {
     description: '기본 응답 형태',
     type: ApiResponseDTO,
   })
+  @UseGuards(JwtOptionalGuard)
+  @ApiBearerAuth()
   public async getFeedsByChallengesFilter(
     @Query() query: GetListFeedMainReqDTO,
+    @UserDeco() user: IUser,
   ): Promise<ApiResponseDTO<GetListFeedMainResDTO>> {
     try {
-      const result = await this.feedService.getFeedsByChallengesFilter(query);
+      const result = await this.feedService.getFeedsByChallengesFilter(
+        query,
+        user.id,
+      );
       return new ApiResponseDTO<GetListFeedMainResDTO>(
         HttpStatus.OK,
         API_RESPONSE_MEESAGE.SUCCESS,
@@ -109,6 +115,8 @@ export class FeedController {
     description: '기본 응답 형태',
     type: ApiResponseDTO,
   })
+  @UseGuards(JwtOptionalGuard)
+  @ApiBearerAuth()
   public async getListFeed(
     @Query() query: GetListFeedReqQueryDTO,
     @UserDeco() user: IUser,
@@ -317,7 +325,7 @@ export class FeedController {
   })
   async update(
     @Body() updateFeedDTO: UpdateFeedDTO,
-    @UserDeco() user,
+    @UserDeco() user: IUser,
   ): Promise<ApiResponseDTO<boolean>> {
     try {
       await this.feedValidator.checkPermissionUpdateFeed(

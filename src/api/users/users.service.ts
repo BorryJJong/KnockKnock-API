@@ -1,6 +1,9 @@
 import {User} from '@entities/User';
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
+import {IBlogPostRepository} from 'src/api/feed/interface/blogPost.interface';
+import {BlogPostRepository} from 'src/api/feed/repository/blogPost.repository';
+import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 import {ImageService, IUploadS3Response} from 'src/api/image/image.service';
 import {UpdateUserReqDTO} from 'src/api/users/dto/users.dto';
 import {ICreateUser} from 'src/api/users/users.interface';
@@ -14,6 +17,10 @@ export class UsersService {
   constructor(
     @InjectRepository(UserRepository)
     private readonly userRepository: UserRepository,
+    @InjectRepository(BlogPostRepository)
+    private readonly blogPostRepository: IBlogPostRepository,
+    @InjectRepository(UserToBlogPostHideRepository)
+    private readonly userToBlogPostHideRepository: UserToBlogPostHideRepository,
     private readonly kakaoService: KakaoService,
     private readonly imageService: ImageService,
     private connection: Connection,
@@ -139,5 +146,37 @@ export class UsersService {
   public async checkDuplicateNickname(nickname: string): Promise<boolean> {
     const findNickname = await this.userRepository.selectUserNickname(nickname);
     return findNickname ? true : false;
+  }
+
+  public async hideBlogPost(userId: number, postId: number): Promise<void> {
+    const queryRunner: QueryRunner = this.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await this.userToBlogPostHideRepository.insertUserToBlogPostHide(
+        userId,
+        postId,
+        queryRunner,
+      );
+      await this.blogPostRepository.updateBlogPostHideCount(
+        postId,
+        queryRunner,
+      );
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new HttpException(
+        {
+          message: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    } finally {
+      if (!queryRunner.isReleased) {
+        await queryRunner.release();
+      }
+    }
   }
 }
