@@ -45,6 +45,7 @@ import {BlogLike} from '@entities/BlogLike';
 import {UserRepository} from 'src/api/users/users.repository';
 import {User} from '@entities/User';
 import {IUser} from 'src/api/users/users.interface';
+import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 
 @Injectable()
 export class FeedService {
@@ -67,6 +68,8 @@ export class FeedService {
     private blogLikeRepository: BlogLikeRepository,
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
+    @InjectRepository(UserToBlogPostHideRepository)
+    private userToBlogPostHideRepository: UserToBlogPostHideRepository,
   ) {}
 
   async create(
@@ -379,6 +382,7 @@ export class FeedService {
 
   public async getFeedsByChallengesFilter(
     query: GetListFeedMainReqDTO,
+    userId?: number,
   ): Promise<GetListFeedMainResDTO> {
     let blogPostIds: number[] = [];
     const blogChallenges =
@@ -394,6 +398,11 @@ export class FeedService {
       query.page,
       query.take,
       blogPostIds,
+      userId
+        ? await this.userToBlogPostHideRepository
+            .selectBlogPostHideByUser(userId)
+            .then(datas => datas.map(data => data.postId))
+        : [],
     );
 
     const blogImages: IGetBlogImagesByBlogPost[] =
@@ -427,12 +436,12 @@ export class FeedService {
   ): Promise<GetListFeedResDTO> {
     const {feedId: blogPostId, challengeId, page: skip, take} = query;
     // 선택한 데이터 맨상단에 노출 [데이터 고정]
-    let excludeBlogPostId = 0;
+    const excludeBlogPostIds: number[] = [];
     let selectBlogPost: BlogPost = new BlogPost();
 
     if (+skip === 1) {
       selectBlogPost = await this.blogPostRepository.getBlogPost(blogPostId);
-      excludeBlogPostId = selectBlogPost.id;
+      excludeBlogPostIds.push(selectBlogPost.id);
     }
 
     // 챌린지ID가 있다면, 챌린지ID에 맞는 데이터를 랜덤으로 노출
@@ -446,11 +455,18 @@ export class FeedService {
       blogPostIds = blogChallenges.map(bc => bc.postId);
     }
 
+    if (userId) {
+      const hideBlogPostIds = await this.userToBlogPostHideRepository
+        .selectBlogPostHideByUser(userId)
+        .then(datas => datas.map(data => data.postId));
+      excludeBlogPostIds.push(...hideBlogPostIds);
+    }
+
     const blogPosts = await this.blogPostRepository.getListBlogPost(
       skip,
       this.getFeedListTake(skip, take),
       blogPostIds,
-      excludeBlogPostId,
+      excludeBlogPostIds,
     );
 
     if (+skip === 1) {

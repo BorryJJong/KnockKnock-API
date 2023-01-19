@@ -12,6 +12,7 @@ import {JwtOptionalGuard} from 'src/auth/jwt/jwtNoneRequired.guard';
 import {BlogLikeRepository} from 'src/api/like/repository/like.repository';
 import {UserRepository} from 'src/api/users/users.repository';
 import {FeedValidator} from 'src/api/feed/feed.validator';
+import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import {FeedValidator} from 'src/api/feed/feed.validator';
       BlogCommentRepository,
       BlogLikeRepository,
       UserRepository,
+      UserToBlogPostHideRepository,
     ]),
   ],
   controllers: [FeedController],

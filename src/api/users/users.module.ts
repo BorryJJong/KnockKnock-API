@@ -9,10 +9,16 @@ import {KakaoService} from 'src/auth/kakao.service';
 import {AppleService} from 'src/auth/apple.service';
 import {ImageService} from 'src/api/image/image.service';
 import {ConfigService} from '@nestjs/config';
+import {BlogPostRepository} from 'src/api/feed/repository/blogPost.repository';
+import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserRepository]),
+    TypeOrmModule.forFeature([
+      UserRepository,
+      BlogPostRepository,
+      UserToBlogPostHideRepository,
+    ]),
     forwardRef(() => AuthModule),
   ],
   controllers: [UsersController],

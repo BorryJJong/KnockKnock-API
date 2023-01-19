@@ -23,6 +23,7 @@ import {
 import {UserDeco} from '@shared/decorator/user.decorator';
 import {ApiResponseDTO} from '@shared/dto/response.dto';
 import {API_RESPONSE_MEESAGE, SOCIAL_TYPE} from '@shared/enums/enum';
+import {PostFeedBlogPostHideReqDTO} from 'src/api/feed/dto/feed.dto';
 import {
   GetCheckDuplicateUserNicknameReqDTO,
   UpdateUserReqDTO,
@@ -297,7 +298,7 @@ export class UsersController {
   async profileUpdate(
     @UploadedFile() file: Express.Multer.File,
     @Body() updateUserReqDTO: UpdateUserReqDTO,
-    @UserDeco() user,
+    @UserDeco() user: IUser,
   ): Promise<ApiResponseDTO<boolean>> {
     try {
       if (updateUserReqDTO.nickname) {
@@ -345,6 +346,35 @@ export class UsersController {
         HttpStatus.OK,
         API_RESPONSE_MEESAGE.SUCCESS,
         isDuplicate,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
+    }
+  }
+
+  @Post('/hide/blog-post/:id')
+  @ApiOperation({summary: '피드 게시글 숨기기'})
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
+  })
+  async hideBlogPost(
+    @Param() param: PostFeedBlogPostHideReqDTO,
+    @UserDeco() user: IUser,
+  ): Promise<ApiResponseDTO<void>> {
+    try {
+      const {id: postId} = param;
+      await this.userService.hideBlogPost(user.id, postId);
+
+      return new ApiResponseDTO<void>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
       );
     } catch (error) {
       return new ApiResponseDTO(

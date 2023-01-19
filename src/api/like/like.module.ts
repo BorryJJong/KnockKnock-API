@@ -10,9 +10,19 @@ import {LikeValidator} from 'src/api/like/like.validator';
 import {ImageService} from 'src/api/image/image.service';
 import {UsersService} from 'src/api/users/users.service';
 import {ConfigService} from '@nestjs/config';
+import {BlogPostRepository} from 'src/api/feed/repository/blogPost.repository';
+import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BlogLikeRepository, UserRepository])],
+  imports: [
+    TypeOrmModule.forFeature([
+      BlogLikeRepository,
+      UserRepository,
+      // dependency..?
+      BlogPostRepository,
+      UserToBlogPostHideRepository,
+    ]),
+  ],
   controllers: [LikeController],
   providers: [
     LikeService,

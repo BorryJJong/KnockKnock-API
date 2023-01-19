@@ -571,3 +571,8 @@ export class DeleteFeedReqDTO {
   @ApiProperty({description: '피드 id', example: '1'})
   id: number;
 }
+
+export class PostFeedBlogPostHideReqDTO {
+  @ApiProperty({description: '피드 id', example: '1'})
+  id: number;
+}

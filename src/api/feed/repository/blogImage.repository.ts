@@ -25,6 +25,10 @@ export class BlogImageRepository extends Repository<BlogImage> {
   async getBlogImagesByBlogPost(
     blogPostIds: number[],
   ): Promise<IGetBlogImagesByBlogPost[]> {
+    if (blogPostIds.length === 0) {
+      return [];
+    }
+
     const blogImages = await this.createQueryBuilder('blogImage')
       .where('blogImage.postId IN (:...postIds)', {
         postIds: blogPostIds,

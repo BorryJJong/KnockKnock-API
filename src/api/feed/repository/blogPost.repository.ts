@@ -56,11 +56,21 @@ export class BlogPostRepository
     page: number,
     take: number,
     blogPostIds: number[],
+    hideBlogPostIds: number[],
   ): Promise<IGetBlogPostItems> {
     let queryBuilder = await this.createQueryBuilder('blogPost');
 
     if (blogPostIds.length > 0) {
       queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
+    }
+
+    if (hideBlogPostIds.length > 0) {
+      queryBuilder = queryBuilder.andWhere(
+        'blogPost.id NOT IN (:...hideBlogPostIds)',
+        {
+          hideBlogPostIds,
+        },
+      );
     }
 
     const [blogPosts, total] = await queryBuilder
@@ -84,12 +94,12 @@ export class BlogPostRepository
     page: number,
     take: number,
     blogPostIds: number[],
-    excludeBlogPostId?: number,
+    excludeBlogPostId: number[],
   ): Promise<IGetBlogPostItems> {
     let queryBuilder = await this.createQueryBuilder('blogPost');
 
-    if (excludeBlogPostId) {
-      queryBuilder = queryBuilder.where('blogPost.id != :id', {
+    if (excludeBlogPostId.length > 0) {
+      queryBuilder = queryBuilder.where('blogPost.id NOT IN (:...id)', {
         id: excludeBlogPostId,
       });
     }
@@ -230,5 +240,18 @@ export class BlogPostRepository
         feed.fileUrl,
       );
     });
+  }
+
+  async updateBlogPostHideCount(
+    id: number,
+    queryRunner?: QueryRunner,
+  ): Promise<void> {
+    await this.createQueryBuilder('blogPost', queryRunner)
+      .update(BlogPost)
+      .set({
+        hideCount: () => 'hide_count+ 1',
+      })
+      .where('id = :id', {id})
+      .execute();
   }
 }
