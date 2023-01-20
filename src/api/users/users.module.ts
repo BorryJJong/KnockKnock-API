@@ -11,6 +11,7 @@ import {ImageService} from 'src/api/image/image.service';
 import {ConfigService} from '@nestjs/config';
 import {BlogPostRepository} from 'src/api/feed/repository/blogPost.repository';
 import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
+import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPo
       UserRepository,
       BlogPostRepository,
       UserToBlogPostHideRepository,
+      UserReportBlogPostRepository,
     ]),
     forwardRef(() => AuthModule),
   ],

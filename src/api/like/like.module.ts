@@ -12,6 +12,7 @@ import {UsersService} from 'src/api/users/users.service';
 import {ConfigService} from '@nestjs/config';
 import {BlogPostRepository} from 'src/api/feed/repository/blogPost.repository';
 import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
+import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPo
       // dependency..?
       BlogPostRepository,
       UserToBlogPostHideRepository,
+      UserReportBlogPostRepository,
     ]),
   ],
   controllers: [LikeController],

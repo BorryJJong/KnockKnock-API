@@ -576,3 +576,13 @@ export class PostFeedBlogPostHideReqDTO {
   @ApiProperty({description: '피드 id', example: '1'})
   id: number;
 }
+
+export class PostFeedBlogPostReportReqParamDTO {
+  @ApiProperty({description: '피드 id', example: '1'})
+  id: number;
+}
+
+export class PostFeedBlogPostReportReqBodyDTO {
+  @ApiProperty({description: '신고 내용', example: '이 글을 신고합니다'})
+  contents: string;
+}

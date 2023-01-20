@@ -13,6 +13,7 @@ import {BlogLikeRepository} from 'src/api/like/repository/like.repository';
 import {UserRepository} from 'src/api/users/users.repository';
 import {FeedValidator} from 'src/api/feed/feed.validator';
 import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
+import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPo
       BlogLikeRepository,
       UserRepository,
       UserToBlogPostHideRepository,
+      UserReportBlogPostRepository,
     ]),
   ],
   controllers: [FeedController],
