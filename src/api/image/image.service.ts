@@ -2,6 +2,7 @@ import {Injectable, Logger} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import * as AWS from 'aws-sdk';
 import 'dotenv/config';
+import sharp from 'sharp';
 
 export interface IUploadS3Response {
   ok: boolean;
@@ -51,15 +52,17 @@ export class ImageService {
     file: Express.Multer.File,
     folder?: string,
   ): Promise<IUploadS3Response> {
-    const Key = this.rename(file.originalname, file.mimetype);
+    const Key = await this.rename(file.originalname, file.mimetype);
     folder = folder ? folder : 'common';
     try {
-      // console.log(`${this.buketName}/${folder}`);
       const result = await this.S3.putObject({
         Bucket: `${this.buketName}/${folder}`,
         ACL: this.ACL,
         Key,
-        Body: file.buffer,
+        Body: await sharp(file.buffer)
+          .toFormat('webp')
+          .webp({quality: 80})
+          .toBuffer(),
       }).promise();
 
       return {
@@ -95,19 +98,19 @@ export class ImageService {
 
     switch (mimeType) {
       case 'image/jpeg':
-        extension = 'jpg';
+        extension = 'webp';
         break;
       case 'image/png':
-        extension = 'png';
+        extension = 'webp';
         break;
       case 'image/gif':
-        extension = 'gif';
+        extension = 'webp';
         break;
       case 'image/bmp':
-        extension = 'bmp';
+        extension = 'webp';
         break;
       default:
-        extension = 'jpg';
+        extension = 'webp';
         break;
     }
 
