@@ -292,6 +292,7 @@ export class GetBlogPostDTO {
   locationY?: string;
 
   @Expose()
+  @Transform(r => convertTimeToStr(convertTime(r.value)))
   @ApiProperty({
     description: '등록 날짜',
     example: '시간 -> text 변환 작업 아직 안함',
