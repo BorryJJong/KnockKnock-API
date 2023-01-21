@@ -241,7 +241,9 @@ export class BlogPostRepository
         });
     }
 
-    const hotFeeds = await queryBuilder.getRawMany<GetListHotFeedResDTO>();
+    const hotFeeds = await queryBuilder
+      .limit(6)
+      .getRawMany<GetListHotFeedResDTO>();
 
     return hotFeeds.map(feed => {
       return new GetListHotFeedResDTO(
