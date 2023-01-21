@@ -1,4 +1,4 @@
-import {Controller, Get, HttpStatus, Param} from '@nestjs/common';
+import {Controller, Get, HttpStatus, Param, Query} from '@nestjs/common';
 import {
   ApiDefaultResponse,
   ApiOperation,
@@ -14,6 +14,7 @@ import {
   GetChallengeResDTO,
   GetChallengeTitleReqDTO,
   GetChallengeDetailResDTO,
+  GetChallengeListReqQueryDTO,
 } from './dto/challenges.dto';
 
 @ApiTags('challenges')
@@ -102,11 +103,11 @@ export class ChallengesController {
     description: '기본 응답 형태',
     type: ApiResponseDTO,
   })
-  public async getChallengeList(): Promise<
-    ApiResponseDTO<GetListChallengeResDTO[]>
-  > {
+  public async getChallengeList(
+    @Query() query: GetChallengeListReqQueryDTO,
+  ): Promise<ApiResponseDTO<GetListChallengeResDTO[]>> {
     try {
-      const challenges = await this.challengesService.getChallengeList();
+      const challenges = await this.challengesService.getChallengeList(query);
       return new ApiResponseDTO<GetListChallengeResDTO[]>(
         HttpStatus.OK,
         API_RESPONSE_MEESAGE.SUCCESS,

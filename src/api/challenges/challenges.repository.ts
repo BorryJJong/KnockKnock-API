@@ -7,6 +7,7 @@ import {User} from '../../entities/User';
 import {BlogPost} from '../../entities/BlogPost';
 import {IChallengeTitle} from './challenges.interface';
 import {map} from 'ramda';
+import {CHALLENGES_SORT} from '@shared/enums/enum';
 
 @Injectable()
 @EntityRepository(Challenges)
@@ -46,8 +47,10 @@ export class ChallengesRepository extends Repository<Challenges> {
     return challenges;
   }
 
-  public async getChallengeList(): Promise<GetListChallengeResDTO[]> {
-    const userPostChallenge: any = getManager()
+  public async getChallengeList(
+    sort: CHALLENGES_SORT,
+  ): Promise<GetListChallengeResDTO[]> {
+    const userPostChallenge = getManager()
       .createQueryBuilder()
       .select('bp.user_id', 'user_id')
       .addSelect('bc.challenge_id', 'challenge_id')
@@ -55,7 +58,7 @@ export class ChallengesRepository extends Repository<Challenges> {
       .innerJoin(BlogChallenges, 'bc', 'bp.id = bc.post_id')
       .groupBy('bp.user_id, bc.challenge_id');
 
-    const challengePostCnt: any = getManager()
+    const challengePostCnt = getManager()
       .createQueryBuilder()
       .select('a.id', 'id')
       .addSelect('count(*)', 'post_cnt')
@@ -67,7 +70,7 @@ export class ChallengesRepository extends Repository<Challenges> {
       )
       .groupBy('a.id');
 
-    const challengeList: any = getManager()
+    const challengeList = getManager()
       .createQueryBuilder()
       .select('ma.id', 'id')
       .addSelect('ma.title', 'title')
@@ -82,6 +85,12 @@ export class ChallengesRepository extends Repository<Challenges> {
       .addSelect('rank() over(order by mb.post_cnt desc)', 'rnk')
       .from(Challenges, 'ma')
       .leftJoin('(' + challengePostCnt.getQuery() + ')', 'mb', 'ma.id = mb.id');
+
+    if (sort === CHALLENGES_SORT.BRAND_NEW) {
+      challengeList.orderBy('ma.regDate', 'DESC');
+    } else {
+      challengeList.orderBy('rnk', 'ASC');
+    }
 
     // Execute the generated query
     const challengeListRaws = await challengeList.getRawMany();

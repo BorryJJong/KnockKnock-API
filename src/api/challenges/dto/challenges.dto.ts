@@ -1,4 +1,5 @@
 import {ApiProperty, PickType} from '@nestjs/swagger';
+import {CHALLENGES_SORT} from '@shared/enums/enum';
 import {Column} from 'typeorm';
 import {Challenges} from '../../../entities/Challenges';
 import {IChallengeTitle} from '../challenges.interface';
@@ -127,6 +128,10 @@ export class GetListChallengeResDTO extends PickType(Challenges, [
   'content',
   'regDate',
 ] as const) {
+  // 재구현 => refactoring
+  // "newYn": "N",
+  // "postCnt": "2",
+  //  "rnk": "1",
   @Column({
     name: 'new_yn',
     nullable: true,
@@ -154,4 +159,15 @@ export class GetChallengeTitleReqDTO implements IChallengeTitle {
 
   @ApiProperty({description: '챌린지 이름', example: '챌린지'})
   title: string;
+}
+
+export class GetChallengeListReqQueryDTO {
+  @ApiProperty({
+    required: true,
+    default: CHALLENGES_SORT.BRAND_NEW,
+    enum: CHALLENGES_SORT,
+    description: '챌린지 목록 정렬(default 최신순)',
+    example: 'BRAND_NEW',
+  })
+  sort: CHALLENGES_SORT;
 }
