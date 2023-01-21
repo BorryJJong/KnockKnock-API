@@ -89,7 +89,7 @@ export class ChallengesRepository extends Repository<Challenges> {
     if (sort === CHALLENGES_SORT.BRAND_NEW) {
       challengeList.orderBy('ma.regDate', 'DESC');
     } else {
-      challengeList.
+      challengeList.orderBy('rnk', 'ASC');
     }
 
     // Execute the generated query
