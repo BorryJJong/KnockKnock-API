@@ -70,7 +70,8 @@ export declare class GetFeedResDTO {
     private blogLikeCount;
     private isLike;
     private blogCommentCount;
-    constructor(id: number, userName: string, userImage: string, content: string, regDateToString: string, scale: string, blogLikeCount: string, isLike: boolean, blogCommentCount: string, blogImages: IGetBlogImagesByBlogPost[]);
+    private isWriter;
+    constructor(id: number, userName: string, userImage: string, content: string, regDateToString: string, scale: string, blogLikeCount: string, isLike: boolean, blogCommentCount: string, blogImages: IGetBlogImagesByBlogPost[], isWriter: boolean);
 }
 export declare class GetListFeedResDTO extends PagenationResDTO {
     feeds: GetFeedResDTO[];
@@ -90,6 +91,8 @@ export declare class GetBlogPostDTO {
     userName: string;
     userImage: string;
     scale: string;
+    isLike: boolean;
+    isWriter: boolean;
 }
 export declare class GetBlogPromotionDTO {
     id: number;
@@ -125,6 +128,7 @@ export declare class GetBlogCommentDTO {
     content: string;
     regDate: Date;
     isDeleted: boolean;
+    isWriter: boolean;
 }
 export declare class GetListFeedCommentResDTO extends GetBlogCommentDTO {
     replyCnt?: number;
@@ -144,6 +148,9 @@ export declare class GetListFeedLikeResDTO {
     likes: GetFeedLikeDTO[];
 }
 export declare class DeleteFeedReqDTO {
+    id: number;
+}
+export declare class PostFeedBlogPostHideReqDTO {
     id: number;
 }
 export {};

@@ -1,19 +1,20 @@
 /// <reference types="multer" />
 import { FeedService } from './feed.service';
-import { CreateFeedDTO, UpdateFeedDTO, GetListFeedMainResDTO, GetListFeedMainReqDTO, GetListFeedReqQueryDTO, GetListFeedResDTO, InsBlogCommentDTO, GetFeedViewReqDTO, GetListFeedCommentReqDTO, DelBlogCommentReqDTO, DeleteFeedReqDTO } from './dto/feed.dto';
-import { FeedCreateResponse, GetFeedViewResponse, GetFeedCommentResponse, DeleteBlogCommentResponse, UpdateFeedResponse } from 'src/shared/response_entities/feed/temp.response';
+import { CreateFeedDTO, UpdateFeedDTO, GetListFeedMainResDTO, GetListFeedMainReqDTO, GetListFeedReqQueryDTO, GetListFeedResDTO, InsBlogCommentDTO, GetFeedViewReqDTO, GetFeedViewResDTO, GetListFeedCommentReqDTO, GetListFeedCommentResDTO, DelBlogCommentReqDTO, DeleteFeedReqDTO } from './dto/feed.dto';
+import { ApiResponseDTO } from '@shared/dto/response.dto';
 import { FeedValidator } from 'src/api/feed/feed.validator';
+import { IUser } from 'src/api/users/users.interface';
 export declare class FeedController {
     private readonly feedService;
     private readonly feedValidator;
     constructor(feedService: FeedService, feedValidator: FeedValidator);
-    getFeedsByChallengesFilter(query: GetListFeedMainReqDTO): Promise<GetListFeedMainResDTO>;
-    getListFeed(query: GetListFeedReqQueryDTO, req: any): Promise<GetListFeedResDTO>;
-    create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO): Promise<FeedCreateResponse>;
-    getFeed(param: GetFeedViewReqDTO): Promise<GetFeedViewResponse>;
-    insertBlogComment(insBlogCommentDTO: InsBlogCommentDTO): Promise<FeedCreateResponse>;
-    getListFeedComment(param: GetListFeedCommentReqDTO): Promise<GetFeedCommentResponse>;
-    deleteBlogComment(delBlogCommentReqDTO: DelBlogCommentReqDTO): Promise<DeleteBlogCommentResponse>;
-    update(updateFeedDTO: UpdateFeedDTO): Promise<UpdateFeedResponse>;
-    delete(param: DeleteFeedReqDTO, req: any): Promise<boolean>;
+    getFeedsByChallengesFilter(query: GetListFeedMainReqDTO, user: IUser): Promise<ApiResponseDTO<GetListFeedMainResDTO>>;
+    getListFeed(query: GetListFeedReqQueryDTO, user: IUser): Promise<ApiResponseDTO<GetListFeedResDTO>>;
+    create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO, user: IUser): Promise<ApiResponseDTO<boolean>>;
+    getFeed(param: GetFeedViewReqDTO, user: IUser): Promise<ApiResponseDTO<GetFeedViewResDTO>>;
+    insertBlogComment(user: IUser, insBlogCommentDTO: InsBlogCommentDTO): Promise<ApiResponseDTO<any>>;
+    getListFeedComment(user: IUser, param: GetListFeedCommentReqDTO): Promise<ApiResponseDTO<GetListFeedCommentResDTO[]>>;
+    deleteBlogComment(user: IUser, param: DelBlogCommentReqDTO): Promise<ApiResponseDTO<boolean>>;
+    update(updateFeedDTO: UpdateFeedDTO, user: IUser): Promise<ApiResponseDTO<boolean>>;
+    delete(param: DeleteFeedReqDTO, user: IUser): Promise<ApiResponseDTO<boolean>>;
 }

@@ -9,6 +9,8 @@ import {UsersModule} from './api/users/users.module';
 import {FeedModule} from './api/feed/feed.module';
 import {PromotionsModule} from './api/promotions/promotions.module';
 import {LikeModule} from './api/like/like.module';
+import {MyPageModule} from 'src/api/my-page/myPage.module';
+import {HomeModule} from 'src/api/home/home.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import {LikeModule} from './api/like/like.module';
     PromotionsModule,
     ChallengesModule,
     LikeModule,
+    MyPageModule,
+    HomeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -12,8 +12,14 @@ const typeorm_1 = require("typeorm");
 const BlogComment_1 = require("../../../entities/BlogComment");
 const User_1 = require("../../../entities/User");
 let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Repository {
-    createBlogComment(insBlogCommentDTO) {
-        return this.create(Object.assign({}, insBlogCommentDTO));
+    createBlogComment(insBlogCommentDTO, userId) {
+        const { postId, commentId, content } = insBlogCommentDTO;
+        return this.create({
+            userId,
+            postId,
+            content,
+            commentId,
+        });
     }
     async saveBlogComment(queryRunner, BlogComment) {
         if (queryRunner === null) {
@@ -29,7 +35,9 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             .select('comment_id', 'reply_id')
             .addSelect('COUNT(*)', 'cnt')
             .from(BlogComment_1.BlogComment, 'b')
+            .innerJoin(User_1.User, 'u', 'b.user_id = u.id')
             .where('b.comment_id IS NOT NULL')
+            .andWhere('b.isDeleted = false')
             .groupBy('b.comment_id');
         const comment = await (0, typeorm_1.getManager)()
             .createQueryBuilder()
@@ -70,7 +78,7 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
         return comment;
     }
     async getBlogComment(id) {
-        return await this.findOne(id);
+        return await this.findOneOrFail(id);
     }
     async selectFeedsByCommentCount(postIds) {
         return await this.createQueryBuilder('blogComment')
@@ -79,8 +87,21 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             .where('blogComment.postId IN (:...postIds)', {
             postIds: postIds.length === 0 ? [] : postIds,
         })
+            .andWhere('blogComment.isDeleted = :isDeleted', {
+            isDeleted: false,
+        })
             .groupBy('blogComment.postId')
             .getRawMany();
+    }
+    async selectBlogPostCommentByUser(id, userId) {
+        return await this.createQueryBuilder('blogComment')
+            .where('blogComment.id = :id', {
+            id,
+        })
+            .andWhere('blogComment.userId = :userId', {
+            userId,
+        })
+            .getOne();
     }
 };
 BlogCommentRepository = __decorate([

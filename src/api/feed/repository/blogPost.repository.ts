@@ -13,6 +13,9 @@ import {
 import {User} from '../../../entities/User';
 import {getCurrentPageCount} from '../../../shared/utils';
 import {BlogLike} from '@entities/BlogLike';
+import {GetListHotFeedResDTO} from 'src/api/home/dto/home.dto';
+import {BlogImage} from '@entities/BlogImage';
+import {BlogChallenges} from '@entities/BlogChallenges';
 
 @Injectable()
 @EntityRepository(BlogPost)
@@ -22,8 +25,9 @@ export class BlogPostRepository
 {
   createBlogPost(
     createBlogPostDTO: CreateBlogPostDTO | UpdateBlogPostDTO,
+    userId?: number,
   ): BlogPost {
-    return this.create({...createBlogPostDTO});
+    return this.create({...createBlogPostDTO, userId});
   }
 
   async saveBlogPost(
@@ -53,11 +57,21 @@ export class BlogPostRepository
     page: number,
     take: number,
     blogPostIds: number[],
+    hideBlogPostIds: number[],
   ): Promise<IGetBlogPostItems> {
     let queryBuilder = await this.createQueryBuilder('blogPost');
 
     if (blogPostIds.length > 0) {
       queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
+    }
+
+    if (hideBlogPostIds.length > 0) {
+      queryBuilder = queryBuilder.andWhere(
+        'blogPost.id NOT IN (:...hideBlogPostIds)',
+        {
+          hideBlogPostIds,
+        },
+      );
     }
 
     const [blogPosts, total] = await queryBuilder
@@ -81,12 +95,12 @@ export class BlogPostRepository
     page: number,
     take: number,
     blogPostIds: number[],
-    excludeBlogPostId?: number,
+    excludeBlogPostId: number[],
   ): Promise<IGetBlogPostItems> {
     let queryBuilder = await this.createQueryBuilder('blogPost');
 
-    if (excludeBlogPostId) {
-      queryBuilder = queryBuilder.where('blogPost.id != :id', {
+    if (excludeBlogPostId.length > 0) {
+      queryBuilder = queryBuilder.where('blogPost.id NOT IN (:...id)', {
         id: excludeBlogPostId,
       });
     }
@@ -119,7 +133,10 @@ export class BlogPostRepository
       .getOneOrFail();
   }
 
-  async getBlogPostById(id: number, userId?: number): Promise<GetBlogPostDTO> {
+  async getBlogPostById(
+    id: number,
+    userId?: number,
+  ): Promise<GetBlogPostDTO | undefined> {
     let queryBuilder = getManager()
       .createQueryBuilder()
       .select('bp.id', 'id')
@@ -150,9 +167,18 @@ export class BlogPostRepository
             postId: id,
           });
       }, 'isLike');
+
+      queryBuilder = queryBuilder.addSelect(sq => {
+        return sq
+          .from(BlogPost, 'bp')
+          .select(`IF(bp.userId = ${userId}, true, false)`)
+          .where('bp.id = :id', {
+            id,
+          });
+      }, 'isWriter');
     }
 
-    return await queryBuilder.getRawOne();
+    return await queryBuilder.getRawOne<GetBlogPostDTO>();
   }
 
   async updateBlogPostHits(id: number): Promise<void> {
@@ -178,5 +204,65 @@ export class BlogPostRepository
       .where('id = :id', {id})
       .andWhere('blogPost.userId = :userId', {userId})
       .getOne();
+  }
+
+  // TODO: 데이터가 확장될 경우, 날짜를 Today로 제한
+  async selectBlogPostByHotFeeds(
+    challengeId: number,
+  ): Promise<GetListHotFeedResDTO[]> {
+    let queryBuilder = this.createQueryBuilder('blogPost')
+      .select('blogPost.id', 'postId')
+      .addSelect('blogPost.scale', 'scale')
+      .addSelect('user.nickname', 'nickname')
+      .addSelect('count(*)', 'blogLikeCount')
+      .innerJoin(User, 'user', 'user.id = blogPost.userId')
+      .innerJoin(BlogImage, 'bi', 'bi.post_id = blogPost.id')
+      .leftJoin(BlogLike, 'blogLike', 'blogLike.post_id = blogPost.id')
+      .where('blogPost.delDate IS NULL')
+      .orderBy('blogPost.hits', 'DESC')
+      .addOrderBy('blogLikeCount', 'DESC')
+      .addOrderBy('blogPost.regDate', 'DESC')
+      .groupBy('blogPost.id')
+      .addGroupBy('fileUrl');
+
+    queryBuilder = queryBuilder.addSelect(sq => {
+      return sq
+        .select('bi.file_url')
+        .from(BlogImage, 'bi')
+        .where('bi.postId = blogPost.id')
+        .limit(1);
+    }, 'fileUrl');
+
+    if (+challengeId !== 0) {
+      queryBuilder = queryBuilder
+        .innerJoin(BlogChallenges, 'bc', 'bc.post_id = blogPost.id')
+        .andWhere('bc.challengeId = :challengeId', {
+          challengeId,
+        });
+    }
+
+    const hotFeeds = await queryBuilder.getRawMany<GetListHotFeedResDTO>();
+
+    return hotFeeds.map(feed => {
+      return new GetListHotFeedResDTO(
+        feed.postId,
+        feed.scale,
+        feed.nickname,
+        feed.fileUrl,
+      );
+    });
+  }
+
+  async updateBlogPostHideCount(
+    id: number,
+    queryRunner?: QueryRunner,
+  ): Promise<void> {
+    await this.createQueryBuilder('blogPost', queryRunner)
+      .update(BlogPost)
+      .set({
+        hideCount: () => 'hide_count+ 1',
+      })
+      .where('id = :id', {id})
+      .execute();
   }
 }

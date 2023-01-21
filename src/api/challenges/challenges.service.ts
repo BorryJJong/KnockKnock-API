@@ -61,7 +61,7 @@ export class ChallengesService {
     const challengeContentJson: ChallengeContentType = JSON.parse(
       challengeDTO.content,
     ) as ChallengeContentType;
-    const subContents = [];
+    const subContents: ChallengeSubContentDTO[] = [];
 
     if (challengeContentJson.subContents !== undefined) {
       challengeContentJson.subContents.forEach((_, index) => {
@@ -101,14 +101,14 @@ export class ChallengesService {
       sort,
     );
 
-    // for (let index = 0; index < (await challengeList).length; index++) {
-    //   const element = challengeList[index];
-    //   const challengeId = element.id;
+    for (let index = 0; index < (await challengeList).length; index++) {
+      const element = challengeList[index];
+      const challengeId = element.id;
 
-    //   const participantList =
-    //     await this.challengesRepository.getParticipantList(challengeId);
-    //   challengeList[index].participants = participantList;
-    // }
+      const participantList =
+        await this.challengesRepository.getParticipantList(challengeId);
+      challengeList[index].participants = participantList;
+    }
 
     return challengeList;
   }

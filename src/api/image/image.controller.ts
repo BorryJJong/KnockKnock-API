@@ -1,14 +1,6 @@
-import {
-  Body,
-  Controller,
-  Post,
-  UploadedFile,
-  UseInterceptors,
-} from '@nestjs/common';
+import {Controller, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {ImageService} from './image.service';
-import multerS3 from 'multer-s3';
-import * as AWS from 'aws-sdk';
 import 'dotenv/config';
 
 @Controller('image')
@@ -17,7 +9,7 @@ export class ImageController {
 
   @Post()
   @UseInterceptors(FileInterceptor('images'))
-  async uploadImage(@UploadedFile() file: Express.Multer.File, @Body() body) {
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
     return this.imageService.uploadS3(file);
   }
 }

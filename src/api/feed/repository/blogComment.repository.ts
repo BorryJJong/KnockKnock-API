@@ -12,8 +12,17 @@ import {IGetFeedsByCommentCountResponse} from 'src/api/feed/interface/blogCommen
 @Injectable()
 @EntityRepository(BlogComment)
 export class BlogCommentRepository extends Repository<BlogComment> {
-  createBlogComment(insBlogCommentDTO: InsBlogCommentDTO): BlogComment {
-    return this.create({...insBlogCommentDTO});
+  createBlogComment(
+    insBlogCommentDTO: InsBlogCommentDTO,
+    userId: number,
+  ): BlogComment {
+    const {postId, commentId, content} = insBlogCommentDTO;
+    return this.create({
+      userId,
+      postId,
+      content,
+      commentId,
+    });
   }
 
   async saveBlogComment(
@@ -32,15 +41,19 @@ export class BlogCommentRepository extends Repository<BlogComment> {
    * 리댓글 없는 댓글이 삭제된 경우 가져오지 않음.
    * 리댓글 있는 댓글이 삭제된 경우 내용을 '삭제된 댓글입니다.'로 변경하여 가져옴.
    * @param id postId
-   * @returns GetFeedCommentResDTO
+   * @returns GetFeedCommentResDTO[]
    */
-  async getBlogCommentByPostId(id: number) {
+  async getBlogCommentByPostId(
+    id: number,
+  ): Promise<GetListFeedCommentResDTO[]> {
     const cntQb = getManager()
       .createQueryBuilder()
       .select('comment_id', 'reply_id')
       .addSelect('COUNT(*)', 'cnt')
       .from(BlogComment, 'b')
+      .innerJoin(User, 'u', 'b.user_id = u.id')
       .where('b.comment_id IS NOT NULL')
+      .andWhere('b.isDeleted = false')
       .groupBy('b.comment_id');
 
     const comment: GetListFeedCommentResDTO[] = await getManager()
@@ -98,7 +111,7 @@ export class BlogCommentRepository extends Repository<BlogComment> {
   }
 
   async getBlogComment(id: number): Promise<BlogComment> {
-    return await this.findOne(id);
+    return await this.findOneOrFail(id);
   }
 
   async selectFeedsByCommentCount(
@@ -115,5 +128,19 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       })
       .groupBy('blogComment.postId')
       .getRawMany<IGetFeedsByCommentCountResponse>();
+  }
+
+  async selectBlogPostCommentByUser(
+    id: number,
+    userId: number,
+  ): Promise<BlogComment | undefined> {
+    return await this.createQueryBuilder('blogComment')
+      .where('blogComment.id = :id', {
+        id,
+      })
+      .andWhere('blogComment.userId = :userId', {
+        userId,
+      })
+      .getOne();
   }
 }

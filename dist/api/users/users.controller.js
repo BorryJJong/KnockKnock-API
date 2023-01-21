@@ -14,8 +14,12 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 const swagger_1 = require("@nestjs/swagger");
+const user_decorator_1 = require("../../shared/decorator/user.decorator");
+const response_dto_1 = require("../../shared/dto/response.dto");
 const enum_1 = require("../../shared/enums/enum");
+const feed_dto_1 = require("../feed/dto/feed.dto");
 const users_dto_1 = require("./dto/users.dto");
 const users_validator_1 = require("./users.validator");
 const apple_service_1 = require("../../auth/apple.service");
@@ -33,52 +37,105 @@ let UsersController = class UsersController {
         this.appleService = appleService;
     }
     async socialLogin(body) {
-        const { socialType, socialUuid } = body;
-        const userProperties = await this.getSocialLoginAttributes(socialType, socialUuid);
-        const user = await this.userService.getSocialUser({
-            socialUuid: userProperties.id.toString(),
-            socialType,
-        });
-        if (user) {
-            const { accessToken, refreshToken } = await this.authService.makeJwtToken(user.id);
-            await this.authService.updateRefreshToken(user.id, refreshToken);
-            return new auth_dto_1.SocialLoginResponseDTO(true, new users_dto_1.UserInfoResponseDTO(user.nickname, user.socialType, user.image, user.regDate, user.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
+        try {
+            const { socialType, socialUuid } = body;
+            const userProperties = await this.getSocialLoginAttributes(socialType, socialUuid);
+            const user = await this.userService.getSocialUser({
+                socialUuid: userProperties.id.toString(),
+                socialType,
+            });
+            if (user) {
+                const { accessToken, refreshToken } = await this.authService.makeJwtToken(user.id);
+                await this.authService.updateRefreshToken(user.id, refreshToken);
+                const result = new auth_dto_1.SocialLoginResponseDTO(true, new users_dto_1.UserInfoResDTO(user.nickname, user.socialType, user.image, user.regDate, user.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
+                return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, result);
+            }
+            else {
+                return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, false);
+            }
         }
-        else {
-            return new auth_dto_1.SocialLoginResponseDTO(false);
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
         }
     }
-    async signUp(body) {
-        const { socialUuid, socialType, nickname } = body;
-        const userProperties = await this.getSocialLoginAttributes(socialType, socialUuid);
-        await this.userValidator.checkExistSocialUser(userProperties.id.toString(), socialType);
-        const newUser = await this.userService.saveUser({
-            socialType,
-            socialUuid: userProperties.id.toString(),
-            nickname,
-        });
-        const { accessToken, refreshToken } = await this.authService.makeJwtToken(newUser.id);
-        await this.authService.updateRefreshToken(newUser.id, refreshToken);
-        return new auth_dto_1.SocialLoginResponseDTO(false, new users_dto_1.UserInfoResponseDTO(newUser.nickname, newUser.socialType, newUser.image, newUser.regDate, newUser.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
+    async signUp(file, body) {
+        try {
+            const { socialUuid, socialType, nickname } = body;
+            const userProperties = await this.getSocialLoginAttributes(socialType, socialUuid);
+            await this.userValidator.checkExistSocialUser(userProperties.id.toString(), socialType);
+            await this.userValidator.checkDuplicateNickname(nickname);
+            const newUser = await this.userService.saveUser({
+                socialType,
+                socialUuid: userProperties.id.toString(),
+                nickname,
+            }, file);
+            const { accessToken, refreshToken } = await this.authService.makeJwtToken(newUser.id);
+            await this.authService.updateRefreshToken(newUser.id, refreshToken);
+            const result = new auth_dto_1.SocialLoginResponseDTO(false, new users_dto_1.UserInfoResDTO(newUser.nickname, newUser.socialType, newUser.image, newUser.regDate, newUser.deletedAt), new auth_dto_1.AuthInfoResponseDTO(accessToken, refreshToken));
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, result);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
     }
-    async logout(req) {
-        const requestUser = req.user;
-        const user = await this.userService.getUser(requestUser.id);
-        await this.userService.logout(user.id);
-        return true;
+    async logout(user) {
+        try {
+            await this.userService.getUser(user.id);
+            await this.userService.logout(user.id);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, true);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
     }
-    async deleteUser(req) {
-        const requestUser = req.user;
-        const user = await this.userService.getUser(requestUser.id);
-        await this.userService.deleteUser(user.id, user.socialUuid);
-        return true;
+    async deleteUser(user) {
+        try {
+            const findeUser = await this.userService.getUserFindOrFail(user.id);
+            await this.userService.deleteUser(findeUser.id, findeUser.socialUuid, findeUser.socialType === enum_1.SOCIAL_TYPE.KAKAO);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, true);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
     }
     async getSocialLoginAttributes(socialType, socialUuid) {
-        switch (socialType) {
-            case enum_1.SOCIAL_TYPE.APPLE:
-                return await this.appleService.getUserProperties(socialUuid);
-            case enum_1.SOCIAL_TYPE.KAKAO:
-                return await this.kakaoService.getUserProperties(socialUuid);
+        if (socialType === enum_1.SOCIAL_TYPE.APPLE) {
+            return await this.appleService.getUserProperties(socialUuid);
+        }
+        else {
+            return await this.kakaoService.getUserProperties(socialUuid);
+        }
+    }
+    async profileUpdate(file, updateUserReqDTO, user) {
+        try {
+            if (updateUserReqDTO.nickname) {
+                await this.userValidator.checkDuplicateNickname(updateUserReqDTO.nickname);
+            }
+            await this.userService.profileUpdate(user.id, updateUserReqDTO, file);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, true);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
+    }
+    async checkDuplicateNickname(param) {
+        try {
+            const { nickname } = param;
+            const isDuplicate = await this.userService.checkDuplicateNickname(nickname);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, isDuplicate);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
+    }
+    async hideBlogPost(param, user) {
+        try {
+            const { id: postId } = param;
+            await this.userService.hideBlogPost(user.id, postId);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
         }
     }
 };
@@ -88,10 +145,20 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '성공',
+        type: auth_dto_1.SocialLoginResponseDTO,
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: '회원가입필요 여부',
+        type: Boolean,
     }),
     (0, swagger_1.ApiResponse)({
         status: 401,
         description: '인증 에러',
+    }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
     }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -104,10 +171,18 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '성공',
+        type: auth_dto_1.SocialLoginResponseDTO,
     }),
-    __param(0, (0, common_1.Body)()),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
+    }),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images')),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [auth_dto_1.SignUpRequestDTO]),
+    __metadata("design:paramtypes", [Object, auth_dto_1.SignUpRequestDTO]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "signUp", null);
 __decorate([
@@ -121,8 +196,13 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '로그아웃 성공',
+        type: Boolean,
     }),
-    __param(0, (0, common_1.Request)()),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
+    }),
+    __param(0, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
@@ -138,12 +218,66 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '회원탈퇴 성공',
+        type: Boolean,
     }),
-    __param(0, (0, common_1.Request)()),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
+    }),
+    __param(0, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "deleteUser", null);
+__decorate([
+    (0, common_1.Put)(),
+    (0, swagger_1.ApiOperation)({ summary: '회원 프로필 수정' }),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
+    }),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images')),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, user_decorator_1.UserDeco)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, users_dto_1.UpdateUserReqDTO, Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "profileUpdate", null);
+__decorate([
+    (0, common_1.Get)('/duplicate-nickname/:nickname'),
+    (0, swagger_1.ApiOperation)({ summary: '회원 닉네임 중복 확인' }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
+    }),
+    (0, swagger_1.ApiResponse)({
+        description: '닉네임 중복시 true, 아니면 false',
+        type: Boolean,
+    }),
+    __param(0, (0, common_1.Param)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [users_dto_1.GetCheckDuplicateUserNicknameReqDTO]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "checkDuplicateNickname", null);
+__decorate([
+    (0, common_1.Post)('/hide/blog-post/:id'),
+    (0, swagger_1.ApiOperation)({ summary: '피드 게시글 숨기기' }),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
+    }),
+    __param(0, (0, common_1.Param)()),
+    __param(1, (0, user_decorator_1.UserDeco)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [feed_dto_1.PostFeedBlogPostHideReqDTO, Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "hideBlogPost", null);
 UsersController = __decorate([
     (0, swagger_1.ApiTags)('users'),
     (0, common_1.Controller)('users'),

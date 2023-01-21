@@ -13,16 +13,36 @@ const like_service_1 = require("./like.service");
 const like_controller_1 = require("./like.controller");
 const like_repository_1 = require("./repository/like.repository");
 const jwt_guard_1 = require("../../auth/jwt/jwt.guard");
-const users_service_1 = require("../users/users.service");
 const users_repository_1 = require("../users/users.repository");
 const kakao_service_1 = require("../../auth/kakao.service");
+const like_validator_1 = require("./like.validator");
+const image_service_1 = require("../image/image.service");
+const users_service_1 = require("../users/users.service");
+const config_1 = require("@nestjs/config");
+const blogPost_repository_1 = require("../feed/repository/blogPost.repository");
+const UserToBlogPostHide_repository_1 = require("../feed/repository/UserToBlogPostHide.repository");
 let LikeModule = class LikeModule {
 };
 LikeModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([like_repository_1.BlogLikeRepository, users_repository_1.UserRepository])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([
+                like_repository_1.BlogLikeRepository,
+                users_repository_1.UserRepository,
+                blogPost_repository_1.BlogPostRepository,
+                UserToBlogPostHide_repository_1.UserToBlogPostHideRepository,
+            ]),
+        ],
         controllers: [like_controller_1.LikeController],
-        providers: [like_service_1.LikeService, jwt_guard_1.JwtGuard, users_service_1.UsersService, kakao_service_1.KakaoService],
+        providers: [
+            like_service_1.LikeService,
+            jwt_guard_1.JwtGuard,
+            kakao_service_1.KakaoService,
+            like_validator_1.LikeValidator,
+            users_service_1.UsersService,
+            image_service_1.ImageService,
+            config_1.ConfigService,
+        ],
     })
 ], LikeModule);
 exports.LikeModule = LikeModule;

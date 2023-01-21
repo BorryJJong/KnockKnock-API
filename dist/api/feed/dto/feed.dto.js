@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DeleteFeedReqDTO = exports.GetListFeedLikeResDTO = exports.GetFeedLikeDTO = exports.GetListFeedCommentReqDTO = exports.GetListFeedCommentResDTO = exports.GetBlogCommentDTO = exports.DelBlogCommentReqDTO = exports.InsBlogCommentDTO = exports.GetFeedViewResDTO = exports.GetBlogImageDTO = exports.GetBlogChallengesDTO = exports.GetBlogPromotionDTO = exports.GetBlogPostDTO = exports.GetFeedViewReqDTO = exports.GetListFeedResDTO = exports.GetFeedResDTO = exports.GetFeedImageResDTO = exports.GetListFeedReqQueryDTO = exports.GetListBlogImageByBlogPostResDTO = exports.GetListFeedMainResDTO = exports.GetFeedMainResDTO = exports.GetListFeedMainReqDTO = exports.UpdateBlogPostDTO = exports.CreateBlogImageDTO = exports.CreateBlogPromotionDTO = exports.CreateBlogChallengesDTO = exports.CreateBlogPostDTO = exports.UpdateFeedDTO = exports.CreateFeedDTO = void 0;
+exports.PostFeedBlogPostHideReqDTO = exports.DeleteFeedReqDTO = exports.GetListFeedLikeResDTO = exports.GetFeedLikeDTO = exports.GetListFeedCommentReqDTO = exports.GetListFeedCommentResDTO = exports.GetBlogCommentDTO = exports.DelBlogCommentReqDTO = exports.InsBlogCommentDTO = exports.GetFeedViewResDTO = exports.GetBlogImageDTO = exports.GetBlogChallengesDTO = exports.GetBlogPromotionDTO = exports.GetBlogPostDTO = exports.GetFeedViewReqDTO = exports.GetListFeedResDTO = exports.GetFeedResDTO = exports.GetFeedImageResDTO = exports.GetListFeedReqQueryDTO = exports.GetListBlogImageByBlogPostResDTO = exports.GetListFeedMainResDTO = exports.GetFeedMainResDTO = exports.GetListFeedMainReqDTO = exports.UpdateBlogPostDTO = exports.CreateBlogImageDTO = exports.CreateBlogPromotionDTO = exports.CreateBlogChallengesDTO = exports.CreateBlogPostDTO = exports.UpdateFeedDTO = exports.CreateFeedDTO = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 const swagger_1 = require("@nestjs/swagger");
@@ -180,7 +180,7 @@ __decorate([
 ], GetFeedImageResDTO.prototype, "fileUrl", void 0);
 exports.GetFeedImageResDTO = GetFeedImageResDTO;
 class GetFeedResDTO {
-    constructor(id, userName, userImage, content, regDateToString, scale, blogLikeCount, isLike, blogCommentCount, blogImages) {
+    constructor(id, userName, userImage, content, regDateToString, scale, blogLikeCount, isLike, blogCommentCount, blogImages, isWriter) {
         this.id = id;
         this.userName = userName;
         this.userImage = userImage;
@@ -191,6 +191,7 @@ class GetFeedResDTO {
         this.isLike = isLike;
         this.blogCommentCount = blogCommentCount;
         this.blogImages = blogImages.map(blogImage => new GetFeedImageResDTO(blogImage.id, blogImage.fileUrl));
+        this.isWriter = isWriter;
     }
 }
 __decorate([
@@ -243,6 +244,10 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '댓글 개수', example: '2,456' }),
     __metadata("design:type", String)
 ], GetFeedResDTO.prototype, "blogCommentCount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '피드 작성 여부', example: 'true' }),
+    __metadata("design:type", Boolean)
+], GetFeedResDTO.prototype, "isWriter", void 0);
 exports.GetFeedResDTO = GetFeedResDTO;
 class GetListFeedResDTO extends pagenation_dto_1.PagenationResDTO {
 }
@@ -352,6 +357,24 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], GetBlogPostDTO.prototype, "scale", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, class_transformer_1.Transform)(({ value }) => (0, utils_1.dtoConvertBoolean)(value)),
+    (0, swagger_1.ApiProperty)({
+        description: '게시글 좋아요 여부',
+        example: true,
+    }),
+    __metadata("design:type", Boolean)
+], GetBlogPostDTO.prototype, "isLike", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, class_transformer_1.Transform)(({ value }) => (0, utils_1.dtoConvertBoolean)(value)),
+    (0, swagger_1.ApiProperty)({
+        description: '피드 작성 여부',
+        example: 'true',
+    }),
+    __metadata("design:type", Boolean)
+], GetBlogPostDTO.prototype, "isWriter", void 0);
 GetBlogPostDTO = __decorate([
     (0, class_transformer_1.Exclude)()
 ], GetBlogPostDTO);
@@ -549,6 +572,15 @@ __decorate([
     (0, class_transformer_1.Transform)(({ value }) => value === 'true' || value === true || value === 1),
     __metadata("design:type", Boolean)
 ], GetBlogCommentDTO.prototype, "isDeleted", void 0);
+__decorate([
+    (0, class_transformer_1.Expose)(),
+    (0, class_transformer_1.Type)(() => Boolean),
+    (0, swagger_1.ApiProperty)({
+        description: '댓글 작성 여부',
+        example: 'true',
+    }),
+    __metadata("design:type", Boolean)
+], GetBlogCommentDTO.prototype, "isWriter", void 0);
 GetBlogCommentDTO = __decorate([
     (0, class_transformer_1.Exclude)()
 ], GetBlogCommentDTO);
@@ -633,4 +665,11 @@ __decorate([
     __metadata("design:type", Number)
 ], DeleteFeedReqDTO.prototype, "id", void 0);
 exports.DeleteFeedReqDTO = DeleteFeedReqDTO;
+class PostFeedBlogPostHideReqDTO {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '피드 id', example: '1' }),
+    __metadata("design:type", Number)
+], PostFeedBlogPostHideReqDTO.prototype, "id", void 0);
+exports.PostFeedBlogPostHideReqDTO = PostFeedBlogPostHideReqDTO;
 //# sourceMappingURL=feed.dto.js.map

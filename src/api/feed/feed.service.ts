@@ -26,7 +26,7 @@ import {
   UpdateBlogPostDTO,
   DeleteFeedReqDTO,
 } from './dto/feed.dto';
-import {ImageService} from 'src/api/image/image.service';
+import {ImageService, IUploadS3Response} from 'src/api/image/image.service';
 import {BlogChallengesRepository} from './repository/blogChallenges.repository';
 import {BlogImageRepository} from './repository/blogImage.repository';
 import {BlogPostRepository} from './repository/blogPost.repository';
@@ -44,6 +44,8 @@ import {BlogLikeRepository} from 'src/api/like/repository/like.repository';
 import {BlogLike} from '@entities/BlogLike';
 import {UserRepository} from 'src/api/users/users.repository';
 import {User} from '@entities/User';
+import {IUser} from 'src/api/users/users.interface';
+import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 
 @Injectable()
 export class FeedService {
@@ -66,9 +68,15 @@ export class FeedService {
     private blogLikeRepository: BlogLikeRepository,
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
+    @InjectRepository(UserToBlogPostHideRepository)
+    private userToBlogPostHideRepository: UserToBlogPostHideRepository,
   ) {}
 
-  async create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO) {
+  async create(
+    files: Express.Multer.File[],
+    createFeedDTO: CreateFeedDTO,
+    userId: number,
+  ) {
     const queryRunner = this.connection.createQueryRunner();
     let result = false;
 
@@ -77,7 +85,7 @@ export class FeedService {
 
     try {
       // 1. 포스트 저장
-      const post = await this.savePost(queryRunner, createFeedDTO);
+      const post = await this.savePost(queryRunner, createFeedDTO, userId);
       const postId: number = post.id;
 
       // 2. 챌린지 저장
@@ -112,8 +120,12 @@ export class FeedService {
   async savePost(
     queryRunner: QueryRunner,
     createBlogPostDTO: CreateBlogPostDTO,
+    userId: number,
   ) {
-    const post = this.blogPostRepository.createBlogPost(createBlogPostDTO);
+    const post = this.blogPostRepository.createBlogPost(
+      createBlogPostDTO,
+      userId,
+    );
     const returned = await this.blogPostRepository.saveBlogPost(
       queryRunner,
       post,
@@ -165,7 +177,12 @@ export class FeedService {
     postId: number,
     file: Express.Multer.File,
   ) {
-    let resultS3 = null;
+    let resultS3: IUploadS3Response = {
+      ok: true,
+      ETag: undefined,
+      Key: undefined,
+      url: undefined,
+    };
     try {
       // 1. image s3 upload
       resultS3 = await this.imageService.uploadS3(file, 'feed');
@@ -182,13 +199,13 @@ export class FeedService {
       // 2. save db
       const image = this.blogImageRepository.createBlogImage({
         postId: postId,
-        fileUrl: resultS3.url,
+        fileUrl: resultS3.url || '',
       });
 
       await this.blogImageRepository.saveBlogImage(queryRunner, image);
     } catch (e) {
       if (resultS3.ok) {
-        this.imageService.deleteS3(resultS3.Key);
+        this.imageService.deleteS3(resultS3.Key || '');
       }
       throw new HttpException(
         {
@@ -200,10 +217,12 @@ export class FeedService {
     }
   }
 
-  async saveBlogComment(insBlogCommentDTO: InsBlogCommentDTO) {
+  async saveBlogComment(insBlogCommentDTO: InsBlogCommentDTO, userId: number) {
     try {
-      const comment =
-        this.blogCommentRepository.createBlogComment(insBlogCommentDTO);
+      const comment = this.blogCommentRepository.createBlogComment(
+        insBlogCommentDTO,
+        userId,
+      );
       await this.blogCommentRepository.saveBlogComment(null, comment);
     } catch (e) {
       throw new HttpException(
@@ -222,6 +241,15 @@ export class FeedService {
   ): Promise<GetFeedViewResDTO> {
     try {
       const post = await this.blogPostRepository.getBlogPostById(id, userId);
+      if (!post) {
+        throw new HttpException(
+          {
+            message: '피드가 존재하지 않습니다',
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
       const promotions =
         await this.blogPromotionRepository.getBlogPromotionByPostId(id);
       const challenges =
@@ -354,6 +382,7 @@ export class FeedService {
 
   public async getFeedsByChallengesFilter(
     query: GetListFeedMainReqDTO,
+    userId?: number,
   ): Promise<GetListFeedMainResDTO> {
     let blogPostIds: number[] = [];
     const blogChallenges =
@@ -369,6 +398,11 @@ export class FeedService {
       query.page,
       query.take,
       blogPostIds,
+      userId
+        ? await this.userToBlogPostHideRepository
+            .selectBlogPostHideByUser(userId)
+            .then(datas => datas.map(data => data.postId))
+        : [],
     );
 
     const blogImages: IGetBlogImagesByBlogPost[] =
@@ -402,17 +436,18 @@ export class FeedService {
   ): Promise<GetListFeedResDTO> {
     const {feedId: blogPostId, challengeId, page: skip, take} = query;
     // 선택한 데이터 맨상단에 노출 [데이터 고정]
-    let excludeBlogPostId: number;
-    let selectBlogPost: BlogPost;
+    const excludeBlogPostIds: number[] = [];
+    let selectBlogPost: BlogPost = new BlogPost();
+
     if (+skip === 1) {
       selectBlogPost = await this.blogPostRepository.getBlogPost(blogPostId);
-      excludeBlogPostId = selectBlogPost.id;
+      excludeBlogPostIds.push(selectBlogPost.id);
     }
 
     // 챌린지ID가 있다면, 챌린지ID에 맞는 데이터를 랜덤으로 노출
     let blogPostIds: number[] = [];
 
-    if (+challengeId) {
+    if (challengeId) {
       const blogChallenges =
         await this.blogChallengesRepository.getBlogChallengesByChallengeId(
           challengeId,
@@ -420,12 +455,18 @@ export class FeedService {
       blogPostIds = blogChallenges.map(bc => bc.postId);
     }
 
+    if (userId) {
+      const hideBlogPostIds = await this.userToBlogPostHideRepository
+        .selectBlogPostHideByUser(userId)
+        .then(datas => datas.map(data => data.postId));
+      excludeBlogPostIds.push(...hideBlogPostIds);
+    }
+
     const blogPosts = await this.blogPostRepository.getListBlogPost(
       skip,
       this.getFeedListTake(skip, take),
       blogPostIds,
-      excludeBlogPostId,
-      userId,
+      excludeBlogPostIds,
     );
 
     if (+skip === 1) {
@@ -447,7 +488,7 @@ export class FeedService {
     );
 
     // 비회원의 경우 false, 회원인 경우 좋아요 여부 확인
-    let likes = [];
+    let likes: BlogLike[] = [];
     if (userId) {
       likes = await this.getFeedListByUserLikes(blogPostIds, userId);
     }
@@ -459,7 +500,9 @@ export class FeedService {
     return {
       feeds: blogPosts.items.map((blogPost: IGetBlogPostItem) => {
         const defaultImageRatio = '1:1';
-        const writer = findUsers.find(user => user.id === blogPost.userId);
+        const writer = findUsers.find(
+          user => user.id === blogPost.userId,
+        ) as IUser;
         const commentCount =
           feedsCommentCount.find(comment => comment.postId === blogPost.id)
             ?.commentCount || 0;
@@ -470,6 +513,7 @@ export class FeedService {
           ? likes.some(like => like.postId === blogPost.id)
           : false;
         const images = blogImages.filter(bi => bi.postId === blogPost.id);
+        const isWriter = userId === blogPost.userId;
 
         return new GetFeedResDTO(
           blogPost.id,
@@ -482,6 +526,7 @@ export class FeedService {
           isLike,
           commafy(commentCount),
           images,
+          isWriter,
         );
       }),
       // SELECT절의 random()이 아니기 때문에, total과 상관없이 무한 스크롤 가능하게 수정
@@ -520,21 +565,35 @@ export class FeedService {
     return await this.userRepository.selectUsers(userIds);
   }
 
-  async getListFeedComment({
-    id,
-  }: GetListFeedCommentReqDTO): Promise<GetListFeedCommentResDTO[]> {
+  async getListFeedComment(
+    {id}: GetListFeedCommentReqDTO,
+    userId: number,
+  ): Promise<GetListFeedCommentResDTO[]> {
     try {
-      let comment = await this.blogCommentRepository.getBlogCommentByPostId(id);
-      comment = plainToInstance(GetListFeedCommentResDTO, comment);
+      let comments = await this.blogCommentRepository.getBlogCommentByPostId(
+        id,
+      );
+      comments = plainToInstance(GetListFeedCommentResDTO, comments);
 
       const result: GetListFeedCommentResDTO[] = await Promise.all(
-        comment.map(async c => {
-          if (c.replyCnt != 0) {
+        comments.map(async comment => {
+          if (comment.replyCnt != 0) {
             const reply: GetBlogCommentDTO[] =
-              await this.blogCommentRepository.getBlogCommentByCommentId(c.id);
-            c.reply = plainToInstance(GetBlogCommentDTO, reply);
+              await this.blogCommentRepository.getBlogCommentByCommentId(
+                comment.id,
+              );
+            reply.map(
+              (r, index) =>
+                (reply[index].isWriter = this.isFeedCommentWriter(
+                  r.userId,
+                  userId,
+                )),
+            );
+            comment.reply = plainToInstance(GetBlogCommentDTO, reply);
           }
-          return c;
+          comment.isWriter = this.isFeedCommentWriter(comment.userId, userId);
+
+          return comment;
         }),
       );
 
@@ -548,6 +607,13 @@ export class FeedService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  private isFeedCommentWriter(
+    writerId: number,
+    requestUserId: number,
+  ): boolean {
+    return writerId === requestUserId;
   }
 
   async deleteBlogComment({id}: DelBlogCommentReqDTO) {

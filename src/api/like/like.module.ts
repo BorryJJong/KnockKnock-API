@@ -4,13 +4,34 @@ import {LikeService} from './like.service';
 import {LikeController} from './like.controller';
 import {BlogLikeRepository} from './repository/like.repository';
 import {JwtGuard} from 'src/auth/jwt/jwt.guard';
-import {UsersService} from 'src/api/users/users.service';
 import {UserRepository} from 'src/api/users/users.repository';
 import {KakaoService} from 'src/auth/kakao.service';
+import {LikeValidator} from 'src/api/like/like.validator';
+import {ImageService} from 'src/api/image/image.service';
+import {UsersService} from 'src/api/users/users.service';
+import {ConfigService} from '@nestjs/config';
+import {BlogPostRepository} from 'src/api/feed/repository/blogPost.repository';
+import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BlogLikeRepository, UserRepository])],
+  imports: [
+    TypeOrmModule.forFeature([
+      BlogLikeRepository,
+      UserRepository,
+      // dependency..?
+      BlogPostRepository,
+      UserToBlogPostHideRepository,
+    ]),
+  ],
   controllers: [LikeController],
-  providers: [LikeService, JwtGuard, UsersService, KakaoService],
+  providers: [
+    LikeService,
+    JwtGuard,
+    KakaoService,
+    LikeValidator,
+    UsersService,
+    ImageService,
+    ConfigService,
+  ],
 })
 export class LikeModule {}

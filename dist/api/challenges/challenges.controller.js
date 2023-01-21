@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChallengesController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
+const response_dto_1 = require("../../shared/dto/response.dto");
+const enum_1 = require("../../shared/enums/enum");
 const challenges_service_1 = require("./challenges.service");
 const challenges_dto_1 = require("./dto/challenges.dto");
 let ChallengesController = class ChallengesController {
@@ -22,13 +24,31 @@ let ChallengesController = class ChallengesController {
         this.challengesService = challengesService;
     }
     async getChallengeTitles() {
-        return this.challengesService.getChallengeTitles();
+        try {
+            const challengeTitles = await this.challengesService.getChallengeTitles();
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, challengeTitles);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
     }
     async getChallenge(param) {
-        return this.challengesService.getChallengeDetail(param);
+        try {
+            const challenge = await this.challengesService.getChallengeDetail(param);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, challenge);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
     }
     async getChallengeList() {
-        return this.challengesService.getChallengeList();
+        try {
+            const challenges = await this.challengesService.getChallengeList();
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, challenges);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
     }
 };
 __decorate([
@@ -47,6 +67,10 @@ __decorate([
         description: '성공!!!',
         type: [challenges_dto_1.GetChallengeTitleReqDTO],
     }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
+    }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
@@ -59,6 +83,10 @@ __decorate([
         description: '성공',
         type: challenges_dto_1.GetChallengeResDTO,
     }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
+    }),
     __param(0, (0, common_1.Param)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [challenges_dto_1.GetChallengeReqDTO]),
@@ -70,7 +98,11 @@ __decorate([
     (0, swagger_1.ApiResponse)({
         status: 200,
         description: '성공',
-        type: challenges_dto_1.GetChallengeResDTO,
+        type: [challenges_dto_1.GetChallengeResDTO],
+    }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
     }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

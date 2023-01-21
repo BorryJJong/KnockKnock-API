@@ -62,4 +62,15 @@ export class BlogLikeRepository extends Repository<BlogLike> {
       .groupBy('blogLike.postId')
       .getRawMany<IGetFeedsByLikeCountResponse>();
   }
+
+  async selectFeedByUser(postId: number, userId: number): Promise<number> {
+    return await this.createQueryBuilder('blogLike')
+      .where('blogLike.postId = :postId', {
+        postId,
+      })
+      .andWhere('blogLike.userId = :userId', {
+        userId,
+      })
+      .getCount();
+  }
 }

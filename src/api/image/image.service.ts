@@ -2,8 +2,14 @@ import {Injectable, Logger} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import * as AWS from 'aws-sdk';
 import 'dotenv/config';
+import sharp from 'sharp';
 
-const s3 = new AWS.S3();
+export interface IUploadS3Response {
+  ok: boolean;
+  ETag?: string | undefined;
+  Key?: string;
+  url?: string;
+}
 
 @Injectable()
 export class ImageService {
@@ -17,15 +23,15 @@ export class ImageService {
     // (1) Region + Key 설정
     AWS.config.update({
       credentials: {
-        accessKeyId: configService.get('AWS_ACCESS_KEY_ID'),
-        secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY'),
+        accessKeyId: configService.get('AWS_ACCESS_KEY_ID') || '',
+        secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY') || '',
       },
       region: configService.get('AWS_REGION'),
     });
     // (2) S3객체,엑세스레밸 , 버킷이름+지역
     this.S3 = new AWS.S3();
-    this.buketName = configService.get('AWS_S3_BUCKET_NAME');
-    this.region = configService.get('AWS_REGION');
+    this.buketName = configService.get('AWS_S3_BUCKET_NAME') || '';
+    this.region = configService.get('AWS_REGION') || '';
     this.ACL = 'public-read';
   }
 
@@ -42,17 +48,23 @@ export class ImageService {
   }
 
   // (1) 폴더 업로드 - 폴더 미지정시 common
-  async uploadS3(file: Express.Multer.File, folder?: string) {
-    const Key = this.rename(file.originalname, file.mimetype);
+  async uploadS3(
+    file: Express.Multer.File,
+    folder?: string,
+  ): Promise<IUploadS3Response> {
+    const Key = await this.rename(file.originalname, file.mimetype);
     folder = folder ? folder : 'common';
     try {
-      // console.log(`${this.buketName}/${folder}`);
       const result = await this.S3.putObject({
         Bucket: `${this.buketName}/${folder}`,
         ACL: this.ACL,
         Key,
-        Body: file.buffer,
+        Body: await sharp(file.buffer)
+          .toFormat('webp')
+          .webp({quality: 80})
+          .toBuffer(),
       }).promise();
+
       return {
         ok: true,
         ETag: result.ETag,
@@ -86,19 +98,19 @@ export class ImageService {
 
     switch (mimeType) {
       case 'image/jpeg':
-        extension = 'jpg';
+        extension = 'webp';
         break;
       case 'image/png':
-        extension = 'png';
+        extension = 'webp';
         break;
       case 'image/gif':
-        extension = 'gif';
+        extension = 'webp';
         break;
       case 'image/bmp':
-        extension = 'bmp';
+        extension = 'webp';
         break;
       default:
-        extension = 'jpg';
+        extension = 'webp';
         break;
     }
 

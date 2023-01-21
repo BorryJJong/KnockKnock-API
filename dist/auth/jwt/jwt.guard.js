@@ -22,6 +22,7 @@ let JwtGuard = class JwtGuard extends (0, passport_1.AuthGuard)('jwt-access-toke
         if (!authorization) {
             throw new common_1.HttpException({
                 error: 'AccessToken 미전송',
+                message: 'AccessToken 미전송',
             }, common_1.HttpStatus.UNAUTHORIZED);
         }
         return super.canActivate(context);

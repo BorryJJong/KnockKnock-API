@@ -20,6 +20,7 @@ export class JwtGuard extends AuthGuard('jwt-access-token') {
       throw new HttpException(
         {
           error: 'AccessToken 미전송',
+          message: 'AccessToken 미전송',
         },
         HttpStatus.UNAUTHORIZED,
       );

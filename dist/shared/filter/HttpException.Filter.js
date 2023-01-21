@@ -16,12 +16,13 @@ let HttpExceptionFilter = class HttpExceptionFilter {
         const status = exception instanceof common_1.HttpException
             ? exception.getStatus()
             : common_1.HttpStatus.INTERNAL_SERVER_ERROR;
+        console.log('Test Response Message', exception.getResponse());
         const res = exception.getResponse();
         const method = request.method;
         const url = request.url;
         const error = res.error;
         const now = new Date().toLocaleString();
-        const errorLogFormat = `[${method}] ${url} [error]: ${error} [KST time] ${now}`;
+        const errorLogFormat = `[${method}] ${url} [error|response]: ${error} [KST time] ${now}`;
         console.error('ERROR! ', errorLogFormat);
         response.status(status).json({
             success: false,

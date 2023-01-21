@@ -134,6 +134,19 @@ export class BlogPost {
   })
   modDate?: Date;
 
+  @ApiProperty({
+    description: '숨기기 수',
+    example: '5',
+  })
+  @Column({
+    name: 'hide_count',
+    type: 'int',
+    comment: '숨기기 수',
+    default: 0,
+    nullable: false,
+  })
+  hideCount: number;
+
   @CreateDateColumn({
     name: 'reg_date',
     type: 'timestamp',

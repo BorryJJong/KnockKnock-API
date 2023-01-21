@@ -26,7 +26,11 @@ let JwtAccessTokenStrategy = class JwtAccessTokenStrategy extends (0, passport_1
     async validate(payload, done) {
         const user = await this.authService.tokenValidateUser(payload.sub);
         if (!user) {
-            return done(new common_1.HttpException('존재하지 않는 유저입니다.', common_1.HttpStatus.UNAUTHORIZED), false);
+            const errorText = '존재하지 않는 유저입니다.';
+            return done(new common_1.HttpException({
+                error: errorText,
+                message: errorText,
+            }, common_1.HttpStatus.UNAUTHORIZED), false);
         }
         return done(null, user);
     }

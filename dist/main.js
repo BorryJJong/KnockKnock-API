@@ -9,7 +9,7 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     (0, swagger_1.swaggerBuilder)(app);
     app.useGlobalFilters(new HttpException_Filter_1.HttpExceptionFilter());
-    await app.listen(process.env.APP_PORT, () => {
+    await app.listen(process.env.APP_PORT || '', () => {
         console.log(`[ 녹녹 ] Server listening on port : ${process.env.APP_PORT}`);
     });
 }

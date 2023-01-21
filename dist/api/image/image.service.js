@@ -27,6 +27,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var ImageService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImageService = void 0;
@@ -34,21 +37,21 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const AWS = __importStar(require("aws-sdk"));
 require("dotenv/config");
-const s3 = new AWS.S3();
+const sharp_1 = __importDefault(require("sharp"));
 let ImageService = ImageService_1 = class ImageService {
     constructor(configService) {
         this.configService = configService;
         this.logger = new common_1.Logger(ImageService_1.name);
         AWS.config.update({
             credentials: {
-                accessKeyId: configService.get('AWS_ACCESS_KEY_ID'),
-                secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY'),
+                accessKeyId: configService.get('AWS_ACCESS_KEY_ID') || '',
+                secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY') || '',
             },
             region: configService.get('AWS_REGION'),
         });
         this.S3 = new AWS.S3();
-        this.buketName = configService.get('AWS_S3_BUCKET_NAME');
-        this.region = configService.get('AWS_REGION');
+        this.buketName = configService.get('AWS_S3_BUCKET_NAME') || '';
+        this.region = configService.get('AWS_REGION') || '';
         this.ACL = 'public-read';
     }
     async __createBucket() {
@@ -60,14 +63,17 @@ let ImageService = ImageService_1 = class ImageService {
         return `https://${this.buketName}.s3.${this.region}.amazonaws.com/${dest}`;
     }
     async uploadS3(file, folder) {
-        const Key = this.rename(file.originalname, file.mimetype);
+        const Key = await this.rename(file.originalname, file.mimetype);
         folder = folder ? folder : 'common';
         try {
             const result = await this.S3.putObject({
                 Bucket: `${this.buketName}/${folder}`,
                 ACL: this.ACL,
                 Key,
-                Body: file.buffer,
+                Body: await (0, sharp_1.default)(file.buffer)
+                    .toFormat('webp')
+                    .webp({ quality: 80 })
+                    .toBuffer(),
             }).promise();
             return {
                 ok: true,
@@ -98,19 +104,19 @@ let ImageService = ImageService_1 = class ImageService {
         const newFileName = new Date().valueOf() + Math.random().toString(36).substr(2, 11);
         switch (mimeType) {
             case 'image/jpeg':
-                extension = 'jpg';
+                extension = 'webp';
                 break;
             case 'image/png':
-                extension = 'png';
+                extension = 'webp';
                 break;
             case 'image/gif':
-                extension = 'gif';
+                extension = 'webp';
                 break;
             case 'image/bmp':
-                extension = 'bmp';
+                extension = 'webp';
                 break;
             default:
-                extension = 'jpg';
+                extension = 'webp';
                 break;
         }
         return `${newFileName}.${extension}`;

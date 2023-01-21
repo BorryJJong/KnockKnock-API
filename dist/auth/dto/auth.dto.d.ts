@@ -1,5 +1,5 @@
 import { SOCIAL_TYPE } from '@shared/enums/enum';
-import { UserInfoResponseDTO } from 'src/api/users/dto/users.dto';
+import { UserInfoResDTO } from 'src/api/users/dto/users.dto';
 export declare class AuthInfoResponseDTO {
     private accessToken;
     private refreshToken;
@@ -9,7 +9,7 @@ export declare class SocialLoginResponseDTO {
     private isExistUser;
     private userInfo?;
     private authInfo?;
-    constructor(isExistUser: boolean, userInfo?: UserInfoResponseDTO, authInfo?: AuthInfoResponseDTO);
+    constructor(isExistUser: boolean, userInfo?: UserInfoResDTO, authInfo?: AuthInfoResponseDTO);
 }
 export declare class SocialLoginRequestDTO {
     socialUuid: string;

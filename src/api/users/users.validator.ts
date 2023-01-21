@@ -23,9 +23,22 @@ export class UserValidator {
     if (user) {
       throw new HttpException(
         {
-          message: '이미 존재하는 회원입니다.',
+          message: '이미 존재하는 회원입니다',
         },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.CONFLICT,
+      );
+    }
+  }
+
+  public async checkDuplicateNickname(nickname: string): Promise<void> {
+    const findNickname = await this.userRepository.selectUserNickname(nickname);
+
+    if (findNickname) {
+      throw new HttpException(
+        {
+          message: `'${findNickname}' 닉네임은 중복입니다`,
+        },
+        HttpStatus.CONFLICT,
       );
     }
   }

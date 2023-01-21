@@ -1,12 +1,8 @@
 import {User} from '@entities/User';
 import {Injectable} from '@nestjs/common';
 import {SOCIAL_TYPE} from '@shared/enums/enum';
-import {
-  ICreateUser,
-  IUpdateUser,
-  IUserRepository,
-} from 'src/api/users/users.interface';
-import {EntityRepository, In, QueryRunner, Repository} from 'typeorm';
+import {ICreateUser, IUserRepository} from 'src/api/users/users.interface';
+import {EntityRepository, QueryRunner, Repository} from 'typeorm';
 
 @Injectable()
 @EntityRepository(User)
@@ -14,21 +10,30 @@ export class UserRepository
   extends Repository<User>
   implements IUserRepository
 {
-  public async insertUser(request: ICreateUser): Promise<User> {
+  public async insertUser(
+    request: ICreateUser,
+    fileUrl: string,
+  ): Promise<User> {
     return await this.save(
       this.create({
         ...request,
+        image: fileUrl,
       }),
     );
   }
 
-  public async updateUser(request: IUpdateUser): Promise<void> {
+  public async updateUser(
+    userId: number,
+    nickname?: string,
+    fileUrl?: string,
+  ): Promise<void> {
     await this.createQueryBuilder()
       .update(User)
       .set({
-        nickname: request.nickname,
+        nickname,
+        image: fileUrl,
       })
-      .where('id = :id', {id: request.id})
+      .where('id = :id', {id: userId})
       .execute();
   }
 
@@ -54,7 +59,7 @@ export class UserRepository
 
   public async updateRefreshToken(
     userId: number,
-    refreshToken: string,
+    refreshToken?: string,
     queryRunner?: QueryRunner,
   ): Promise<void> {
     await this.createQueryBuilder('users', queryRunner)
@@ -68,6 +73,10 @@ export class UserRepository
     return await this.findOne(userId);
   }
 
+  public async selectUserFindOneOrFail(userId: number): Promise<User> {
+    return await this.findOneOrFail(userId);
+  }
+
   public async selectUsers(userIds: number[]): Promise<User[]> {
     return await this.findByIds(userIds, {
       withDeleted: true,
@@ -78,17 +87,35 @@ export class UserRepository
     userId: number,
     queryRunner?: QueryRunner,
   ): Promise<void> {
-    await queryRunner.manager.softDelete(User, userId);
+    await this.createQueryBuilder('users', queryRunner)
+      .where('users.id = :id', {
+        id: userId,
+      })
+      .softDelete();
   }
 
   public async deleteUserInfo(
     userId: number,
     queryRunner?: QueryRunner,
   ): Promise<void> {
-    await queryRunner.manager.update(User, userId, {
-      nickname: '',
-      socialUuid: '',
-      socialType: SOCIAL_TYPE.NONE,
-    });
+    await this.createQueryBuilder('users', queryRunner)
+      .update()
+      .set({
+        nickname: '',
+        socialUuid: '',
+        socialType: SOCIAL_TYPE.NONE,
+      })
+      .where('id = :id', {id: userId})
+      .execute();
+  }
+
+  public async selectUserNickname(
+    nickname: string,
+  ): Promise<string | undefined> {
+    return await this.findOne({
+      where: {
+        nickname,
+      },
+    }).then(user => user?.nickname);
   }
 }

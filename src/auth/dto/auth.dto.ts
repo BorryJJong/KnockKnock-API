@@ -1,7 +1,7 @@
 import {ApiProperty} from '@nestjs/swagger';
 import {SOCIAL_TYPE} from '@shared/enums/enum';
 import {IsBoolean, IsString} from 'class-validator';
-import {UserInfoResponseDTO} from 'src/api/users/dto/users.dto';
+import {UserInfoResDTO} from 'src/api/users/dto/users.dto';
 
 export class AuthInfoResponseDTO {
   @ApiProperty({example: 'access_token', type: String})
@@ -25,11 +25,11 @@ export class SocialLoginResponseDTO {
 
   @ApiProperty({
     description: '회원 정보',
-    example: UserInfoResponseDTO,
-    type: UserInfoResponseDTO,
+    example: UserInfoResDTO,
+    type: UserInfoResDTO,
     required: false,
   })
-  private userInfo?: UserInfoResponseDTO;
+  private userInfo?: UserInfoResDTO;
 
   @ApiProperty({
     description: '토큰 정보',
@@ -41,7 +41,7 @@ export class SocialLoginResponseDTO {
 
   constructor(
     isExistUser: boolean,
-    userInfo?: UserInfoResponseDTO,
+    userInfo?: UserInfoResDTO,
     authInfo?: AuthInfoResponseDTO,
   ) {
     this.isExistUser = isExistUser;

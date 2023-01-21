@@ -11,9 +11,8 @@ import {BlogCommentRepository} from './repository/blogComment.repository';
 import {JwtOptionalGuard} from 'src/auth/jwt/jwtNoneRequired.guard';
 import {BlogLikeRepository} from 'src/api/like/repository/like.repository';
 import {UserRepository} from 'src/api/users/users.repository';
-import {UsersService} from 'src/api/users/users.service';
 import {FeedValidator} from 'src/api/feed/feed.validator';
-import {KakaoService} from 'src/auth/kakao.service';
+import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 
 @Module({
   imports: [
@@ -26,6 +25,7 @@ import {KakaoService} from 'src/auth/kakao.service';
       BlogCommentRepository,
       BlogLikeRepository,
       UserRepository,
+      UserToBlogPostHideRepository,
     ]),
   ],
   controllers: [FeedController],

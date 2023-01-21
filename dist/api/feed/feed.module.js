@@ -21,6 +21,7 @@ const jwtNoneRequired_guard_1 = require("../../auth/jwt/jwtNoneRequired.guard");
 const like_repository_1 = require("../like/repository/like.repository");
 const users_repository_1 = require("../users/users.repository");
 const feed_validator_1 = require("./feed.validator");
+const UserToBlogPostHide_repository_1 = require("./repository/UserToBlogPostHide.repository");
 let FeedModule = class FeedModule {
 };
 FeedModule = __decorate([
@@ -35,6 +36,7 @@ FeedModule = __decorate([
                 blogComment_repository_1.BlogCommentRepository,
                 like_repository_1.BlogLikeRepository,
                 users_repository_1.UserRepository,
+                UserToBlogPostHide_repository_1.UserToBlogPostHideRepository,
             ]),
         ],
         controllers: [feed_controller_1.FeedController],

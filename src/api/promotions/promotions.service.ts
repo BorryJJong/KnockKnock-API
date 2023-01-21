@@ -9,23 +9,8 @@ export class PromotionsService {
     @InjectRepository(Promotions)
     private promotionsRepository: Repository<Promotions>,
   ) {}
-  // create(createPromotionDto: CreatePromotionDto) {
-  //   return 'This action adds a new promotion';
-  // }
 
   async findAll() {
     return this.promotionsRepository.createQueryBuilder('promotions').getMany();
   }
-
-  // findOne(id: number) {
-  //   return `This action returns a #${id} promotion`;
-  // }
-
-  // update(id: number, updatePromotionDto: UpdatePromotionDto) {
-  //   return `This action updates a #${id} promotion`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} promotion`;
-  // }
 }

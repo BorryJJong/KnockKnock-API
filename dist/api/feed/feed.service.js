@@ -26,10 +26,12 @@ const blogPost_repository_1 = require("./repository/blogPost.repository");
 const blogPromotion_repository_1 = require("./repository/blogPromotion.repository");
 const blogComment_repository_1 = require("./repository/blogComment.repository");
 const utils_1 = require("../../shared/utils");
+const BlogPost_1 = require("../../entities/BlogPost");
 const like_repository_1 = require("../like/repository/like.repository");
 const users_repository_1 = require("../users/users.repository");
+const UserToBlogPostHide_repository_1 = require("./repository/UserToBlogPostHide.repository");
 let FeedService = FeedService_1 = class FeedService {
-    constructor(imageService, connection, blogPostRepository, blogChallengesRepository, blogPromotionRepository, blogImageRepository, blogCommentRepository, blogLikeRepository, userRepository) {
+    constructor(imageService, connection, blogPostRepository, blogChallengesRepository, blogPromotionRepository, blogImageRepository, blogCommentRepository, blogLikeRepository, userRepository, userToBlogPostHideRepository) {
         this.imageService = imageService;
         this.connection = connection;
         this.blogPostRepository = blogPostRepository;
@@ -39,15 +41,16 @@ let FeedService = FeedService_1 = class FeedService {
         this.blogCommentRepository = blogCommentRepository;
         this.blogLikeRepository = blogLikeRepository;
         this.userRepository = userRepository;
+        this.userToBlogPostHideRepository = userToBlogPostHideRepository;
         this.logger = new common_1.Logger(FeedService_1.name);
     }
-    async create(files, createFeedDTO) {
+    async create(files, createFeedDTO, userId) {
         const queryRunner = this.connection.createQueryRunner();
         let result = false;
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            const post = await this.savePost(queryRunner, createFeedDTO);
+            const post = await this.savePost(queryRunner, createFeedDTO, userId);
             const postId = post.id;
             await this.saveChallenges(queryRunner, postId, createFeedDTO.challenges);
             await this.savePromotion(queryRunner, postId, createFeedDTO.promotions);
@@ -66,8 +69,8 @@ let FeedService = FeedService_1 = class FeedService {
         }
         return result;
     }
-    async savePost(queryRunner, createBlogPostDTO) {
-        const post = this.blogPostRepository.createBlogPost(createBlogPostDTO);
+    async savePost(queryRunner, createBlogPostDTO, userId) {
+        const post = this.blogPostRepository.createBlogPost(createBlogPostDTO, userId);
         const returned = await this.blogPostRepository.saveBlogPost(queryRunner, post);
         return returned;
     }
@@ -90,7 +93,12 @@ let FeedService = FeedService_1 = class FeedService {
         }));
     }
     async savePostImage(queryRunner, postId, file) {
-        let resultS3 = null;
+        let resultS3 = {
+            ok: true,
+            ETag: undefined,
+            Key: undefined,
+            url: undefined,
+        };
         try {
             resultS3 = await this.imageService.uploadS3(file, 'feed');
             if (!resultS3.ok) {
@@ -100,13 +108,13 @@ let FeedService = FeedService_1 = class FeedService {
             }
             const image = this.blogImageRepository.createBlogImage({
                 postId: postId,
-                fileUrl: resultS3.url,
+                fileUrl: resultS3.url || '',
             });
             await this.blogImageRepository.saveBlogImage(queryRunner, image);
         }
         catch (e) {
             if (resultS3.ok) {
-                this.imageService.deleteS3(resultS3.Key);
+                this.imageService.deleteS3(resultS3.Key || '');
             }
             throw new common_1.HttpException({
                 error: e.message,
@@ -114,9 +122,9 @@ let FeedService = FeedService_1 = class FeedService {
             }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async saveBlogComment(insBlogCommentDTO) {
+    async saveBlogComment(insBlogCommentDTO, userId) {
         try {
-            const comment = this.blogCommentRepository.createBlogComment(insBlogCommentDTO);
+            const comment = this.blogCommentRepository.createBlogComment(insBlogCommentDTO, userId);
             await this.blogCommentRepository.saveBlogComment(null, comment);
         }
         catch (e) {
@@ -126,9 +134,14 @@ let FeedService = FeedService_1 = class FeedService {
             }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async getFeed({ id }) {
+    async getFeed({ id }, userId) {
         try {
-            const post = await this.blogPostRepository.getBlogPostById(id);
+            const post = await this.blogPostRepository.getBlogPostById(id, userId);
+            if (!post) {
+                throw new common_1.HttpException({
+                    message: '피드가 존재하지 않습니다',
+                }, common_1.HttpStatus.NOT_FOUND);
+            }
             const promotions = await this.blogPromotionRepository.getBlogPromotionByPostId(id);
             const challenges = await this.blogChallengesRepository.getBlogChallengesByPostId(id);
             const images = await this.blogImageRepository.getBlogImageByPostId(id);
@@ -197,13 +210,17 @@ let FeedService = FeedService_1 = class FeedService {
             await this.blogPromotionRepository.saveBlogPromotion(queryRunner, promotion);
         }));
     }
-    async getFeedsByChallengesFilter(query) {
+    async getFeedsByChallengesFilter(query, userId) {
         let blogPostIds = [];
         const blogChallenges = await this.blogChallengesRepository.getBlogChallengesByChallengeId(query.challengeId);
         if (blogChallenges.length > 0) {
             blogPostIds = blogChallenges.map(bc => bc.postId);
         }
-        const blogPosts = await this.blogPostRepository.getBlogPosts(query.page, query.take, blogPostIds);
+        const blogPosts = await this.blogPostRepository.getBlogPosts(query.page, query.take, blogPostIds, userId
+            ? await this.userToBlogPostHideRepository
+                .selectBlogPostHideByUser(userId)
+                .then(datas => datas.map(data => data.postId))
+            : []);
         const blogImages = await this.blogImageRepository.getBlogImagesByBlogPost(blogPosts.items.map(post => post.id));
         return {
             feeds: blogPosts.items.map(blogPost => {
@@ -218,18 +235,24 @@ let FeedService = FeedService_1 = class FeedService {
     }
     async getListFeed(query, userId) {
         const { feedId: blogPostId, challengeId, page: skip, take } = query;
-        let excludeBlogPostId;
-        let selectBlogPost;
+        const excludeBlogPostIds = [];
+        let selectBlogPost = new BlogPost_1.BlogPost();
         if (+skip === 1) {
             selectBlogPost = await this.blogPostRepository.getBlogPost(blogPostId);
-            excludeBlogPostId = selectBlogPost.id;
+            excludeBlogPostIds.push(selectBlogPost.id);
         }
         let blogPostIds = [];
-        if (+challengeId) {
+        if (challengeId) {
             const blogChallenges = await this.blogChallengesRepository.getBlogChallengesByChallengeId(challengeId);
             blogPostIds = blogChallenges.map(bc => bc.postId);
         }
-        const blogPosts = await this.blogPostRepository.getListBlogPost(skip, this.getFeedListTake(skip, take), blogPostIds, excludeBlogPostId, userId);
+        if (userId) {
+            const hideBlogPostIds = await this.userToBlogPostHideRepository
+                .selectBlogPostHideByUser(userId)
+                .then(datas => datas.map(data => data.postId));
+            excludeBlogPostIds.push(...hideBlogPostIds);
+        }
+        const blogPosts = await this.blogPostRepository.getListBlogPost(skip, this.getFeedListTake(skip, take), blogPostIds, excludeBlogPostIds);
         if (+skip === 1) {
             blogPosts.items.unshift(selectBlogPost);
         }
@@ -248,8 +271,17 @@ let FeedService = FeedService_1 = class FeedService {
         return {
             feeds: blogPosts.items.map((blogPost) => {
                 var _a, _b;
+                const defaultImageRatio = '1:1';
                 const writer = findUsers.find(user => user.id === blogPost.userId);
-                return new feed_dto_1.GetFeedResDTO(blogPost.id, writer.nickname, writer.image, blogPost.content, (0, utils_1.convertTimeToStr)(blogPost.regDate), '1:1', (0, utils_1.commafy)(((_a = feedsLikeCount.find(like => like.postId === blogPost.id)) === null || _a === void 0 ? void 0 : _a.likeCount) || 0), userId ? likes.some(like => like.postId === blogPost.id) : false, (0, utils_1.commafy)(((_b = feedsCommentCount.find(comment => comment.postId === blogPost.id)) === null || _b === void 0 ? void 0 : _b.commentCount) || 0), blogImages.filter(bi => bi.postId === blogPost.id));
+                const commentCount = ((_a = feedsCommentCount.find(comment => comment.postId === blogPost.id)) === null || _a === void 0 ? void 0 : _a.commentCount) || 0;
+                const likeCount = ((_b = feedsLikeCount.find(like => like.postId === blogPost.id)) === null || _b === void 0 ? void 0 : _b.likeCount) ||
+                    0;
+                const isLike = userId
+                    ? likes.some(like => like.postId === blogPost.id)
+                    : false;
+                const images = blogImages.filter(bi => bi.postId === blogPost.id);
+                const isWriter = userId === blogPost.userId;
+                return new feed_dto_1.GetFeedResDTO(blogPost.id, writer.nickname, writer.image, blogPost.content, (0, utils_1.convertTimeToStr)(blogPost.regDate), defaultImageRatio, (0, utils_1.commafy)(likeCount), isLike, (0, utils_1.commafy)(commentCount), images, isWriter);
             }),
             isNext: true,
             total: blogPosts.pagination.total,
@@ -272,16 +304,18 @@ let FeedService = FeedService_1 = class FeedService {
     async getFeedListByUserInfo(userIds) {
         return await this.userRepository.selectUsers(userIds);
     }
-    async getListFeedComment({ id, }) {
+    async getListFeedComment({ id }, userId) {
         try {
-            let comment = await this.blogCommentRepository.getBlogCommentByPostId(id);
-            comment = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetListFeedCommentResDTO, comment);
-            const result = await Promise.all(comment.map(async (c) => {
-                if (c.replyCnt != 0) {
-                    const reply = await this.blogCommentRepository.getBlogCommentByCommentId(c.id);
-                    c.reply = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetBlogCommentDTO, reply);
+            let comments = await this.blogCommentRepository.getBlogCommentByPostId(id);
+            comments = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetListFeedCommentResDTO, comments);
+            const result = await Promise.all(comments.map(async (comment) => {
+                if (comment.replyCnt != 0) {
+                    const reply = await this.blogCommentRepository.getBlogCommentByCommentId(comment.id);
+                    reply.map((r, index) => (reply[index].isWriter = this.isFeedCommentWriter(r.userId, userId)));
+                    comment.reply = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetBlogCommentDTO, reply);
                 }
-                return c;
+                comment.isWriter = this.isFeedCommentWriter(comment.userId, userId);
+                return comment;
             }));
             return result;
         }
@@ -291,6 +325,9 @@ let FeedService = FeedService_1 = class FeedService {
                 message: e.message,
             }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    isFeedCommentWriter(writerId, requestUserId) {
+        return writerId === requestUserId;
     }
     async deleteBlogComment({ id }) {
         try {
@@ -327,13 +364,15 @@ FeedService = FeedService_1 = __decorate([
     __param(6, (0, typeorm_1.InjectRepository)(blogComment_repository_1.BlogCommentRepository)),
     __param(7, (0, typeorm_1.InjectRepository)(like_repository_1.BlogLikeRepository)),
     __param(8, (0, typeorm_1.InjectRepository)(users_repository_1.UserRepository)),
+    __param(9, (0, typeorm_1.InjectRepository)(UserToBlogPostHide_repository_1.UserToBlogPostHideRepository)),
     __metadata("design:paramtypes", [image_service_1.ImageService,
         typeorm_2.Connection, Object, blogChallenges_repository_1.BlogChallengesRepository,
         blogPromotion_repository_1.BlogPromotionRepository,
         blogImage_repository_1.BlogImageRepository,
         blogComment_repository_1.BlogCommentRepository,
         like_repository_1.BlogLikeRepository,
-        users_repository_1.UserRepository])
+        users_repository_1.UserRepository,
+        UserToBlogPostHide_repository_1.UserToBlogPostHideRepository])
 ], FeedService);
 exports.FeedService = FeedService;
 //# sourceMappingURL=feed.service.js.map

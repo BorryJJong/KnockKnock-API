@@ -2,6 +2,12 @@
 import { ConfigService } from '@nestjs/config';
 import * as AWS from 'aws-sdk';
 import 'dotenv/config';
+export interface IUploadS3Response {
+    ok: boolean;
+    ETag?: string | undefined;
+    Key?: string;
+    url?: string;
+}
 export declare class ImageService {
     private readonly configService;
     private readonly S3;
@@ -12,19 +18,9 @@ export declare class ImageService {
     constructor(configService: ConfigService);
     __createBucket(): Promise<import("aws-sdk/lib/request").PromiseResult<AWS.S3.CreateBucketOutput, AWS.AWSError>>;
     __makePublicUrl(dest: any): string;
-    uploadS3(file: Express.Multer.File, folder?: string): Promise<{
-        ok: boolean;
-        ETag: string;
-        Key: string;
-        url: string;
-    } | {
-        ok: boolean;
-        ETag?: undefined;
-        Key?: undefined;
-        url?: undefined;
-    }>;
+    uploadS3(file: Express.Multer.File, folder?: string): Promise<IUploadS3Response>;
     deleteS3(Key: string): Promise<{
         ok: boolean;
-    }>;
+    } | undefined>;
     rename(name: string, mimeType: string): string;
 }

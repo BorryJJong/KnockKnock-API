@@ -1,3 +1,4 @@
+import {UserToBlogPostHide} from '@entities/UserToBlogPostHide';
 import 'dotenv/config';
 import {ConnectionOptions} from 'typeorm';
 import {BlogChallenges} from '../entities/BlogChallenges';
@@ -29,6 +30,7 @@ export const ormConfig: ConnectionOptions = {
     Challenges,
     Promotions,
     User,
+    UserToBlogPostHide,
   ],
   synchronize: false,
 };

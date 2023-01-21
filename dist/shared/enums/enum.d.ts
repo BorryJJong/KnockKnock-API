@@ -14,3 +14,7 @@ export declare enum ERRPR_CODE {
     UNAUTHENTICATED = "UNAUTHENTICATED",
     UNAUTHORIZED = "UNAUTHORIZED"
 }
+export declare enum API_RESPONSE_MEESAGE {
+    SUCCESS = "SUCCESS",
+    FAIL = "FAIL"
+}

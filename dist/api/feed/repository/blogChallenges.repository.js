@@ -25,7 +25,7 @@ let BlogChallengesRepository = class BlogChallengesRepository extends typeorm_1.
     }
     async getBlogChallengesByChallengeId(challengeId) {
         return this.createQueryBuilder('blogChallenges')
-            .where('blogChallenges.challengeId = :challengeId ', { challengeId })
+            .where('blogChallenges.challengeId = :challengeId', { challengeId })
             .getMany();
     }
     async getBlogChallengesByPostId(id) {
