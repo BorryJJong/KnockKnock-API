@@ -179,7 +179,9 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
                 challengeId,
             });
         }
-        const hotFeeds = await queryBuilder.getRawMany();
+        const hotFeeds = await queryBuilder
+            .limit(6)
+            .getRawMany();
         return hotFeeds.map(feed => {
             return new home_dto_1.GetListHotFeedResDTO(feed.postId, feed.scale, feed.nickname, feed.fileUrl);
         });

@@ -138,6 +138,15 @@ let UsersController = class UsersController {
             return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
         }
     }
+    async getUser(user) {
+        try {
+            const getUser = new users_dto_1.GetUserResDTO(user.nickname, user.socialType, user.image, user.regDate);
+            return new response_dto_1.ApiResponseDTO(200, enum_1.API_RESPONSE_MEESAGE.SUCCESS, getUser);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+        }
+    }
 };
 __decorate([
     (0, common_1.Post)('/social-login'),
@@ -278,6 +287,24 @@ __decorate([
     __metadata("design:paramtypes", [feed_dto_1.PostFeedBlogPostHideReqDTO, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "hideBlogPost", null);
+__decorate([
+    (0, common_1.Get)('/detail'),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: '유저상세 조회' }),
+    (0, swagger_1.ApiResponse)({
+        description: '',
+        type: users_dto_1.GetUserResDTO,
+    }),
+    (0, swagger_1.ApiDefaultResponse)({
+        description: '기본 응답 형태',
+        type: response_dto_1.ApiResponseDTO,
+    }),
+    __param(0, (0, user_decorator_1.UserDeco)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getUser", null);
 UsersController = __decorate([
     (0, swagger_1.ApiTags)('users'),
     (0, common_1.Controller)('users'),

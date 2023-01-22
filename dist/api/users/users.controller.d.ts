@@ -1,7 +1,7 @@
 /// <reference types="multer" />
 import { ApiResponseDTO } from '@shared/dto/response.dto';
 import { PostFeedBlogPostHideReqDTO } from 'src/api/feed/dto/feed.dto';
-import { GetCheckDuplicateUserNicknameReqDTO, UpdateUserReqDTO } from 'src/api/users/dto/users.dto';
+import { GetCheckDuplicateUserNicknameReqDTO, GetUserResDTO, UpdateUserReqDTO } from 'src/api/users/dto/users.dto';
 import { IUser } from 'src/api/users/users.interface';
 import { UserValidator } from 'src/api/users/users.validator';
 import { AppleService } from 'src/auth/apple.service';
@@ -24,4 +24,5 @@ export declare class UsersController {
     profileUpdate(file: Express.Multer.File, updateUserReqDTO: UpdateUserReqDTO, user: IUser): Promise<ApiResponseDTO<boolean>>;
     checkDuplicateNickname(param: GetCheckDuplicateUserNicknameReqDTO): Promise<ApiResponseDTO<boolean>>;
     hideBlogPost(param: PostFeedBlogPostHideReqDTO, user: IUser): Promise<ApiResponseDTO<void>>;
+    getUser(user: IUser): Promise<ApiResponseDTO<GetUserResDTO>>;
 }

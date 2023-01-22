@@ -41,9 +41,9 @@ let ChallengesController = class ChallengesController {
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
         }
     }
-    async getChallengeList() {
+    async getChallengeList(query) {
         try {
-            const challenges = await this.challengesService.getChallengeList();
+            const challenges = await this.challengesService.getChallengeList(query);
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, challenges);
         }
         catch (error) {
@@ -104,8 +104,9 @@ __decorate([
         description: '기본 응답 형태',
         type: response_dto_1.ApiResponseDTO,
     }),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [challenges_dto_1.GetChallengeListReqQueryDTO]),
     __metadata("design:returntype", Promise)
 ], ChallengesController.prototype, "getChallengeList", null);
 ChallengesController = __decorate([

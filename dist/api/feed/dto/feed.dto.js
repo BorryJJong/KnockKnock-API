@@ -327,6 +327,7 @@ __decorate([
 ], GetBlogPostDTO.prototype, "locationY", void 0);
 __decorate([
     (0, class_transformer_1.Expose)(),
+    (0, class_transformer_1.Transform)(r => (0, utils_1.convertTimeToStr)((0, utils_1.convertTime)(r.value))),
     (0, swagger_1.ApiProperty)({
         description: '등록 날짜',
         example: '시간 -> text 변환 작업 아직 안함',

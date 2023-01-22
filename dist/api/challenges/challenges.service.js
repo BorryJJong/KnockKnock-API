@@ -52,8 +52,9 @@ let ChallengesService = class ChallengesService {
         const challenge = new challenges_dto_1.GetChallengeDetailResDTO(challengeDTO, participantList, challengeContent);
         return challenge;
     }
-    async getChallengeList() {
-        const challengeList = await this.challengesRepository.getChallengeList();
+    async getChallengeList(query) {
+        const { sort } = query;
+        const challengeList = await this.challengesRepository.getChallengeList(sort);
         for (let index = 0; index < (await challengeList).length; index++) {
             const element = challengeList[index];
             const challengeId = element.id;
