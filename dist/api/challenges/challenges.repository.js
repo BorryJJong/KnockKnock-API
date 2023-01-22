@@ -14,6 +14,7 @@ const Challenges_1 = require("../../entities/Challenges");
 const User_1 = require("../../entities/User");
 const BlogPost_1 = require("../../entities/BlogPost");
 const ramda_1 = require("ramda");
+const enum_1 = require("../../shared/enums/enum");
 let ChallengesRepository = class ChallengesRepository extends typeorm_1.Repository {
     async checkExistChallenge({ id }) {
         const challenge = await this.findOne({ select: ['id'], where: { id } });
@@ -41,7 +42,7 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
         });
         return challenges;
     }
-    async getChallengeList() {
+    async getChallengeList(sort) {
         const userPostChallenge = (0, typeorm_1.getManager)()
             .createQueryBuilder()
             .select('bp.user_id', 'user_id')
@@ -68,6 +69,12 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
             .addSelect('rank() over(order by mb.post_cnt desc)', 'rnk')
             .from(Challenges_1.Challenges, 'ma')
             .leftJoin('(' + challengePostCnt.getQuery() + ')', 'mb', 'ma.id = mb.id');
+        if (sort === enum_1.CHALLENGES_SORT.BRAND_NEW) {
+            challengeList.orderBy('ma.regDate', 'DESC');
+        }
+        else {
+            challengeList.orderBy('rnk', 'ASC');
+        }
         const challengeListRaws = await challengeList.getRawMany();
         const challenges = challengeListRaws.map((s) => {
             const item = {

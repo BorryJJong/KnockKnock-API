@@ -1,3 +1,4 @@
+import { CHALLENGES_SORT } from '@shared/enums/enum';
 import { Challenges } from '../../../entities/Challenges';
 import { IChallengeTitle } from '../challenges.interface';
 export declare class ChallengeSubContentDTO {
@@ -44,5 +45,8 @@ export declare class GetListChallengeResDTO extends GetListChallengeResDTO_base 
 export declare class GetChallengeTitleReqDTO implements IChallengeTitle {
     id: number;
     title: string;
+}
+export declare class GetChallengeListReqQueryDTO {
+    sort: CHALLENGES_SORT;
 }
 export {};

@@ -9,8 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetChallengeTitleReqDTO = exports.GetListChallengeResDTO = exports.GetChallengeDetailResDTO = exports.GetChallengeResDTO = exports.GetChallengeReqDTO = exports.insChallengeReqDTO = exports.ParticipantUserDTO = exports.ChallengeContentDTO = exports.ChallengeSubContentDTO = void 0;
+exports.GetChallengeListReqQueryDTO = exports.GetChallengeTitleReqDTO = exports.GetListChallengeResDTO = exports.GetChallengeDetailResDTO = exports.GetChallengeResDTO = exports.GetChallengeReqDTO = exports.insChallengeReqDTO = exports.ParticipantUserDTO = exports.ChallengeContentDTO = exports.ChallengeSubContentDTO = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const enum_1 = require("../../../shared/enums/enum");
 const typeorm_1 = require("typeorm");
 const Challenges_1 = require("../../../entities/Challenges");
 class ChallengeSubContentDTO {
@@ -181,4 +182,17 @@ __decorate([
     __metadata("design:type", String)
 ], GetChallengeTitleReqDTO.prototype, "title", void 0);
 exports.GetChallengeTitleReqDTO = GetChallengeTitleReqDTO;
+class GetChallengeListReqQueryDTO {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        required: true,
+        default: enum_1.CHALLENGES_SORT.BRAND_NEW,
+        enum: enum_1.CHALLENGES_SORT,
+        description: '챌린지 목록 정렬(default 최신순)',
+        example: 'BRAND_NEW',
+    }),
+    __metadata("design:type", String)
+], GetChallengeListReqQueryDTO.prototype, "sort", void 0);
+exports.GetChallengeListReqQueryDTO = GetChallengeListReqQueryDTO;
 //# sourceMappingURL=challenges.dto.js.map
