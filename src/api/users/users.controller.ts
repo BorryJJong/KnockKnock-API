@@ -26,6 +26,7 @@ import {API_RESPONSE_MEESAGE, SOCIAL_TYPE} from '@shared/enums/enum';
 import {PostFeedBlogPostHideReqDTO} from 'src/api/feed/dto/feed.dto';
 import {
   GetCheckDuplicateUserNicknameReqDTO,
+  GetUserResDTO,
   UpdateUserReqDTO,
   UserInfoResDTO,
 } from 'src/api/users/dto/users.dto';
@@ -379,6 +380,43 @@ export class UsersController {
     } catch (error) {
       return new ApiResponseDTO(
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        API_RESPONSE_MEESAGE.FAIL,
+        error.message,
+      );
+    }
+  }
+
+  @Get('/detail')
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  @ApiOperation({summary: '유저상세 조회'})
+  @ApiResponse({
+    description: '',
+    type: GetUserResDTO,
+  })
+  @ApiDefaultResponse({
+    description: '기본 응답 형태',
+    type: ApiResponseDTO,
+  })
+  async getUser(
+    @UserDeco() user: IUser,
+  ): Promise<ApiResponseDTO<GetUserResDTO>> {
+    try {
+      const getUser = new GetUserResDTO(
+        user.nickname,
+        user.socialType,
+        user.image,
+        user.regDate,
+      );
+
+      return new ApiResponseDTO<GetUserResDTO>(
+        200,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        getUser,
+      );
+    } catch (error) {
+      return new ApiResponseDTO(
+        HttpStatus.INTERNAL_SERVER_ERROR,
         API_RESPONSE_MEESAGE.FAIL,
         error.message,
       );
