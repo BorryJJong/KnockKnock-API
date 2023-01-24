@@ -90,7 +90,17 @@ __decorate([
     __metadata("design:type", String)
 ], SignUpRequestDTO.prototype, "nickname", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: '이미지 파일 업로드', example: '' }),
+    (0, swagger_1.ApiProperty)({
+        description: '이미지 파일 업로드',
+        example: '',
+        type: 'file',
+        properties: {
+            file: {
+                type: 'string',
+                format: 'binary',
+            },
+        },
+    }),
     __metadata("design:type", String)
 ], SignUpRequestDTO.prototype, "image", void 0);
 exports.SignUpRequestDTO = SignUpRequestDTO;

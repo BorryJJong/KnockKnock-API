@@ -22,7 +22,7 @@ let JwtRefreshTokenStrategy = class JwtRefreshTokenStrategy extends (0, passport
     }
     validate(request, payload) {
         console.log('request', request);
-        return Object.assign({}, payload);
+        return { ...payload };
     }
 };
 JwtRefreshTokenStrategy = __decorate([

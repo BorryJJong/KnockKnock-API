@@ -13,9 +13,10 @@ exports.PromotionsController = void 0;
 const common_1 = require("@nestjs/common");
 const promotions_service_1 = require("./promotions.service");
 const swagger_1 = require("@nestjs/swagger");
-const Promotions_1 = require("../../entities/Promotions");
 const response_dto_1 = require("../../shared/dto/response.dto");
 const enum_1 = require("../../shared/enums/enum");
+const swagger_decorator_1 = require("../../shared/decorator/swagger.decorator");
+const promotions_dto_1 = require("./dto/promotions.dto");
 let PromotionsController = class PromotionsController {
     constructor(promotionsService) {
         this.promotionsService = promotionsService;
@@ -23,24 +24,19 @@ let PromotionsController = class PromotionsController {
     async findAll() {
         try {
             const promotions = await this.promotionsService.findAll();
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, promotions);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, promotions.map(p => new promotions_dto_1.GetPromotionResDTO(p.id, p.type)));
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
 };
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: '프로모션 리스트' }),
-    (0, swagger_1.ApiOkResponse)({
-        description: '성공',
-        type: [Promotions_1.Promotions],
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.OkApiResponseListDataDTO)(promotions_dto_1.GetPromotionResDTO),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

@@ -20,13 +20,13 @@ export declare class ParticipantUserDTO {
     nickname: string;
     image: string;
 }
-declare const insChallengeReqDTO_base: import("@nestjs/common").Type<Pick<Challenges, "title" | "subTitle" | "content">>;
+declare const insChallengeReqDTO_base: import("@nestjs/common").Type<Pick<Challenges, "title" | "content" | "subTitle">>;
 export declare class insChallengeReqDTO extends insChallengeReqDTO_base {
 }
 export declare class GetChallengeReqDTO {
     id: number;
 }
-declare const GetChallengeResDTO_base: import("@nestjs/common").Type<Pick<Challenges, "id" | "regDate" | "title" | "subTitle" | "content">>;
+declare const GetChallengeResDTO_base: import("@nestjs/common").Type<Pick<Challenges, "id" | "regDate" | "title" | "content" | "subTitle">>;
 export declare class GetChallengeResDTO extends GetChallengeResDTO_base {
 }
 export declare class GetChallengeDetailResDTO {
@@ -35,7 +35,7 @@ export declare class GetChallengeDetailResDTO {
     private readonly content;
     constructor(challenge: Challenges, participants: ParticipantUserDTO[], content: ChallengeContentDTO);
 }
-declare const GetListChallengeResDTO_base: import("@nestjs/common").Type<Pick<Challenges, "id" | "regDate" | "title" | "subTitle" | "content">>;
+declare const GetListChallengeResDTO_base: import("@nestjs/common").Type<Pick<Challenges, "id" | "regDate" | "title" | "content" | "subTitle">>;
 export declare class GetListChallengeResDTO extends GetListChallengeResDTO_base {
     newYn: string;
     postCnt: number;

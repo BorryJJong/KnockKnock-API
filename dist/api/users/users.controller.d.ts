@@ -1,5 +1,5 @@
 /// <reference types="multer" />
-import { ApiResponseDTO } from '@shared/dto/response.dto';
+import { ApiResponseDTO, ErrorDTO } from '@shared/dto/response.dto';
 import { PostFeedBlogPostHideReqDTO } from 'src/api/feed/dto/feed.dto';
 import { GetCheckDuplicateUserNicknameReqDTO, GetUserResDTO, UpdateUserReqDTO } from 'src/api/users/dto/users.dto';
 import { IUser } from 'src/api/users/users.interface';
@@ -16,13 +16,13 @@ export declare class UsersController {
     private readonly kakaoService;
     private readonly appleService;
     constructor(userService: UsersService, authService: AuthService, userValidator: UserValidator, kakaoService: KakaoService, appleService: AppleService);
-    socialLogin(body: SocialLoginRequestDTO): Promise<ApiResponseDTO<SocialLoginResponseDTO | boolean>>;
-    signUp(file: Express.Multer.File, body: SignUpRequestDTO): Promise<ApiResponseDTO<SocialLoginResponseDTO>>;
-    logout(user: IUser): Promise<ApiResponseDTO<boolean>>;
-    deleteUser(user: IUser): Promise<ApiResponseDTO<boolean>>;
+    socialLogin(body: SocialLoginRequestDTO): Promise<ApiResponseDTO<SocialLoginResponseDTO | ErrorDTO>>;
+    signUp(file: Express.Multer.File, body: SignUpRequestDTO): Promise<ApiResponseDTO<SocialLoginResponseDTO | ErrorDTO>>;
+    logout(user: IUser): Promise<ApiResponseDTO<void | ErrorDTO>>;
+    deleteUser(user: IUser): Promise<ApiResponseDTO<void | ErrorDTO>>;
     private getSocialLoginAttributes;
-    profileUpdate(file: Express.Multer.File, updateUserReqDTO: UpdateUserReqDTO, user: IUser): Promise<ApiResponseDTO<boolean>>;
-    checkDuplicateNickname(param: GetCheckDuplicateUserNicknameReqDTO): Promise<ApiResponseDTO<boolean>>;
-    hideBlogPost(param: PostFeedBlogPostHideReqDTO, user: IUser): Promise<ApiResponseDTO<void>>;
-    getUser(user: IUser): Promise<ApiResponseDTO<GetUserResDTO>>;
+    profileUpdate(file: Express.Multer.File, updateUserReqDTO: UpdateUserReqDTO, user: IUser): Promise<ApiResponseDTO<void | ErrorDTO>>;
+    checkDuplicateNickname(param: GetCheckDuplicateUserNicknameReqDTO): Promise<ApiResponseDTO<boolean | ErrorDTO>>;
+    hideBlogPost(param: PostFeedBlogPostHideReqDTO, user: IUser): Promise<ApiResponseDTO<void | ErrorDTO>>;
+    getUser(user: IUser): Promise<ApiResponseDTO<GetUserResDTO | ErrorDTO>>;
 }

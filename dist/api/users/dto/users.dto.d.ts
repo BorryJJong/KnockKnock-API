@@ -9,6 +9,7 @@ export declare class UserInfoResDTO {
 }
 export declare class UpdateUserReqDTO {
     nickname?: string;
+    image: string;
     constructor(nickname: string);
 }
 export declare class GetCheckDuplicateUserNicknameReqDTO {

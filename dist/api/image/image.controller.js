@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const image_service_1 = require("./image.service");
 require("dotenv/config");
+const swagger_1 = require("@nestjs/swagger");
 let ImageController = class ImageController {
     constructor(imageService) {
         this.imageService = imageService;
@@ -27,6 +28,7 @@ let ImageController = class ImageController {
 };
 __decorate([
     (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: '이미지 테스트용 API' }),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('images')),
     __param(0, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),

@@ -1,7 +1,14 @@
-import { API_RESPONSE_MEESAGE } from '@shared/enums/enum';
 export declare class ApiResponseDTO<T = void> {
     private code;
     private message;
     private data?;
-    constructor(code: number, message: API_RESPONSE_MEESAGE, data?: T);
+    constructor(code: number, message: string, data?: T);
+}
+export declare class ErrorDTO {
+    private code;
+    private message;
+}
+export declare class NoneDataDTO {
+    private code;
+    private message;
 }
