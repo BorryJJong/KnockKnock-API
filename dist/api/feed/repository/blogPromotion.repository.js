@@ -13,7 +13,7 @@ const BlogPromotion_1 = require("../../../entities/BlogPromotion");
 const Promotions_1 = require("../../../entities/Promotions");
 let BlogPromotionRepository = class BlogPromotionRepository extends typeorm_1.Repository {
     createBlogPromotion(createBlogPromotionDTO) {
-        return this.create(Object.assign({}, createBlogPromotionDTO));
+        return this.create({ ...createBlogPromotionDTO });
     }
     async saveBlogPromotion(queryRunner, blogPromotion) {
         if (queryRunner === null) {

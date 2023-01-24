@@ -75,10 +75,8 @@ let UsersService = class UsersService {
     }
     async profileUpdate(userId, updateUserReqDTO, file) {
         const { nickname } = updateUserReqDTO;
-        console.log('file', file);
         const fileUrl = await this.getUserProfileImageUrl(file);
-        console.log('fileUrl', fileUrl);
-        return await this.userRepository.updateUser(userId, nickname);
+        return await this.userRepository.updateUser(userId, nickname, fileUrl);
     }
     async getUserProfileImageUrl(file) {
         let resultS3 = {

@@ -9,9 +9,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ApiResponseDTO = void 0;
+exports.NoneDataDTO = exports.ErrorDTO = exports.ApiResponseDTO = void 0;
 const swagger_1 = require("@nestjs/swagger");
-const enum_1 = require("../enums/enum");
 class ApiResponseDTO {
     constructor(code, message, data) {
         this.code = code;
@@ -29,8 +28,8 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '응답에 대한 결과 메세지',
-        example: 'SUCCESS or FAIL',
-        enum: enum_1.API_RESPONSE_MEESAGE,
+        example: 'SUCCESS',
+        type: String,
     }),
     __metadata("design:type", String)
 ], ApiResponseDTO.prototype, "message", void 0);
@@ -42,4 +41,40 @@ __decorate([
     __metadata("design:type", Object)
 ], ApiResponseDTO.prototype, "data", void 0);
 exports.ApiResponseDTO = ApiResponseDTO;
+class ErrorDTO {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '실패에 대한 Http Status Code || Ground Rule(nestjs/common Http status)',
+        example: 'default(500) 혹은 설정된 다른 Status Code',
+    }),
+    __metadata("design:type", Number)
+], ErrorDTO.prototype, "code", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '응답에 대한 결과 메세지',
+        example: 'Error Message',
+        type: String,
+    }),
+    __metadata("design:type", String)
+], ErrorDTO.prototype, "message", void 0);
+exports.ErrorDTO = ErrorDTO;
+class NoneDataDTO {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'Ground Rule(nestjs/common Http status)',
+        example: '성공시 200',
+    }),
+    __metadata("design:type", Number)
+], NoneDataDTO.prototype, "code", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '응답에 대한 결과 메세지',
+        example: 'SUCCESS',
+        type: String,
+    }),
+    __metadata("design:type", String)
+], NoneDataDTO.prototype, "message", void 0);
+exports.NoneDataDTO = NoneDataDTO;
 //# sourceMappingURL=response.dto.js.map

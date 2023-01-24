@@ -1,8 +1,8 @@
 import { PromotionsService } from './promotions.service';
-import { Promotions } from 'src/entities/Promotions';
-import { ApiResponseDTO } from '@shared/dto/response.dto';
+import { ApiResponseDTO, ErrorDTO } from '@shared/dto/response.dto';
+import { GetPromotionResDTO } from 'src/api/promotions/dto/promotions.dto';
 export declare class PromotionsController {
     private readonly promotionsService;
     constructor(promotionsService: PromotionsService);
-    findAll(): Promise<ApiResponseDTO<Promotions[]>>;
+    findAll(): Promise<ApiResponseDTO<GetPromotionResDTO[] | ErrorDTO>>;
 }

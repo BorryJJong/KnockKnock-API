@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MyPageController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
+const swagger_decorator_1 = require("../../shared/decorator/swagger.decorator");
 const user_decorator_1 = require("../../shared/decorator/user.decorator");
 const response_dto_1 = require("../../shared/dto/response.dto");
 const enum_1 = require("../../shared/enums/enum");
@@ -27,10 +28,10 @@ let MyPageController = class MyPageController {
     async isLogin(user) {
         try {
             await this.myPageService.isLogin(user.id);
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, true);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
 };
@@ -39,19 +40,10 @@ __decorate([
     (0, swagger_1.ApiOperation)({
         summary: '마이페이지 화면 구성(로그인 or 로그아웃/회원탈퇴 확인)',
     }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '성공',
-        type: Boolean,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 401,
-        description: '회원탈퇴유저',
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.UnauthorizedApiResponseDTO)(),
+    (0, swagger_decorator_1.OkApiResponseNoneDataDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     __param(0, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

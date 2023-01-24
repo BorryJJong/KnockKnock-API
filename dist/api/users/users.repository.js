@@ -13,7 +13,10 @@ const enum_1 = require("../../shared/enums/enum");
 const typeorm_1 = require("typeorm");
 let UserRepository = class UserRepository extends typeorm_1.Repository {
     async insertUser(request, fileUrl) {
-        return await this.save(this.create(Object.assign(Object.assign({}, request), { image: fileUrl })));
+        return await this.save(this.create({
+            ...request,
+            image: fileUrl,
+        }));
     }
     async updateUser(userId, nickname, fileUrl) {
         await this.createQueryBuilder()

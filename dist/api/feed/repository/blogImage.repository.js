@@ -12,7 +12,7 @@ const typeorm_1 = require("typeorm");
 const BlogImage_1 = require("../../../entities/BlogImage");
 let BlogImageRepository = class BlogImageRepository extends typeorm_1.Repository {
     createBlogImage(createBlogImageDTO) {
-        return this.create(Object.assign({}, createBlogImageDTO));
+        return this.create({ ...createBlogImageDTO });
     }
     async saveBlogImage(queryRunner, blogImage) {
         if (queryRunner === null) {

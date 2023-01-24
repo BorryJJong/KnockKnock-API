@@ -24,6 +24,7 @@ const feed_validator_1 = require("./feed.validator");
 const jwt_guard_1 = require("../../auth/jwt/jwt.guard");
 const user_decorator_1 = require("../../shared/decorator/user.decorator");
 const enum_1 = require("../../shared/enums/enum");
+const swagger_decorator_1 = require("../../shared/decorator/swagger.decorator");
 let FeedController = class FeedController {
     constructor(feedService, feedValidator) {
         this.feedService = feedService;
@@ -35,7 +36,7 @@ let FeedController = class FeedController {
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, result);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async getListFeed(query, user) {
@@ -44,17 +45,17 @@ let FeedController = class FeedController {
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, feeds);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async create(files, createFeedDTO, user) {
         try {
             await this.feedValidator.checkPermissionCreateFeed(user.id);
-            const status = await this.feedService.create(files, createFeedDTO, user.id);
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, status);
+            await this.feedService.create(files, createFeedDTO, user.id);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async getFeed(param, user) {
@@ -63,16 +64,16 @@ let FeedController = class FeedController {
             return new response_dto_1.ApiResponseDTO(200, enum_1.API_RESPONSE_MEESAGE.SUCCESS, feed);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async insertBlogComment(user, insBlogCommentDTO) {
         try {
             await this.feedService.saveBlogComment(insBlogCommentDTO, user.id);
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, true);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async getListFeedComment(user, param) {
@@ -81,37 +82,37 @@ let FeedController = class FeedController {
             return new response_dto_1.ApiResponseDTO(200, enum_1.API_RESPONSE_MEESAGE.SUCCESS, comments);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async deleteBlogComment(user, param) {
         try {
             await this.feedValidator.checkFeedCommentAuthor(param.id, user.id);
             await this.feedService.deleteBlogComment(param);
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, true);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async update(updateFeedDTO, user) {
         try {
             await this.feedValidator.checkPermissionUpdateFeed(updateFeedDTO.id, user.id);
-            const status = await this.feedService.update(updateFeedDTO);
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, status);
+            await this.feedService.update(updateFeedDTO);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async delete(param, user) {
         try {
             await this.feedValidator.checkFeedAuthor(param.id, user.id);
             await this.feedService.delete(param);
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, true);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
 };
@@ -125,17 +126,11 @@ __decorate([
         },
         deprecated: false,
     }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '성공!!!',
-        type: feed_dto_1.GetListFeedMainResDTO,
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
     (0, common_1.UseGuards)(jwtNoneRequired_guard_1.JwtOptionalGuard),
     (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_decorator_1.OkApiResponseDTO)(feed_dto_1.GetListFeedMainResDTO),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
     __param(0, (0, common_1.Query)()),
     __param(1, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
@@ -154,17 +149,11 @@ __decorate([
         },
         deprecated: false,
     }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '성공!!!',
-        type: feed_dto_1.GetListFeedResDTO,
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
     (0, common_1.UseGuards)(jwtNoneRequired_guard_1.JwtOptionalGuard),
     (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_decorator_1.OkApiResponseDTO)(feed_dto_1.GetListFeedResDTO),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
     __param(0, (0, common_1.Query)()),
     __param(1, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
@@ -176,15 +165,11 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: '피드 등록' }),
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiCreatedResponse)({
-        description: '성공',
-        type: Boolean,
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
     (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images')),
+    (0, swagger_decorator_1.OkApiResponseNoneDataDTO)(),
+    (0, swagger_decorator_1.ForbiddenApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
     __param(0, (0, common_1.UploadedFiles)()),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, user_decorator_1.UserDeco)()),
@@ -197,14 +182,9 @@ __decorate([
     (0, common_1.UseGuards)(jwtNoneRequired_guard_1.JwtOptionalGuard),
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: '피드 상세 조회' }),
-    (0, swagger_1.ApiResponse)({
-        description: '',
-        type: feed_dto_1.GetFeedViewResDTO,
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.OkApiResponseDTO)(feed_dto_1.GetFeedViewResDTO),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
     __param(0, (0, common_1.Param)()),
     __param(1, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
@@ -216,14 +196,9 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: '댓글 등록' }),
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiCreatedResponse)({
-        description: '성공',
-        type: Boolean,
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.OkApiResponseNoneDataDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
     __param(0, (0, user_decorator_1.UserDeco)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -235,14 +210,9 @@ __decorate([
     (0, common_1.UseGuards)(jwtNoneRequired_guard_1.JwtOptionalGuard),
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: '댓글 목록 조회' }),
-    (0, swagger_1.ApiResponse)({
-        description: '성공',
-        type: [feed_dto_1.GetListFeedCommentResDTO],
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.OkApiResponseListDataDTO)(feed_dto_1.GetListFeedCommentResDTO),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
     __param(0, (0, user_decorator_1.UserDeco)()),
     __param(1, (0, common_1.Param)()),
     __metadata("design:type", Function),
@@ -254,14 +224,10 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: '댓글 삭제' }),
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiResponse)({
-        description: '성공',
-        type: Boolean,
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.OkApiResponseNoneDataDTO)(),
+    (0, swagger_decorator_1.ForbiddenApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
     __param(0, (0, user_decorator_1.UserDeco)()),
     __param(1, (0, common_1.Param)()),
     __metadata("design:type", Function),
@@ -273,14 +239,10 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: '피드 수정' }),
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
-    (0, swagger_1.ApiCreatedResponse)({
-        description: '성공',
-        type: Boolean,
-    }),
+    (0, swagger_decorator_1.OkApiResponseNoneDataDTO)(),
+    (0, swagger_decorator_1.ForbiddenApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
@@ -292,14 +254,10 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: '피드 삭제' }),
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiCreatedResponse)({
-        description: '성공',
-        type: Boolean,
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.OkApiResponseNoneDataDTO)(),
+    (0, swagger_decorator_1.ForbiddenApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
     __param(0, (0, common_1.Param)()),
     __param(1, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),

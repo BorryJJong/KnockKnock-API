@@ -13,7 +13,7 @@ const BlogChallenges_1 = require("../../../entities/BlogChallenges");
 const Challenges_1 = require("../../../entities/Challenges");
 let BlogChallengesRepository = class BlogChallengesRepository extends typeorm_1.Repository {
     createBlogChallenges(createBlogChallengesDTO) {
-        return this.create(Object.assign({}, createBlogChallengesDTO));
+        return this.create({ ...createBlogChallengesDTO });
     }
     async saveBlogChallenges(queryRunner, blogChallenges) {
         if (queryRunner === null) {

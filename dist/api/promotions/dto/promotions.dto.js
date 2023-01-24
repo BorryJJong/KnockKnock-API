@@ -9,26 +9,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Promotions = void 0;
-const typeorm_1 = require("typeorm");
-let Promotions = class Promotions {
-};
+exports.GetPromotionResDTO = void 0;
+const swagger_1 = require("@nestjs/swagger");
+class GetPromotionResDTO {
+    constructor(id, type) {
+        this.id = id;
+        this.type = type;
+    }
+}
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    (0, swagger_1.ApiProperty)({ description: '프로모션 id', example: '1' }),
     __metadata("design:type", Number)
-], Promotions.prototype, "id", void 0);
+], GetPromotionResDTO.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({
-        name: 'type',
-        type: 'varchar',
-        comment: '종류',
-        length: 45,
-        nullable: false,
+    (0, swagger_1.ApiProperty)({
+        description: '프로모션 종류',
+        example: '다회용기 할인',
     }),
     __metadata("design:type", String)
-], Promotions.prototype, "type", void 0);
-Promotions = __decorate([
-    (0, typeorm_1.Entity)('promotions', { schema: 'knockknock' })
-], Promotions);
-exports.Promotions = Promotions;
-//# sourceMappingURL=Promotions.js.map
+], GetPromotionResDTO.prototype, "type", void 0);
+exports.GetPromotionResDTO = GetPromotionResDTO;
+//# sourceMappingURL=promotions.dto.js.map

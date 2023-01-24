@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChallengesController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
+const swagger_decorator_1 = require("../../shared/decorator/swagger.decorator");
 const response_dto_1 = require("../../shared/dto/response.dto");
 const enum_1 = require("../../shared/enums/enum");
 const challenges_service_1 = require("./challenges.service");
@@ -29,7 +30,7 @@ let ChallengesController = class ChallengesController {
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, challengeTitles);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async getChallenge(param) {
@@ -38,7 +39,7 @@ let ChallengesController = class ChallengesController {
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, challenge);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async getChallengeList(query) {
@@ -47,7 +48,7 @@ let ChallengesController = class ChallengesController {
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, challenges);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
 };
@@ -62,15 +63,9 @@ __decorate([
         },
         deprecated: false,
     }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '성공!!!',
-        type: [challenges_dto_1.GetChallengeTitleReqDTO],
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.OkApiResponseListDataDTO)(challenges_dto_1.GetChallengeTitleReqDTO),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
@@ -78,15 +73,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)('/:id'),
     (0, swagger_1.ApiOperation)({ summary: '챌린지 상세조회' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '성공',
-        type: challenges_dto_1.GetChallengeResDTO,
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.OkApiResponseDTO)(challenges_dto_1.GetChallengeResDTO),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     __param(0, (0, common_1.Param)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [challenges_dto_1.GetChallengeReqDTO]),
@@ -95,15 +84,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)('/'),
     (0, swagger_1.ApiOperation)({ summary: '챌린지 목록조회' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '성공',
-        type: [challenges_dto_1.GetChallengeResDTO],
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.OkApiResponseListDataDTO)(challenges_dto_1.GetChallengeResDTO),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [challenges_dto_1.GetChallengeListReqQueryDTO]),

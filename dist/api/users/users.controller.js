@@ -16,6 +16,7 @@ exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const swagger_1 = require("@nestjs/swagger");
+const swagger_decorator_1 = require("../../shared/decorator/swagger.decorator");
 const user_decorator_1 = require("../../shared/decorator/user.decorator");
 const response_dto_1 = require("../../shared/dto/response.dto");
 const enum_1 = require("../../shared/enums/enum");
@@ -51,11 +52,12 @@ let UsersController = class UsersController {
                 return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, result);
             }
             else {
-                return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, false);
+                const isExistUser = new auth_dto_1.SocialLoginResponseDTO(false);
+                return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, isExistUser);
             }
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async signUp(file, body) {
@@ -75,27 +77,27 @@ let UsersController = class UsersController {
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, result);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async logout(user) {
         try {
             await this.userService.getUser(user.id);
             await this.userService.logout(user.id);
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, true);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async deleteUser(user) {
         try {
             const findeUser = await this.userService.getUserFindOrFail(user.id);
             await this.userService.deleteUser(findeUser.id, findeUser.socialUuid, findeUser.socialType === enum_1.SOCIAL_TYPE.KAKAO);
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, true);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async getSocialLoginAttributes(socialType, socialUuid) {
@@ -112,10 +114,10 @@ let UsersController = class UsersController {
                 await this.userValidator.checkDuplicateNickname(updateUserReqDTO.nickname);
             }
             await this.userService.profileUpdate(user.id, updateUserReqDTO, file);
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, true);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async checkDuplicateNickname(param) {
@@ -125,7 +127,7 @@ let UsersController = class UsersController {
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, isDuplicate);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async hideBlogPost(param, user) {
@@ -135,7 +137,7 @@ let UsersController = class UsersController {
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
     async getUser(user) {
@@ -144,31 +146,17 @@ let UsersController = class UsersController {
             return new response_dto_1.ApiResponseDTO(200, enum_1.API_RESPONSE_MEESAGE.SUCCESS, getUser);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
 };
 __decorate([
     (0, common_1.Post)('/social-login'),
     (0, swagger_1.ApiOperation)({ summary: '소셜 로그인' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '성공',
-        type: auth_dto_1.SocialLoginResponseDTO,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '회원가입필요 여부',
-        type: Boolean,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 401,
-        description: '인증 에러',
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.OkApiResponseDTO)(auth_dto_1.SocialLoginResponseDTO),
+    (0, swagger_decorator_1.UnauthorizedApiResponseDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [auth_dto_1.SocialLoginRequestDTO]),
@@ -177,17 +165,12 @@ __decorate([
 __decorate([
     (0, common_1.Post)('/sign-up'),
     (0, swagger_1.ApiOperation)({ summary: '회원가입' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '성공',
-        type: auth_dto_1.SocialLoginResponseDTO,
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images')),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image')),
     (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, swagger_decorator_1.OkApiResponseDTO)(auth_dto_1.SocialLoginResponseDTO),
+    (0, swagger_decorator_1.ConflictApiResponseDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     __param(0, (0, common_1.UploadedFile)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -202,15 +185,9 @@ __decorate([
         summary: '로그아웃',
         description: 'access_token을 활용해 회원 로그아웃',
     }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '로그아웃 성공',
-        type: Boolean,
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.OkApiResponseNoneDataDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     __param(0, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -224,15 +201,9 @@ __decorate([
         summary: '회원탈퇴',
         description: 'access_token을 활용해 회원 탈퇴',
     }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '회원탈퇴 성공',
-        type: Boolean,
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.OkApiResponseNoneDataDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     __param(0, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -243,12 +214,12 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: '회원 프로필 수정' }),
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images')),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image')),
     (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, swagger_decorator_1.OkApiResponseNoneDataDTO)(),
+    (0, swagger_decorator_1.ConflictApiResponseDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     __param(0, (0, common_1.UploadedFile)()),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, user_decorator_1.UserDeco)()),
@@ -259,14 +230,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)('/duplicate-nickname/:nickname'),
     (0, swagger_1.ApiOperation)({ summary: '회원 닉네임 중복 확인' }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
-    (0, swagger_1.ApiResponse)({
-        description: '닉네임 중복시 true, 아니면 false',
-        type: Boolean,
-    }),
+    (0, swagger_decorator_1.OkApiResponseDTO)(Boolean, '닉네임 중복시 true, 아니면 false'),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     __param(0, (0, common_1.Param)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [users_dto_1.GetCheckDuplicateUserNicknameReqDTO]),
@@ -277,10 +243,9 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: '피드 게시글 숨기기' }),
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.OkApiResponseNoneDataDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     __param(0, (0, common_1.Param)()),
     __param(1, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
@@ -292,14 +257,9 @@ __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: '유저상세 조회' }),
-    (0, swagger_1.ApiResponse)({
-        description: '',
-        type: users_dto_1.GetUserResDTO,
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.OkApiResponseDTO)(users_dto_1.GetUserResDTO),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     __param(0, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

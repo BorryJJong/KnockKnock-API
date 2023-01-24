@@ -3,6 +3,12 @@ import { IBlogPostRepository, IGetBlogPostItems } from '../interface/blogPost.in
 import { QueryRunner, Repository } from 'typeorm';
 import { CreateBlogPostDTO, GetBlogPostDTO, UpdateBlogPostDTO } from '../dto/feed.dto';
 import { GetListHotFeedResDTO } from 'src/api/home/dto/home.dto';
+export interface test {
+    postId: number;
+    scale: string;
+    nickname: string;
+    fileUrl: string;
+}
 export declare class BlogPostRepository extends Repository<BlogPost> implements IBlogPostRepository {
     createBlogPost(createBlogPostDTO: CreateBlogPostDTO | UpdateBlogPostDTO, userId?: number): BlogPost;
     saveBlogPost(queryRunner: QueryRunner | null, blogPost: BlogPost): Promise<BlogPost>;
