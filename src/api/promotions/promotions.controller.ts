@@ -1,14 +1,14 @@
 import {Controller, Get, HttpStatus} from '@nestjs/common';
 import {PromotionsService} from './promotions.service';
-import {
-  ApiDefaultResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
-import {Promotions} from 'src/entities/Promotions';
-import {ApiResponseDTO} from '@shared/dto/response.dto';
+import {ApiOperation, ApiTags} from '@nestjs/swagger';
+import {ApiResponseDTO, ErrorDTO} from '@shared/dto/response.dto';
 import {API_RESPONSE_MEESAGE} from '@shared/enums/enum';
+import {
+  DefaultErrorApiResponseDTO,
+  InternalServerApiResponseDTO,
+  OkApiResponseListDataDTO,
+} from '@shared/decorator/swagger.decorator';
+import {GetPromotionResDTO} from 'src/api/promotions/dto/promotions.dto';
 
 @ApiTags('promotions')
 @Controller('promotions')
@@ -17,27 +17,21 @@ export class PromotionsController {
 
   @Get()
   @ApiOperation({summary: '프로모션 리스트'})
-  @ApiOkResponse({
-    description: '성공',
-    type: [Promotions],
-  })
-  @ApiDefaultResponse({
-    description: '기본 응답 형태',
-    type: ApiResponseDTO,
-  })
-  async findAll(): Promise<ApiResponseDTO<Promotions[]>> {
+  @OkApiResponseListDataDTO(GetPromotionResDTO)
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
+  async findAll(): Promise<ApiResponseDTO<GetPromotionResDTO[] | ErrorDTO>> {
     try {
       const promotions = await this.promotionsService.findAll();
 
-      return new ApiResponseDTO<Promotions[]>(
+      return new ApiResponseDTO<GetPromotionResDTO[]>(
         HttpStatus.OK,
         API_RESPONSE_MEESAGE.SUCCESS,
-        promotions,
+        promotions.map(p => new GetPromotionResDTO(p.id, p.type)),
       );
     } catch (error) {
-      return new ApiResponseDTO(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        API_RESPONSE_MEESAGE.FAIL,
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
         error.message,
       );
     }

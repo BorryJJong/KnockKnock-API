@@ -46,6 +46,19 @@ export class UpdateUserReqDTO {
   })
   nickname?: string;
 
+  @ApiProperty({
+    description: '이미지 파일 업로드',
+    example: '',
+    type: 'file',
+    properties: {
+      file: {
+        type: 'string',
+        format: 'binary',
+      },
+    },
+  })
+  image: string;
+
   constructor(nickname: string) {
     this.nickname = nickname;
   }
