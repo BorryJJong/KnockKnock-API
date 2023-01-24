@@ -11,7 +11,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {FilesInterceptor} from '@nestjs/platform-express';
+import {FileInterceptor} from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiConsumes,
@@ -142,7 +142,7 @@ export class UsersController {
     description: '기본 응답 형태',
     type: ApiResponseDTO,
   })
-  @UseInterceptors(FilesInterceptor('images'))
+  @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
   async signUp(
     @UploadedFile() file: Express.Multer.File,
@@ -294,7 +294,7 @@ export class UsersController {
     description: '기본 응답 형태',
     type: ApiResponseDTO,
   })
-  @UseInterceptors(FilesInterceptor('images'))
+  @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
   async profileUpdate(
     @UploadedFile() file: Express.Multer.File,
