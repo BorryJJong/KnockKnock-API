@@ -2,22 +2,22 @@ import {ApiProperty} from '@nestjs/swagger';
 
 export class GetListHotFeedResDTO {
   @ApiProperty({description: '게시글 id', example: '1'})
-  postId: number;
+  private postId: number;
 
   @ApiProperty({description: '게시글 내 이미지의 비율', example: '1:1'})
-  scale: string;
+  private scale: string;
 
   @ApiProperty({
     description: '사용자 닉네임',
     example: '홍길동',
   })
-  nickname: string;
+  private nickname: string;
 
   @ApiProperty({
     description: '블로그의 이미지 URL',
     example: '{aws.s3.endpoint}/feed/filename.png',
   })
-  fileUrl: string;
+  private fileUrl: string;
 
   constructor(
     postId: number,

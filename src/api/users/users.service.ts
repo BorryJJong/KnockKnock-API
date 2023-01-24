@@ -99,12 +99,9 @@ export class UsersService {
     file: Express.Multer.File,
   ): Promise<void> {
     const {nickname} = updateUserReqDTO;
-
-    console.log('file', file);
     const fileUrl = await this.getUserProfileImageUrl(file);
-    console.log('fileUrl', fileUrl);
 
-    return await this.userRepository.updateUser(userId, nickname);
+    return await this.userRepository.updateUser(userId, nickname, fileUrl);
   }
 
   async getUserProfileImageUrl(file: Express.Multer.File): Promise<string> {

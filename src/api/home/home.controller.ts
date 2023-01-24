@@ -1,11 +1,10 @@
 import {Controller, Get, HttpStatus, Query} from '@nestjs/common';
+import {ApiOperation, ApiTags} from '@nestjs/swagger';
 import {
-  ApiDefaultResponse,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import {ApiResponseDTO} from '@shared/dto/response.dto';
+  DefaultErrorApiResponseDTO,
+  OkApiResponseListDataDTO,
+} from '@shared/decorator/swagger.decorator';
+import {ApiResponseDTO, ErrorDTO} from '@shared/dto/response.dto';
 import {API_RESPONSE_MEESAGE} from '@shared/enums/enum';
 import {
   GetListHotFeedReqDTO,
@@ -20,18 +19,11 @@ export class HomeController {
 
   @Get('/hot-post')
   @ApiOperation({summary: '오늘의 인기 게시글'})
-  @ApiResponse({
-    status: 200,
-    description: '성공',
-    type: GetListHotFeedResDTO,
-  })
-  @ApiDefaultResponse({
-    description: '기본 응답 형태',
-    type: ApiResponseDTO,
-  })
+  @OkApiResponseListDataDTO(GetListHotFeedResDTO)
+  @DefaultErrorApiResponseDTO()
   async getListHotFeed(
     @Query() query: GetListHotFeedReqDTO,
-  ): Promise<ApiResponseDTO<GetListHotFeedResDTO[]>> {
+  ): Promise<ApiResponseDTO<GetListHotFeedResDTO[] | ErrorDTO>> {
     try {
       const {challengeId} = query;
       const hotFeeds = await this.homeService.getListHotFeed(challengeId);
@@ -42,9 +34,8 @@ export class HomeController {
         hotFeeds,
       );
     } catch (error) {
-      return new ApiResponseDTO(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        API_RESPONSE_MEESAGE.FAIL,
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
         error.message,
       );
     }

@@ -15,13 +15,19 @@ import {FileInterceptor} from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiConsumes,
-  ApiDefaultResponse,
   ApiOperation,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  ConflictApiResponseDTO,
+  DefaultErrorApiResponseDTO,
+  InternalServerApiResponseDTO,
+  OkApiResponseDTO,
+  OkApiResponseNoneDataDTO,
+  UnauthorizedApiResponseDTO,
+} from '@shared/decorator/swagger.decorator';
 import {UserDeco} from '@shared/decorator/user.decorator';
-import {ApiResponseDTO} from '@shared/dto/response.dto';
+import {ApiResponseDTO, ErrorDTO} from '@shared/dto/response.dto';
 import {API_RESPONSE_MEESAGE, SOCIAL_TYPE} from '@shared/enums/enum';
 import {PostFeedBlogPostHideReqDTO} from 'src/api/feed/dto/feed.dto';
 import {
@@ -58,27 +64,13 @@ export class UsersController {
 
   @Post('/social-login')
   @ApiOperation({summary: '소셜 로그인'})
-  @ApiResponse({
-    status: 200,
-    description: '성공',
-    type: SocialLoginResponseDTO,
-  })
-  @ApiResponse({
-    status: 200,
-    description: '회원가입필요 여부',
-    type: Boolean,
-  })
-  @ApiResponse({
-    status: 401,
-    description: '인증 에러',
-  })
-  @ApiDefaultResponse({
-    description: '기본 응답 형태',
-    type: ApiResponseDTO,
-  })
+  @OkApiResponseDTO(SocialLoginResponseDTO)
+  @UnauthorizedApiResponseDTO()
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
   async socialLogin(
     @Body() body: SocialLoginRequestDTO,
-  ): Promise<ApiResponseDTO<SocialLoginResponseDTO | boolean>> {
+  ): Promise<ApiResponseDTO<SocialLoginResponseDTO | ErrorDTO>> {
     try {
       const {socialType, socialUuid} = body;
       const userProperties = await this.getSocialLoginAttributes(
@@ -116,16 +108,16 @@ export class UsersController {
           result,
         );
       } else {
-        return new ApiResponseDTO<boolean>(
+        const isExistUser = new SocialLoginResponseDTO(false);
+        return new ApiResponseDTO<SocialLoginResponseDTO>(
           HttpStatus.OK,
           API_RESPONSE_MEESAGE.SUCCESS,
-          false,
+          isExistUser,
         );
       }
     } catch (error) {
-      return new ApiResponseDTO(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        API_RESPONSE_MEESAGE.FAIL,
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
         error.message,
       );
     }
@@ -133,21 +125,16 @@ export class UsersController {
 
   @Post('/sign-up')
   @ApiOperation({summary: '회원가입'})
-  @ApiResponse({
-    status: 200,
-    description: '성공',
-    type: SocialLoginResponseDTO,
-  })
-  @ApiDefaultResponse({
-    description: '기본 응답 형태',
-    type: ApiResponseDTO,
-  })
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
+  @OkApiResponseDTO(SocialLoginResponseDTO)
+  @ConflictApiResponseDTO()
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
   async signUp(
     @UploadedFile() file: Express.Multer.File,
     @Body() body: SignUpRequestDTO,
-  ): Promise<ApiResponseDTO<SocialLoginResponseDTO>> {
+  ): Promise<ApiResponseDTO<SocialLoginResponseDTO | ErrorDTO>> {
     try {
       const {socialUuid, socialType, nickname} = body;
       const userProperties = await this.getSocialLoginAttributes(
@@ -193,9 +180,8 @@ export class UsersController {
         result,
       );
     } catch (error) {
-      return new ApiResponseDTO(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        API_RESPONSE_MEESAGE.FAIL,
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
         error.message,
       );
     }
@@ -208,28 +194,22 @@ export class UsersController {
     summary: '로그아웃',
     description: 'access_token을 활용해 회원 로그아웃',
   })
-  @ApiResponse({
-    status: 200,
-    description: '로그아웃 성공',
-    type: Boolean,
-  })
-  @ApiDefaultResponse({
-    description: '기본 응답 형태',
-    type: ApiResponseDTO,
-  })
-  async logout(@UserDeco() user: IUser): Promise<ApiResponseDTO<boolean>> {
+  @OkApiResponseNoneDataDTO()
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
+  async logout(
+    @UserDeco() user: IUser,
+  ): Promise<ApiResponseDTO<void | ErrorDTO>> {
     try {
       await this.userService.getUser(user.id);
       await this.userService.logout(user.id);
-      return new ApiResponseDTO<boolean>(
+      return new ApiResponseDTO<void>(
         HttpStatus.OK,
         API_RESPONSE_MEESAGE.SUCCESS,
-        true,
       );
     } catch (error) {
-      return new ApiResponseDTO(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        API_RESPONSE_MEESAGE.FAIL,
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
         error.message,
       );
     }
@@ -242,16 +222,12 @@ export class UsersController {
     summary: '회원탈퇴',
     description: 'access_token을 활용해 회원 탈퇴',
   })
-  @ApiResponse({
-    status: 200,
-    description: '회원탈퇴 성공',
-    type: Boolean,
-  })
-  @ApiDefaultResponse({
-    description: '기본 응답 형태',
-    type: ApiResponseDTO,
-  })
-  async deleteUser(@UserDeco() user: IUser): Promise<ApiResponseDTO<boolean>> {
+  @OkApiResponseNoneDataDTO()
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
+  async deleteUser(
+    @UserDeco() user: IUser,
+  ): Promise<ApiResponseDTO<void | ErrorDTO>> {
     try {
       const findeUser = await this.userService.getUserFindOrFail(user.id);
       await this.userService.deleteUser(
@@ -260,15 +236,10 @@ export class UsersController {
         findeUser.socialType === SOCIAL_TYPE.KAKAO,
       );
 
-      return new ApiResponseDTO(
-        HttpStatus.OK,
-        API_RESPONSE_MEESAGE.SUCCESS,
-        true,
-      );
+      return new ApiResponseDTO(HttpStatus.OK, API_RESPONSE_MEESAGE.SUCCESS);
     } catch (error) {
-      return new ApiResponseDTO(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        API_RESPONSE_MEESAGE.FAIL,
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
         error.message,
       );
     }
@@ -290,17 +261,17 @@ export class UsersController {
   @ApiOperation({summary: '회원 프로필 수정'})
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
-  @ApiDefaultResponse({
-    description: '기본 응답 형태',
-    type: ApiResponseDTO,
-  })
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
+  @OkApiResponseNoneDataDTO()
+  @ConflictApiResponseDTO()
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
   async profileUpdate(
     @UploadedFile() file: Express.Multer.File,
     @Body() updateUserReqDTO: UpdateUserReqDTO,
     @UserDeco() user: IUser,
-  ): Promise<ApiResponseDTO<boolean>> {
+  ): Promise<ApiResponseDTO<void | ErrorDTO>> {
     try {
       if (updateUserReqDTO.nickname) {
         await this.userValidator.checkDuplicateNickname(
@@ -310,15 +281,13 @@ export class UsersController {
 
       await this.userService.profileUpdate(user.id, updateUserReqDTO, file);
 
-      return new ApiResponseDTO<boolean>(
+      return new ApiResponseDTO<void>(
         HttpStatus.OK,
         API_RESPONSE_MEESAGE.SUCCESS,
-        true,
       );
     } catch (error) {
-      return new ApiResponseDTO(
+      return new ApiResponseDTO<ErrorDTO>(
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-        API_RESPONSE_MEESAGE.FAIL,
         error.message,
       );
     }
@@ -326,17 +295,12 @@ export class UsersController {
 
   @Get('/duplicate-nickname/:nickname')
   @ApiOperation({summary: '회원 닉네임 중복 확인'})
-  @ApiDefaultResponse({
-    description: '기본 응답 형태',
-    type: ApiResponseDTO,
-  })
-  @ApiResponse({
-    description: '닉네임 중복시 true, 아니면 false',
-    type: Boolean,
-  })
+  @OkApiResponseDTO(Boolean, '닉네임 중복시 true, 아니면 false')
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
   async checkDuplicateNickname(
     @Param() param: GetCheckDuplicateUserNicknameReqDTO,
-  ): Promise<ApiResponseDTO<boolean>> {
+  ): Promise<ApiResponseDTO<boolean | ErrorDTO>> {
     try {
       const {nickname} = param;
       const isDuplicate = await this.userService.checkDuplicateNickname(
@@ -349,9 +313,8 @@ export class UsersController {
         isDuplicate,
       );
     } catch (error) {
-      return new ApiResponseDTO(
+      return new ApiResponseDTO<ErrorDTO>(
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-        API_RESPONSE_MEESAGE.FAIL,
         error.message,
       );
     }
@@ -361,14 +324,13 @@ export class UsersController {
   @ApiOperation({summary: '피드 게시글 숨기기'})
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
-  @ApiDefaultResponse({
-    description: '기본 응답 형태',
-    type: ApiResponseDTO,
-  })
+  @OkApiResponseNoneDataDTO()
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
   async hideBlogPost(
     @Param() param: PostFeedBlogPostHideReqDTO,
     @UserDeco() user: IUser,
-  ): Promise<ApiResponseDTO<void>> {
+  ): Promise<ApiResponseDTO<void | ErrorDTO>> {
     try {
       const {id: postId} = param;
       await this.userService.hideBlogPost(user.id, postId);
@@ -378,9 +340,8 @@ export class UsersController {
         API_RESPONSE_MEESAGE.SUCCESS,
       );
     } catch (error) {
-      return new ApiResponseDTO(
+      return new ApiResponseDTO<ErrorDTO>(
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-        API_RESPONSE_MEESAGE.FAIL,
         error.message,
       );
     }
@@ -390,17 +351,12 @@ export class UsersController {
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
   @ApiOperation({summary: '유저상세 조회'})
-  @ApiResponse({
-    description: '',
-    type: GetUserResDTO,
-  })
-  @ApiDefaultResponse({
-    description: '기본 응답 형태',
-    type: ApiResponseDTO,
-  })
+  @OkApiResponseDTO(GetUserResDTO)
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
   async getUser(
     @UserDeco() user: IUser,
-  ): Promise<ApiResponseDTO<GetUserResDTO>> {
+  ): Promise<ApiResponseDTO<GetUserResDTO | ErrorDTO>> {
     try {
       const getUser = new GetUserResDTO(
         user.nickname,
@@ -415,9 +371,8 @@ export class UsersController {
         getUser,
       );
     } catch (error) {
-      return new ApiResponseDTO(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        API_RESPONSE_MEESAGE.FAIL,
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
         error.message,
       );
     }

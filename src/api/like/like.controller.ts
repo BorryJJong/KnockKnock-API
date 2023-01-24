@@ -7,21 +7,22 @@ import {
   Get,
   HttpStatus,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiDefaultResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import {ApiBearerAuth, ApiOperation, ApiTags} from '@nestjs/swagger';
 import {JwtGuard} from 'src/auth/jwt/jwt.guard';
 import {GetListFeedLikeResDTO} from '../feed/dto/feed.dto';
 import {LikeService} from './like.service';
 import {UserDeco} from '@shared/decorator/user.decorator';
 import {IUser} from 'src/api/users/users.interface';
-import {ApiResponseDTO} from '@shared/dto/response.dto';
+import {ApiResponseDTO, ErrorDTO} from '@shared/dto/response.dto';
 import {API_RESPONSE_MEESAGE} from '@shared/enums/enum';
 import {LikeValidator} from 'src/api/like/like.validator';
+import {
+  ConflictApiResponseDTO,
+  DefaultErrorApiResponseDTO,
+  InternalServerApiResponseDTO,
+  OkApiResponseListDataDTO,
+  OkApiResponseNoneDataDTO,
+} from '@shared/decorator/swagger.decorator';
 
 @ApiTags('like')
 @Controller('like')
@@ -35,19 +36,14 @@ export class LikeController {
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
   @ApiOperation({summary: '피드 좋아요'})
-  @ApiCreatedResponse({
-    description: '성공',
-    status: HttpStatus.OK,
-    type: ApiResponseDTO,
-  })
-  @ApiDefaultResponse({
-    description: '기본 응답 형태',
-    type: ApiResponseDTO,
-  })
+  @OkApiResponseNoneDataDTO()
+  @ConflictApiResponseDTO()
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
   async feedLike(
     @Param('id') id: number,
     @UserDeco() user: IUser,
-  ): Promise<ApiResponseDTO<void>> {
+  ): Promise<ApiResponseDTO<void | ErrorDTO>> {
     try {
       await this.likeValidator.validLike(id, user.id, true);
       await this.likeService.feedLike(id, user.id);
@@ -56,9 +52,8 @@ export class LikeController {
         API_RESPONSE_MEESAGE.SUCCESS,
       );
     } catch (error) {
-      return new ApiResponseDTO(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        API_RESPONSE_MEESAGE.FAIL,
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
         error.message,
       );
     }
@@ -68,19 +63,14 @@ export class LikeController {
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
   @ApiOperation({summary: '피드 좋아요 취소'})
-  @ApiCreatedResponse({
-    description: '성공',
-    status: 200,
-    type: Boolean,
-  })
-  @ApiDefaultResponse({
-    description: '기본 응답 형태',
-    type: ApiResponseDTO,
-  })
+  @OkApiResponseNoneDataDTO()
+  @ConflictApiResponseDTO()
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
   async feedUnLike(
     @Param('id') id: number,
     @UserDeco() user: IUser,
-  ): Promise<ApiResponseDTO<void>> {
+  ): Promise<ApiResponseDTO<void | ErrorDTO>> {
     try {
       await this.likeValidator.validLike(id, user.id, false);
       await this.likeService.feedUnLike(id, user.id);
@@ -90,9 +80,8 @@ export class LikeController {
         API_RESPONSE_MEESAGE.SUCCESS,
       );
     } catch (error) {
-      return new ApiResponseDTO(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        API_RESPONSE_MEESAGE.FAIL,
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
         error.message,
       );
     }
@@ -100,17 +89,12 @@ export class LikeController {
 
   @Get('/feed/:id')
   @ApiOperation({summary: '피드 좋아요 목록'})
-  @ApiCreatedResponse({
-    description: '성공',
-    type: GetListFeedLikeResDTO,
-  })
-  @ApiDefaultResponse({
-    description: '기본 응답 형태',
-    type: ApiResponseDTO,
-  })
+  @OkApiResponseListDataDTO(GetListFeedLikeResDTO)
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
   async getListFeedLike(
     @Param('id') id: number,
-  ): Promise<ApiResponseDTO<GetListFeedLikeResDTO>> {
+  ): Promise<ApiResponseDTO<GetListFeedLikeResDTO | ErrorDTO>> {
     try {
       const likes: GetListFeedLikeResDTO =
         await this.likeService.getListFeedLike(id);
@@ -121,9 +105,8 @@ export class LikeController {
         likes,
       );
     } catch (error) {
-      return new ApiResponseDTO(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        API_RESPONSE_MEESAGE.FAIL,
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
         error.message,
       );
     }
