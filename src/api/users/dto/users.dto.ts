@@ -50,12 +50,6 @@ export class UpdateUserReqDTO {
     description: '이미지 파일 업로드',
     example: '',
     type: 'file',
-    properties: {
-      file: {
-        type: 'string',
-        format: 'binary',
-      },
-    },
   })
   image: string;
 
