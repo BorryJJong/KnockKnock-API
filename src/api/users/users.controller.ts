@@ -278,6 +278,7 @@ export class UsersController {
           updateUserReqDTO.nickname,
         );
       }
+      console.log('profile upload test', file.filename);
 
       await this.userService.profileUpdate(user.id, updateUserReqDTO, file);
 

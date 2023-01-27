@@ -1,4 +1,3 @@
-import {User} from '@entities/User';
 import {applyDecorators, Type} from '@nestjs/common';
 import {
   ApiConflictResponse,
@@ -10,6 +9,24 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import {ApiResponseDTO, NoneDataDTO, ErrorDTO} from '@shared/dto/response.dto';
+
+// export function ApiFile(fieldName) {
+//   return applyDecorators(
+//     UseInterceptors(FileInterceptor(fieldName)),
+//     ApiConsumes('multipart/form-data'),
+//     ApiBody({
+//       schema: {
+//         type: 'object',
+//         properties: {
+//           [fieldName]: {
+//             type: 'string',
+//             format: 'binary',
+//           },
+//         },
+//       },
+//     }),
+//   );
+// }
 
 export const OkApiResponseDTO = <T extends Type<any>>(
   data: T,
