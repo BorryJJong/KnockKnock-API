@@ -113,6 +113,7 @@ let UsersController = class UsersController {
             if (updateUserReqDTO.nickname) {
                 await this.userValidator.checkDuplicateNickname(updateUserReqDTO.nickname);
             }
+            console.log('profile upload test', file.filename);
             await this.userService.profileUpdate(user.id, updateUserReqDTO, file);
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
