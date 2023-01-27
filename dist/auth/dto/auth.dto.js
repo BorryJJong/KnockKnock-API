@@ -94,12 +94,6 @@ __decorate([
         description: '이미지 파일 업로드',
         example: '',
         type: 'file',
-        properties: {
-            file: {
-                type: 'string',
-                format: 'binary',
-            },
-        },
     }),
     __metadata("design:type", String)
 ], SignUpRequestDTO.prototype, "image", void 0);
