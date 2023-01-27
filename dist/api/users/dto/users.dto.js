@@ -48,9 +48,6 @@ __decorate([
 ], UserInfoResDTO.prototype, "deletedAt", void 0);
 exports.UserInfoResDTO = UserInfoResDTO;
 class UpdateUserReqDTO {
-    constructor(nickname) {
-        this.nickname = nickname;
-    }
 }
 __decorate([
     (0, swagger_1.ApiProperty)({
@@ -65,9 +62,10 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         description: '이미지 파일 업로드',
         example: '',
-        type: 'file',
+        type: 'string',
+        format: 'binary',
     }),
-    __metadata("design:type", String)
+    __metadata("design:type", Object)
 ], UpdateUserReqDTO.prototype, "image", void 0);
 exports.UpdateUserReqDTO = UpdateUserReqDTO;
 class GetCheckDuplicateUserNicknameReqDTO {
