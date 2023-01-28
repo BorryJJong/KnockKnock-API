@@ -108,15 +108,12 @@ let UsersController = class UsersController {
             return await this.kakaoService.getUserProperties(socialUuid);
         }
     }
-    async profileUpdate(files, updateUserReqDTO, user) {
+    async profileUpdate(file, updateUserReqDTO, user) {
         try {
-            console.log('profile upload test', files[0].filename);
-            console.log('body', updateUserReqDTO);
-            console.log('user', user);
             if (updateUserReqDTO.nickname) {
                 await this.userValidator.checkDuplicateNickname(updateUserReqDTO.nickname);
             }
-            await this.userService.profileUpdate(user.id, updateUserReqDTO, files[0]);
+            await this.userService.profileUpdate(user.id, updateUserReqDTO, file);
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
         catch (error) {
@@ -217,16 +214,17 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: '회원 프로필 수정' }),
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images')),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image')),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
     (0, swagger_decorator_1.OkApiResponseNoneDataDTO)(),
     (0, swagger_decorator_1.ConflictApiResponseDTO)(),
     (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
     (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
-    __param(0, (0, common_1.UploadedFiles)()),
+    __param(0, (0, common_1.UploadedFile)()),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array, users_dto_1.UpdateUserReqDTO, Object]),
+    __metadata("design:paramtypes", [Object, users_dto_1.UpdateUserReqDTO, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "profileUpdate", null);
 __decorate([

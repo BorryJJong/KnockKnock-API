@@ -10,7 +10,7 @@ export declare class UserInfoResDTO {
 }
 export declare class UpdateUserReqDTO {
     nickname?: string;
-    images: Express.Multer.File[];
+    image: Express.Multer.File;
 }
 export declare class GetCheckDuplicateUserNicknameReqDTO {
     nickname: string;

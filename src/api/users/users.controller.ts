@@ -262,27 +262,25 @@ export class UsersController {
   @ApiOperation({summary: '회원 프로필 수정'})
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
-  @UseInterceptors(FilesInterceptor('images'))
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
   @OkApiResponseNoneDataDTO()
   @ConflictApiResponseDTO()
   @DefaultErrorApiResponseDTO()
   @InternalServerApiResponseDTO()
   async profileUpdate(
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFile() file: Express.Multer.File,
     @Body() updateUserReqDTO: UpdateUserReqDTO,
     @UserDeco() user: IUser,
   ): Promise<ApiResponseDTO<void | ErrorDTO>> {
     try {
-      console.log('profile upload test', files[0].filename);
-      console.log('body', updateUserReqDTO);
-      console.log('user', user);
       if (updateUserReqDTO.nickname) {
         await this.userValidator.checkDuplicateNickname(
           updateUserReqDTO.nickname,
         );
       }
 
-      await this.userService.profileUpdate(user.id, updateUserReqDTO, files[0]);
+      await this.userService.profileUpdate(user.id, updateUserReqDTO, file);
 
       return new ApiResponseDTO<void>(
         HttpStatus.OK,

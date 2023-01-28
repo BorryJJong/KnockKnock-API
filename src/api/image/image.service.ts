@@ -52,9 +52,7 @@ export class ImageService {
     file: Express.Multer.File,
     folder?: string,
   ): Promise<IUploadS3Response> {
-    console.log('file', file);
     const Key = await this.rename(file.originalname, file.mimetype);
-    console.log('key', Key);
     folder = folder ? folder : 'common';
     try {
       const result = await this.S3.putObject({

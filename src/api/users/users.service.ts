@@ -30,9 +30,7 @@ export class UsersService {
     request: ICreateUser,
     file: Express.Multer.File,
   ): Promise<User> {
-    console.log('file', file);
     const fileUrl = await this.getUserProfileImageUrl(file);
-    console.log('fileUrl', fileUrl);
     return await this.userRepository.insertUser(request, fileUrl);
   }
 

@@ -31,9 +31,7 @@ let UsersService = class UsersService {
         this.connection = connection;
     }
     async saveUser(request, file) {
-        console.log('file', file);
         const fileUrl = await this.getUserProfileImageUrl(file);
-        console.log('fileUrl', fileUrl);
         return await this.userRepository.insertUser(request, fileUrl);
     }
     async getSocialUser({ socialUuid, socialType, }) {

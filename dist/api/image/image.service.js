@@ -63,9 +63,7 @@ let ImageService = ImageService_1 = class ImageService {
         return `https://${this.buketName}.s3.${this.region}.amazonaws.com/${dest}`;
     }
     async uploadS3(file, folder) {
-        console.log('file', file);
         const Key = await this.rename(file.originalname, file.mimetype);
-        console.log('key', Key);
         folder = folder ? folder : 'common';
         try {
             const result = await this.S3.putObject({
