@@ -21,7 +21,7 @@ export declare class UsersController {
     logout(user: IUser): Promise<ApiResponseDTO<void | ErrorDTO>>;
     deleteUser(user: IUser): Promise<ApiResponseDTO<void | ErrorDTO>>;
     private getSocialLoginAttributes;
-    profileUpdate(file: Express.Multer.File, updateUserReqDTO: UpdateUserReqDTO, user: IUser): Promise<ApiResponseDTO<void | ErrorDTO>>;
+    profileUpdate(files: Express.Multer.File[], updateUserReqDTO: UpdateUserReqDTO, user: IUser): Promise<ApiResponseDTO<void | ErrorDTO>>;
     checkDuplicateNickname(param: GetCheckDuplicateUserNicknameReqDTO): Promise<ApiResponseDTO<boolean | ErrorDTO>>;
     hideBlogPost(param: PostFeedBlogPostHideReqDTO, user: IUser): Promise<ApiResponseDTO<void | ErrorDTO>>;
     getUser(user: IUser): Promise<ApiResponseDTO<GetUserResDTO | ErrorDTO>>;

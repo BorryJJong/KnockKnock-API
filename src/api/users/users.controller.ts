@@ -8,10 +8,11 @@ import {
   Post,
   Put,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {FileInterceptor} from '@nestjs/platform-express';
+import {FileInterceptor, FilesInterceptor} from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiConsumes,
@@ -261,25 +262,27 @@ export class UsersController {
   @ApiOperation({summary: '회원 프로필 수정'})
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FilesInterceptor('images'))
   @OkApiResponseNoneDataDTO()
   @ConflictApiResponseDTO()
   @DefaultErrorApiResponseDTO()
   @InternalServerApiResponseDTO()
   async profileUpdate(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles() files: Express.Multer.File[],
     @Body() updateUserReqDTO: UpdateUserReqDTO,
     @UserDeco() user: IUser,
   ): Promise<ApiResponseDTO<void | ErrorDTO>> {
     try {
+      console.log('profile upload test', files[0].filename);
+      console.log('body', updateUserReqDTO);
+      console.log('user', user);
       if (updateUserReqDTO.nickname) {
         await this.userValidator.checkDuplicateNickname(
           updateUserReqDTO.nickname,
         );
       }
-      console.log('profile upload test', file.filename);
 
-      await this.userService.profileUpdate(user.id, updateUserReqDTO, file);
+      await this.userService.profileUpdate(user.id, updateUserReqDTO, files[0]);
 
       return new ApiResponseDTO<void>(
         HttpStatus.OK,
