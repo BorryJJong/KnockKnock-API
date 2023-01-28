@@ -262,7 +262,6 @@ export class UsersController {
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('image'))
-  @ApiConsumes('multipart/form-data')
   @OkApiResponseNoneDataDTO()
   @ConflictApiResponseDTO()
   @DefaultErrorApiResponseDTO()

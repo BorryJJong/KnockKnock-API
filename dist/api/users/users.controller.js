@@ -216,7 +216,6 @@ __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image')),
-    (0, swagger_1.ApiConsumes)('multipart/form-data'),
     (0, swagger_decorator_1.OkApiResponseNoneDataDTO)(),
     (0, swagger_decorator_1.ConflictApiResponseDTO)(),
     (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
