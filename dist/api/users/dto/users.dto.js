@@ -61,12 +61,9 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '이미지 파일 업로드',
-        example: '',
-        type: 'string',
-        format: 'binary',
     }),
-    __metadata("design:type", Object)
-], UpdateUserReqDTO.prototype, "image", void 0);
+    __metadata("design:type", Array)
+], UpdateUserReqDTO.prototype, "images", void 0);
 exports.UpdateUserReqDTO = UpdateUserReqDTO;
 class GetCheckDuplicateUserNicknameReqDTO {
     constructor(nickname) {

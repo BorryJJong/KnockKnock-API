@@ -48,11 +48,8 @@ export class UpdateUserReqDTO {
 
   @ApiProperty({
     description: '이미지 파일 업로드',
-    example: '',
-    type: 'string',
-    format: 'binary',
   })
-  image: Express.Multer.File;
+  images: Express.Multer.File[];
 }
 
 export class GetCheckDuplicateUserNicknameReqDTO {
