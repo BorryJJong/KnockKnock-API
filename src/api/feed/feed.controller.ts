@@ -10,11 +10,11 @@ import {
   Query,
   UseGuards,
   HttpStatus,
+  Put,
 } from '@nestjs/common';
 import {FeedService} from './feed.service';
 import {
   CreateFeedDTO,
-  UpdateFeedDTO,
   GetListFeedMainResDTO,
   GetListFeedMainReqDTO,
   GetListFeedReqQueryDTO,
@@ -26,6 +26,8 @@ import {
   GetListFeedCommentResDTO,
   DelBlogCommentReqDTO,
   DeleteFeedReqDTO,
+  UpdateFeedReqDTO,
+  UpdateFeedReqParamDTO,
 } from './dto/feed.dto';
 import {ApiBearerAuth, ApiOperation, ApiTags} from '@nestjs/swagger';
 import {FilesInterceptor} from '@nestjs/platform-express';
@@ -266,7 +268,7 @@ export class FeedController {
     }
   }
 
-  @Post('/update')
+  @Put(':id')
   @ApiOperation({summary: '피드 수정'})
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
@@ -275,15 +277,14 @@ export class FeedController {
   @InternalServerApiResponseDTO()
   @DefaultErrorApiResponseDTO()
   async update(
-    @Body() updateFeedDTO: UpdateFeedDTO,
+    @Param() param: UpdateFeedReqParamDTO,
+    @Body() updateFeedDTO: UpdateFeedReqDTO,
     @UserDeco() user: IUser,
   ): Promise<ApiResponseDTO<void | ErrorDTO>> {
     try {
-      await this.feedValidator.checkPermissionUpdateFeed(
-        updateFeedDTO.id,
-        user.id,
-      );
-      await this.feedService.update(updateFeedDTO);
+      const {id} = param;
+      await this.feedValidator.checkPermissionUpdateFeed(id, user.id);
+      await this.feedService.update(id, updateFeedDTO);
 
       return new ApiResponseDTO<void>(
         HttpStatus.OK,

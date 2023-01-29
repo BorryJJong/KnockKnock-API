@@ -61,6 +61,54 @@ export class UpdateFeedDTO extends OmitType(BlogPost, [
   challenges: string;
 }
 
+export class UpdateFeedReqParamDTO {
+  @ApiProperty({description: '게시글 id', example: '1'})
+  id: number;
+}
+
+export class UpdateFeedReqDTO {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({description: '프로모션 id', example: '1 or 1,2'})
+  promotions: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({description: '챌린지 id', example: '1 or 1,2,3'})
+  challenges: string;
+
+  @ApiProperty({
+    description: '내용',
+    example:
+      '패키지 상품을 받았을때의 기쁨 후엔 늘 골치아픈 쓰레기와 분리수거의 노동시간이 뒤따릅니다.',
+  })
+  content: string;
+
+  @ApiProperty({
+    description: '매장 주소',
+    example: '경기 성남시 분당구 대왕판교로 374',
+  })
+  storeAddress: string;
+
+  @ApiProperty({
+    description: '매장명',
+    example: '스타벅스 리버사이드팔당DTR점',
+  })
+  storeName: string;
+
+  @ApiProperty({
+    description: '매장 주소 x좌표',
+    example: '127.102269186127',
+  })
+  locationX: string;
+
+  @ApiProperty({
+    description: '매장 주소 y좌표',
+    example: '37.3771012046504',
+  })
+  locationY: string;
+}
+
 // BlogPost
 export class CreateBlogPostDTO extends OmitType(BlogPost, [
   'id',
