@@ -54,6 +54,7 @@ export class ImageService {
   ): Promise<IUploadS3Response> {
     const Key = await this.rename(file.originalname, file.mimetype);
     folder = folder ? folder : 'common';
+
     try {
       const result = await this.S3.putObject({
         Bucket: `${this.buketName}/${folder}`,
