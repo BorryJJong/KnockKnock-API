@@ -30,8 +30,8 @@ export class UserRepository
     await this.createQueryBuilder()
       .update(User)
       .set({
-        nickname,
-        image: fileUrl,
+        ...(nickname && {nickname}),
+        ...(fileUrl && {image: fileUrl}),
       })
       .where('id = :id', {id: userId})
       .execute();
