@@ -22,8 +22,8 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
         await this.createQueryBuilder()
             .update(User_1.User)
             .set({
-            nickname,
-            image: fileUrl,
+            ...(nickname && { nickname }),
+            ...(fileUrl && { image: fileUrl }),
         })
             .where('id = :id', { id: userId })
             .execute();

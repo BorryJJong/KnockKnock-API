@@ -110,10 +110,11 @@ let UsersController = class UsersController {
     }
     async profileUpdate(file, updateUserReqDTO, user) {
         try {
-            if (updateUserReqDTO.nickname) {
-                await this.userValidator.checkDuplicateNickname(updateUserReqDTO.nickname);
+            const { nickname } = updateUserReqDTO;
+            if (nickname) {
+                await this.userValidator.checkDuplicateNickname(nickname);
             }
-            await this.userService.profileUpdate(user.id, updateUserReqDTO, file);
+            await this.userService.profileUpdate(user.id, nickname, file);
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
         catch (error) {

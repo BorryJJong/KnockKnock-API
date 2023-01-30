@@ -23,6 +23,13 @@ let BlogChallengesRepository = class BlogChallengesRepository extends typeorm_1.
             return await queryRunner.manager.save(blogChallenges);
         }
     }
+    async insertBlogChallenges(challenges, queryRunner) {
+        await this.createQueryBuilder('blogChallenges', queryRunner)
+            .insert()
+            .into(BlogChallenges_1.BlogChallenges)
+            .values(challenges)
+            .execute();
+    }
     async getBlogChallengesByChallengeId(challengeId) {
         return this.createQueryBuilder('blogChallenges')
             .where('blogChallenges.challengeId = :challengeId', { challengeId })

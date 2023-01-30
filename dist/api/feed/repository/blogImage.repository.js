@@ -40,6 +40,15 @@ let BlogImageRepository = class BlogImageRepository extends typeorm_1.Repository
         });
         return images;
     }
+    async deleteBlogImageByPostId(queryRunner, postId) {
+        await this.createQueryBuilder('blogImage', queryRunner)
+            .delete()
+            .from(BlogImage_1.BlogImage)
+            .where('postId = :postId', {
+            postId,
+        })
+            .execute();
+    }
 };
 BlogImageRepository = __decorate([
     (0, common_1.Injectable)(),
