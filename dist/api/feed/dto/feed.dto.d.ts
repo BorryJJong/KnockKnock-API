@@ -18,6 +18,18 @@ export declare class UpdateFeedDTO extends UpdateFeedDTO_base {
     promotions: string;
     challenges: string;
 }
+export declare class UpdateFeedReqParamDTO {
+    id: number;
+}
+export declare class UpdateFeedReqDTO {
+    promotions: string;
+    challenges: string;
+    content: string;
+    storeAddress: string;
+    storeName: string;
+    locationX: string;
+    locationY: string;
+}
 declare const CreateBlogPostDTO_base: import("@nestjs/common").Type<Omit<BlogPost, "id" | "regDate" | "hits" | "modDate" | "delDate">>;
 export declare class CreateBlogPostDTO extends CreateBlogPostDTO_base {
 }

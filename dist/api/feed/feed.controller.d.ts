@@ -1,6 +1,6 @@
 /// <reference types="multer" />
 import { FeedService } from './feed.service';
-import { CreateFeedDTO, UpdateFeedDTO, GetListFeedMainResDTO, GetListFeedMainReqDTO, GetListFeedReqQueryDTO, GetListFeedResDTO, InsBlogCommentDTO, GetFeedViewReqDTO, GetFeedViewResDTO, GetListFeedCommentReqDTO, GetListFeedCommentResDTO, DelBlogCommentReqDTO, DeleteFeedReqDTO } from './dto/feed.dto';
+import { CreateFeedDTO, GetListFeedMainResDTO, GetListFeedMainReqDTO, GetListFeedReqQueryDTO, GetListFeedResDTO, InsBlogCommentDTO, GetFeedViewReqDTO, GetFeedViewResDTO, GetListFeedCommentReqDTO, GetListFeedCommentResDTO, DelBlogCommentReqDTO, DeleteFeedReqDTO, UpdateFeedReqDTO, UpdateFeedReqParamDTO } from './dto/feed.dto';
 import { ApiResponseDTO, NoneDataDTO, ErrorDTO } from '@shared/dto/response.dto';
 import { FeedValidator } from 'src/api/feed/feed.validator';
 import { IUser } from 'src/api/users/users.interface';
@@ -15,6 +15,6 @@ export declare class FeedController {
     insertBlogComment(user: IUser, insBlogCommentDTO: InsBlogCommentDTO): Promise<ApiResponseDTO<void | ErrorDTO>>;
     getListFeedComment(user: IUser, param: GetListFeedCommentReqDTO): Promise<ApiResponseDTO<GetListFeedCommentResDTO[] | ErrorDTO>>;
     deleteBlogComment(user: IUser, param: DelBlogCommentReqDTO): Promise<ApiResponseDTO<void | ErrorDTO>>;
-    update(updateFeedDTO: UpdateFeedDTO, user: IUser): Promise<ApiResponseDTO<void | ErrorDTO>>;
+    update(param: UpdateFeedReqParamDTO, updateFeedDTO: UpdateFeedReqDTO, user: IUser): Promise<ApiResponseDTO<void | ErrorDTO>>;
     delete(param: DeleteFeedReqDTO, user: IUser): Promise<ApiResponseDTO<NoneDataDTO | ErrorDTO>>;
 }

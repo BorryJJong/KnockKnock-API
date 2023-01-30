@@ -95,10 +95,11 @@ let FeedController = class FeedController {
             return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
-    async update(updateFeedDTO, user) {
+    async update(param, updateFeedDTO, user) {
         try {
-            await this.feedValidator.checkPermissionUpdateFeed(updateFeedDTO.id, user.id);
-            await this.feedService.update(updateFeedDTO);
+            const { id } = param;
+            await this.feedValidator.checkPermissionUpdateFeed(id, user.id);
+            await this.feedService.update(id, updateFeedDTO);
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
         }
         catch (error) {
@@ -235,7 +236,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "deleteBlogComment", null);
 __decorate([
-    (0, common_1.Post)('/update'),
+    (0, common_1.Put)(':id'),
     (0, swagger_1.ApiOperation)({ summary: '피드 수정' }),
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, swagger_1.ApiBearerAuth)(),
@@ -243,10 +244,12 @@ __decorate([
     (0, swagger_decorator_1.ForbiddenApiResponseDTO)(),
     (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, user_decorator_1.UserDeco)()),
+    __param(0, (0, common_1.Param)()),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [feed_dto_1.UpdateFeedDTO, Object]),
+    __metadata("design:paramtypes", [feed_dto_1.UpdateFeedReqParamDTO,
+        feed_dto_1.UpdateFeedReqDTO, Object]),
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "update", null);
 __decorate([

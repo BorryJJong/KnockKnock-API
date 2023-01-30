@@ -23,6 +23,13 @@ let BlogPromotionRepository = class BlogPromotionRepository extends typeorm_1.Re
             return await queryRunner.manager.save(blogPromotion);
         }
     }
+    async insertBlogPromotion(blogPromotions, queryRunner) {
+        await this.createQueryBuilder('blogPromotion', queryRunner)
+            .insert()
+            .into(BlogPromotion_1.BlogPromotion)
+            .values(blogPromotions)
+            .execute();
+    }
     async getBlogPromotionByPostId(id) {
         const promotions = await (0, typeorm_1.getManager)()
             .createQueryBuilder()

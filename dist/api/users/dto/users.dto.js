@@ -53,15 +53,17 @@ __decorate([
     (0, swagger_1.ApiProperty)({
         type: String,
         nullable: true,
-        example: 'jerry',
+        required: false,
         description: '닉네임',
     }),
     __metadata("design:type", String)
 ], UpdateUserReqDTO.prototype, "nickname", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: '이미지 파일 업로드',
         type: 'file',
+        nullable: true,
+        required: false,
+        description: '이미지 파일 업로드',
     }),
     __metadata("design:type", Object)
 ], UpdateUserReqDTO.prototype, "image", void 0);
