@@ -5,12 +5,16 @@ import {IBlogPostRepository} from 'src/api/feed/interface/blogPost.interface';
 import {BlogPostRepository} from 'src/api/feed/repository/blogPost.repository';
 import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 import {ImageService, IUploadS3Response} from 'src/api/image/image.service';
-import {UpdateUserReqDTO} from 'src/api/users/dto/users.dto';
 import {ICreateUser} from 'src/api/users/users.interface';
 import {SocialLoginRequestDTO} from 'src/auth/dto/auth.dto';
 import {KakaoService} from 'src/auth/kakao.service';
 import {Connection, QueryRunner} from 'typeorm';
 import {UserRepository} from './users.repository';
+
+export interface test {
+  nickname: string | null;
+  fileUrl?: string;
+}
 
 @Injectable()
 export class UsersService {
@@ -93,13 +97,19 @@ export class UsersService {
 
   async profileUpdate(
     userId: number,
-    updateUserReqDTO: UpdateUserReqDTO,
-    file: Express.Multer.File,
+    nickname?: string,
+    file?: Express.Multer.File,
   ): Promise<void> {
-    const {nickname} = updateUserReqDTO;
-    const fileUrl = await this.getUserProfileImageUrl(file);
+    let requestFileUrl: string | undefined;
+    if (file) {
+      requestFileUrl = await this.getUserProfileImageUrl(file);
+    }
 
-    return await this.userRepository.updateUser(userId, nickname, fileUrl);
+    return await this.userRepository.updateUser(
+      userId,
+      nickname,
+      requestFileUrl,
+    );
   }
 
   async getUserProfileImageUrl(file: Express.Multer.File): Promise<string> {

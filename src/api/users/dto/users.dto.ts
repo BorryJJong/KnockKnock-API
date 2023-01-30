@@ -36,21 +36,22 @@ export class UserInfoResDTO {
     this.deletedAt = deletedAt;
   }
 }
-
 export class UpdateUserReqDTO {
   @ApiProperty({
     type: String,
     nullable: true,
-    example: 'jerry',
+    required: false,
     description: '닉네임',
   })
   nickname?: string;
 
   @ApiProperty({
-    description: '이미지 파일 업로드',
     type: 'file',
+    nullable: true,
+    required: false,
+    description: '이미지 파일 업로드',
   })
-  image: Express.Multer.File;
+  image?: Express.Multer.File;
 }
 
 export class GetCheckDuplicateUserNicknameReqDTO {

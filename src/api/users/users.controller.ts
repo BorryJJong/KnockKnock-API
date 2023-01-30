@@ -8,11 +8,10 @@ import {
   Post,
   Put,
   UploadedFile,
-  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {FileInterceptor, FilesInterceptor} from '@nestjs/platform-express';
+import {FileInterceptor} from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiConsumes,
@@ -274,13 +273,12 @@ export class UsersController {
     @UserDeco() user: IUser,
   ): Promise<ApiResponseDTO<void | ErrorDTO>> {
     try {
-      if (updateUserReqDTO.nickname) {
-        await this.userValidator.checkDuplicateNickname(
-          updateUserReqDTO.nickname,
-        );
+      const {nickname} = updateUserReqDTO;
+      if (nickname) {
+        await this.userValidator.checkDuplicateNickname(nickname);
       }
 
-      await this.userService.profileUpdate(user.id, updateUserReqDTO, file);
+      await this.userService.profileUpdate(user.id, nickname, file);
 
       return new ApiResponseDTO<void>(
         HttpStatus.OK,
