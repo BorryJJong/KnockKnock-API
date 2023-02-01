@@ -19,7 +19,7 @@ export enum ERRPR_CODE {
 
 export enum CHALLENGES_SORT {
   BRAND_NEW = 'BRAND_NEW',
-  POPLUAR = 'POPLUAR ',
+  POPULAR = 'POPULAR',
 }
 
 export enum API_RESPONSE_MEESAGE {
