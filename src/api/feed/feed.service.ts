@@ -108,8 +108,14 @@ export class FeedService {
       // await queryRunner.commitTransaction();
       await queryRunner.commitTransaction();
     } catch (e) {
-      this.logger.error(e);
       await queryRunner.rollbackTransaction();
+      throw new HttpException(
+        {
+          error: e.message,
+          message: e.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     } finally {
       await queryRunner.release();
     }

@@ -282,7 +282,6 @@ export class FeedController {
     @UserDeco() user: IUser,
   ): Promise<ApiResponseDTO<void | ErrorDTO>> {
     try {
-      console.log('updateFeedDTO', updateFeedDTO);
       const {id} = param;
       await this.feedValidator.checkPermissionUpdateFeed(id, user.id);
       await this.feedService.update(id, updateFeedDTO);
