@@ -21,7 +21,6 @@ import {JwtAccessTokenStrategy} from './jwt/jwtAccessToken.strategy';
   providers: [
     AuthService,
     JwtAccessTokenStrategy,
-    JwtAccessTokenStrategy,
     KakaoService,
     ConfigService,
     AppleService,
