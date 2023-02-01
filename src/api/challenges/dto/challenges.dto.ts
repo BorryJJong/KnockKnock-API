@@ -62,13 +62,15 @@ export class ChallengeContentDTO {
 
 export class ParticipantUserDTO {
   @ApiProperty({description: '사용자ID', example: '1'})
-  id: number;
-
-  @ApiProperty({description: '사용자 닉네임', example: '1'})
-  nickname: string;
+  readonly id: number;
 
   @ApiProperty({description: '이미지 URL', example: '1'})
-  image: string;
+  readonly image: string;
+
+  constructor(id: number, image: string) {
+    this.id = id;
+    this.image = image;
+  }
 }
 
 export class insChallengeReqDTO extends PickType(Challenges, [
@@ -150,6 +152,13 @@ export class GetListChallengeResDTO extends PickType(Challenges, [
   })
   rnk: number;
 
+  @ApiProperty({
+    description: '챌린지 참여자 목록',
+    example: '[]',
+    isArray: true,
+    required: true,
+    type: [ParticipantUserDTO],
+  })
   participants: ParticipantUserDTO[];
 }
 

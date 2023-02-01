@@ -67,13 +67,11 @@ export class ChallengesService {
       challengeContentJson.subContents.forEach((_, index) => {
         const subContent = challengeContentJson.subContents[index];
 
-        const challengeSubContent = new ChallengeSubContentDTO(
+        subContents[index] = new ChallengeSubContentDTO(
           subContent.title,
           subContent.image,
           subContent.content,
         );
-
-        subContents[index] = challengeSubContent;
       });
     }
 
@@ -101,9 +99,8 @@ export class ChallengesService {
       sort,
     );
 
-    for (let index = 0; index < (await challengeList).length; index++) {
-      const element = challengeList[index];
-      const challengeId = element.id;
+    for (let index = 0; index < challengeList.length; index++) {
+      const challengeId = challengeList[index].id;
 
       const participantList =
         await this.challengesRepository.getParticipantList(challengeId);
