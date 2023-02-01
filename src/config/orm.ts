@@ -33,4 +33,5 @@ export const ormConfig: ConnectionOptions = {
     UserToBlogPostHide,
   ],
   synchronize: false,
+  logging: false,
 };

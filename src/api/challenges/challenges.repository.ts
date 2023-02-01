@@ -117,49 +117,49 @@ export class ChallengesRepository extends Repository<Challenges> {
   public async getParticipantList(
     challengeId: number,
   ): Promise<ParticipantUserDTO[]> {
-    const userPostChallenge: any = getManager()
+    const userPostChallengeQuery = getManager()
       .createQueryBuilder()
       .select('bp.user_id', 'user_id')
       .addSelect('bc.challenge_id', 'challenge_id')
       .from(BlogPost, 'bp')
       .innerJoin(BlogChallenges, 'bc', 'bp.id = bc.post_id')
       .where("bc.challenge_id = ':id'", {id: challengeId})
+      .andWhere('bp.del_date IS NULL')
       .groupBy('bp.user_id, bc.challenge_id');
 
-    const challengePostCnt: any = getManager()
+    const challengePostCntQuery = getManager()
       .createQueryBuilder()
-      .select('a.id', 'id')
+      .select('challenge.id', 'id')
       .addSelect('min(reg_date)', 'reg_date')
-      .from(Challenges, 'a')
+      .from(Challenges, 'challenge')
       .innerJoin(
-        '(' + userPostChallenge.getQuery() + ')',
-        'b',
-        'a.id = b.challenge_id',
+        '(' + userPostChallengeQuery.getQuery() + ')',
+        'userPostChallenge',
+        'challenge.id = userPostChallenge.challenge_id',
       )
-      .groupBy('a.id');
+      .groupBy('challenge.id');
 
-    const participantList: any = getManager()
+    const participantsQuery = getManager()
       .createQueryBuilder()
-      .select('ma.id', 'id')
-      .addSelect('ma.nickname', 'nickname')
-      .addSelect('ma.image', 'image')
-      .from(User, 'ma')
-      .leftJoin('(' + challengePostCnt.getQuery() + ')', 'mb', 'ma.id = mb.id')
-      .orderBy('mb.reg_date', 'ASC');
+      .select('user.id', 'id')
+      .addSelect('user.image', 'image')
+      .from(User, 'user')
+      .leftJoin(
+        '(' + challengePostCntQuery.getQuery() + ')',
+        'cp',
+        'user.id = cp.id',
+      )
+      .where('user.deletedAt IS NULL')
+      .orderBy('RAND()')
+      .limit(3);
 
-    const participantListRaws = await participantList.getRawMany();
+    const participants: ParticipantUserDTO[] =
+      await participantsQuery.getRawMany();
 
-    //Convert raws to our appropriate objects
-    const participants = participantListRaws.map((s: any) => {
-      const item: ParticipantUserDTO = {
-        id: s.id,
-        nickname: s.nickname,
-        image: s.image,
-      };
-      return item;
-    });
-
-    return participants;
+    return participants.map(
+      (participant: ParticipantUserDTO) =>
+        new ParticipantUserDTO(participant.id, participant.image),
+    );
   }
 
   public async getChallengeTitles(): Promise<IChallengeTitle[]> {
