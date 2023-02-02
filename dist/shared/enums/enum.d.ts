@@ -16,7 +16,7 @@ export declare enum ERRPR_CODE {
 }
 export declare enum CHALLENGES_SORT {
     BRAND_NEW = "BRAND_NEW",
-    POPLUAR = "POPLUAR "
+    POPULAR = "POPULAR"
 }
 export declare enum API_RESPONSE_MEESAGE {
     SUCCESS = "SUCCESS",

@@ -16,9 +16,9 @@ export declare class ChallengeContentDTO {
     constructor(image: string, title: string, subTitle: string, rule: string[], subContents: ChallengeSubContentDTO[]);
 }
 export declare class ParticipantUserDTO {
-    id: number;
-    nickname: string;
-    image: string;
+    readonly id: number;
+    readonly image: string;
+    constructor(id: number, image: string);
 }
 declare const insChallengeReqDTO_base: import("@nestjs/common").Type<Pick<Challenges, "title" | "content" | "subTitle">>;
 export declare class insChallengeReqDTO extends insChallengeReqDTO_base {

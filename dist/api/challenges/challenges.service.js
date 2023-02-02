@@ -44,8 +44,7 @@ let ChallengesService = class ChallengesService {
         if (challengeContentJson.subContents !== undefined) {
             challengeContentJson.subContents.forEach((_, index) => {
                 const subContent = challengeContentJson.subContents[index];
-                const challengeSubContent = new challenges_dto_1.ChallengeSubContentDTO(subContent.title, subContent.image, subContent.content);
-                subContents[index] = challengeSubContent;
+                subContents[index] = new challenges_dto_1.ChallengeSubContentDTO(subContent.title, subContent.image, subContent.content);
             });
         }
         const challengeContent = new challenges_dto_1.ChallengeContentDTO(challengeContentJson.image, challengeContentJson.title, challengeContentJson.subTitle, challengeContentJson.rule, subContents);
@@ -55,9 +54,8 @@ let ChallengesService = class ChallengesService {
     async getChallengeList(query) {
         const { sort } = query;
         const challengeList = await this.challengesRepository.getChallengeList(sort);
-        for (let index = 0; index < (await challengeList).length; index++) {
-            const element = challengeList[index];
-            const challengeId = element.id;
+        for (let index = 0; index < challengeList.length; index++) {
+            const challengeId = challengeList[index].id;
             const participantList = await this.challengesRepository.getParticipantList(challengeId);
             challengeList[index].participants = participantList;
         }

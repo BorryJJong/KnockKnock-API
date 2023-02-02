@@ -74,15 +74,15 @@ __decorate([
 ], ChallengeContentDTO.prototype, "subContents", void 0);
 exports.ChallengeContentDTO = ChallengeContentDTO;
 class ParticipantUserDTO {
+    constructor(id, image) {
+        this.id = id;
+        this.image = image;
+    }
 }
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '사용자ID', example: '1' }),
     __metadata("design:type", Number)
 ], ParticipantUserDTO.prototype, "id", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '사용자 닉네임', example: '1' }),
-    __metadata("design:type", String)
-], ParticipantUserDTO.prototype, "nickname", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '이미지 URL', example: '1' }),
     __metadata("design:type", String)
@@ -170,6 +170,16 @@ __decorate([
     }),
     __metadata("design:type", Number)
 ], GetListChallengeResDTO.prototype, "rnk", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '챌린지 참여자 목록',
+        example: '[]',
+        isArray: true,
+        required: true,
+        type: [ParticipantUserDTO],
+    }),
+    __metadata("design:type", Array)
+], GetListChallengeResDTO.prototype, "participants", void 0);
 exports.GetListChallengeResDTO = GetListChallengeResDTO;
 class GetChallengeTitleReqDTO {
 }

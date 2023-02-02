@@ -60,8 +60,11 @@ let FeedService = FeedService_1 = class FeedService {
             await queryRunner.commitTransaction();
         }
         catch (e) {
-            this.logger.error(e);
             await queryRunner.rollbackTransaction();
+            throw new common_1.HttpException({
+                error: e.message,
+                message: e.message,
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
         finally {
             await queryRunner.release();
@@ -181,8 +184,11 @@ let FeedService = FeedService_1 = class FeedService {
             await queryRunner.commitTransaction();
         }
         catch (e) {
-            this.logger.error(e);
             await queryRunner.rollbackTransaction();
+            throw new common_1.HttpException({
+                error: e.message,
+                message: e.message,
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
         finally {
             await queryRunner.release();
