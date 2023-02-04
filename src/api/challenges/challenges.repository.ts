@@ -1,11 +1,15 @@
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {EntityRepository, getManager, Repository} from 'typeorm';
-import {GetListChallengeResDTO, ParticipantUserDTO} from './dto/challenges.dto';
+import {ParticipantUserDTO} from './dto/challenges.dto';
 import {BlogChallenges} from '../../entities/BlogChallenges';
 import {Challenges} from '../../entities/Challenges';
 import {User} from '../../entities/User';
 import {BlogPost} from '../../entities/BlogPost';
-import {IChallengeTitle} from './challenges.interface';
+import {
+  IChallengeTitle,
+  IGetChallengeDetailRes,
+  IGetListChallengeRes,
+} from './challenges.interface';
 import {map} from 'ramda';
 import {CHALLENGES_SORT} from '@shared/enums/enum';
 
@@ -24,11 +28,12 @@ export class ChallengesRepository extends Repository<Challenges> {
     }
   }
 
-  public async findChallengeById(id: number): Promise<Challenges> {
+  public async findChallengeById(id: number): Promise<IGetChallengeDetailRes> {
     const challenge = await this.findOne({
-      select: ['id', 'title', 'subTitle', 'content', 'regDate'],
+      select: ['id', 'title', 'subTitle', 'content', 'contentImage'],
       where: {id},
     });
+
     if (!challenge) {
       throw new HttpException(
         {
@@ -37,6 +42,7 @@ export class ChallengesRepository extends Repository<Challenges> {
         HttpStatus.BAD_REQUEST,
       );
     }
+
     return challenge;
   }
 
@@ -49,7 +55,7 @@ export class ChallengesRepository extends Repository<Challenges> {
 
   public async getChallengeList(
     sort: CHALLENGES_SORT,
-  ): Promise<GetListChallengeResDTO[]> {
+  ): Promise<IGetListChallengeRes[]> {
     const userPostChallenge = getManager()
       .createQueryBuilder()
       .select('bp.user_id', 'user_id')
@@ -83,6 +89,7 @@ export class ChallengesRepository extends Repository<Challenges> {
       )
       .addSelect('IFNULL(mb.post_cnt,0)', 'postCnt')
       .addSelect('rank() over(order by mb.post_cnt desc)', 'rnk')
+      .addSelect('ma.main_image', 'mainImage')
       .from(Challenges, 'ma')
       .leftJoin('(' + challengePostCnt.getQuery() + ')', 'mb', 'ma.id = mb.id');
 
@@ -92,26 +99,7 @@ export class ChallengesRepository extends Repository<Challenges> {
       challengeList.orderBy('rnk', 'ASC');
     }
 
-    // Execute the generated query
-    const challengeListRaws = await challengeList.getRawMany();
-
-    //Convert raws to our appropriate objects
-    const challenges = challengeListRaws.map((s: any) => {
-      const item: GetListChallengeResDTO = {
-        id: s.id,
-        title: s.title,
-        subTitle: s.subTitle,
-        content: s.content,
-        regDate: s.regDate,
-        newYn: s.newYn,
-        postCnt: s.postCnt,
-        rnk: s.rnk,
-        participants: [],
-      };
-      return item;
-    });
-
-    return challenges;
+    return await challengeList.getRawMany<IGetListChallengeRes>();
   }
 
   public async getParticipantList(
