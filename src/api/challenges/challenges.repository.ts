@@ -5,7 +5,11 @@ import {BlogChallenges} from '../../entities/BlogChallenges';
 import {Challenges} from '../../entities/Challenges';
 import {User} from '../../entities/User';
 import {BlogPost} from '../../entities/BlogPost';
-import {IChallengeTitle, IGetListChallengeRes} from './challenges.interface';
+import {
+  IChallengeTitle,
+  IGetChallengeDetailRes,
+  IGetListChallengeRes,
+} from './challenges.interface';
 import {map} from 'ramda';
 import {CHALLENGES_SORT} from '@shared/enums/enum';
 
@@ -24,11 +28,12 @@ export class ChallengesRepository extends Repository<Challenges> {
     }
   }
 
-  public async findChallengeById(id: number): Promise<Challenges> {
+  public async findChallengeById(id: number): Promise<IGetChallengeDetailRes> {
     const challenge = await this.findOne({
-      select: ['id', 'title', 'subTitle', 'content', 'regDate'],
+      select: ['id', 'title', 'subTitle', 'content', 'contentImage'],
       where: {id},
     });
+
     if (!challenge) {
       throw new HttpException(
         {
@@ -37,6 +42,7 @@ export class ChallengesRepository extends Repository<Challenges> {
         HttpStatus.BAD_REQUEST,
       );
     }
+
     return challenge;
   }
 

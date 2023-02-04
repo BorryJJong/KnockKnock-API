@@ -16,3 +16,11 @@ export interface IGetListChallengeRes {
   postCnt: number;
   participants: ParticipantUserDTO[];
 }
+
+export interface IGetChallengeDetailRes {
+  id: number;
+  title: string;
+  subTitle: string;
+  content: string;
+  contentImage: string;
+}

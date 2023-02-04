@@ -21,14 +21,8 @@ export class ChallengeSubContentDTO {
 }
 
 export class ChallengeContentDTO {
-  @ApiProperty({description: '이미지', example: 'url'})
-  image: string;
-
-  @ApiProperty({description: '제목', example: '제목'})
-  title: string;
-
-  @ApiProperty({description: '부제목', example: '부제목'})
-  subTitle: string;
+  @ApiProperty({description: '서브 컨텐츠 이미지', example: 'url'})
+  private image: string;
 
   @ApiProperty({
     description: '방법',
@@ -36,25 +30,21 @@ export class ChallengeContentDTO {
     isArray: true,
     required: true,
   })
-  rule: string[];
+  private rule: string[];
 
   @ApiProperty({
     description: '챌린지 서브 내용',
-    example: '',
-    type: [ChallengeContentDTO],
+    example: ChallengeSubContentDTO,
+    type: [ChallengeSubContentDTO],
   })
-  subContents: ChallengeSubContentDTO[];
+  private subContents: ChallengeSubContentDTO[];
 
   constructor(
     image: string,
-    title: string,
-    subTitle: string,
     rule: string[],
     subContents: ChallengeSubContentDTO[],
   ) {
     this.image = image;
-    this.title = title;
-    this.subTitle = subTitle;
     this.rule = rule;
     this.subContents = subContents;
   }
@@ -93,31 +83,58 @@ export class GetChallengeResDTO extends PickType(Challenges, [
 ] as const) {}
 
 export class GetChallengeDetailResDTO {
-  @ApiProperty({description: '챌린지 이름', example: '챌린지'})
-  private readonly challenge: Challenges;
+  @ApiProperty({description: '챌린지 id', example: '1'})
+  private readonly id: number;
+
+  @ApiProperty({
+    description: '챌린지명',
+    example: '용기내챌린지',
+    required: true,
+  })
+  private readonly title: string;
+
+  @ApiProperty({
+    description: '서브타이틀',
+    example: '용기내챌린지',
+    required: true,
+  })
+  private readonly subTitle: string;
+
+  @ApiProperty({
+    description: '챌린지 상세 메인 이미지',
+    example: '챌린지 상세 메인 목록 이미지',
+    required: true,
+  })
+  private readonly contentImage: string;
 
   @ApiProperty({
     description: '챌린지 참여자 목록',
-    example: '[]',
     isArray: true,
     required: true,
     type: [ParticipantUserDTO],
+    example: ParticipantUserDTO,
   })
   private readonly participants: ParticipantUserDTO[];
 
   @ApiProperty({
-    description: '챌린지 이름',
-    example: '챌린지',
+    description: '챌린지 내용',
+    example: ChallengeContentDTO,
     type: ChallengeContentDTO,
   })
   private readonly content: ChallengeContentDTO;
 
   constructor(
-    challenge: Challenges,
+    id: number,
+    title: string,
+    subTitle: string,
+    contentImage: string,
     participants: ParticipantUserDTO[],
     content: ChallengeContentDTO,
   ) {
-    this.challenge = challenge;
+    this.id = id;
+    this.title = title;
+    this.subTitle = subTitle;
+    this.contentImage = contentImage;
     this.participants = participants;
     this.content = content;
   }

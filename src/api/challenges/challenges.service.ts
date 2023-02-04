@@ -1,7 +1,10 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {isAfter, subDays} from 'date-fns';
-import {IGetListChallengeRes} from 'src/api/challenges/challenges.interface';
+import {
+  IGetChallengeDetailRes,
+  IGetListChallengeRes,
+} from 'src/api/challenges/challenges.interface';
 import {ChallengesRepository} from './challenges.repository';
 import {
   GetChallengeReqDTO,
@@ -35,18 +38,6 @@ export class ChallengesService {
     private readonly challengesRepository: ChallengesRepository,
   ) {}
 
-  async getChallenge({id}: GetChallengeReqDTO): Promise<GetChallengeResDTO> {
-    const challenge = await this.challengesRepository.findChallengeById(id);
-    const {title, subTitle, content, regDate} = challenge;
-    return {
-      id,
-      title,
-      subTitle,
-      content,
-      regDate,
-    };
-  }
-
   async getAllChallenges(): Promise<GetChallengeResDTO[]> {
     const challenges = await this.challengesRepository.findChallengeAll();
     return challenges;
@@ -55,42 +46,41 @@ export class ChallengesService {
   async getChallengeDetail({
     id,
   }: GetChallengeReqDTO): Promise<GetChallengeDetailResDTO> {
-    const challengeDTO = await this.challengesRepository.findChallengeById(id);
+    const challenge: IGetChallengeDetailRes =
+      await this.challengesRepository.findChallengeById(id);
     const participantList = await this.challengesRepository.getParticipantList(
       id,
     );
 
-    const challengeContentJson: ChallengeContentType = JSON.parse(
-      challengeDTO.content,
+    const challengeContent: ChallengeContentType = JSON.parse(
+      challenge.content,
     ) as ChallengeContentType;
     const subContents: ChallengeSubContentDTO[] = [];
 
-    if (challengeContentJson.subContents !== undefined) {
-      challengeContentJson.subContents.forEach((_, index) => {
-        const subContent = challengeContentJson.subContents[index];
+    if (challengeContent.subContents !== undefined) {
+      challengeContent.subContents.forEach((_, index) => {
+        const subContent = challengeContent.subContents[index];
 
         subContents[index] = new ChallengeSubContentDTO(
           subContent.title,
-          subContent.image,
+          this.makeChallgenImageUrl(subContent.image),
           subContent.content,
         );
       });
     }
 
-    const challengeContent = new ChallengeContentDTO(
-      challengeContentJson.image,
-      challengeContentJson.title,
-      challengeContentJson.subTitle,
-      challengeContentJson.rule,
-      subContents,
-    );
-
-    const challenge = new GetChallengeDetailResDTO(
-      challengeDTO,
+    return new GetChallengeDetailResDTO(
+      challenge.id,
+      challenge.title,
+      challenge.subTitle,
+      this.makeChallgenImageUrl(challenge.contentImage),
       participantList,
-      challengeContent,
+      new ChallengeContentDTO(
+        this.makeChallgenImageUrl(challengeContent.image),
+        challengeContent.rule,
+        subContents,
+      ),
     );
-    return challenge;
   }
 
   async getChallengeList(
