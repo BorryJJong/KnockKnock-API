@@ -3,7 +3,6 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {Connection, QueryRunner} from 'typeorm';
 import {plainToInstance} from 'class-transformer';
 import {
-  CreateFeedDTO,
   CreateBlogPostDTO,
   GetListFeedMainReqDTO,
   GetListFeedMainResDTO,
@@ -25,6 +24,7 @@ import {
   UpdateBlogPostDTO,
   DeleteFeedReqDTO,
   UpdateFeedReqDTO,
+  CreateFeedDTOV2,
 } from './dto/feed.dto';
 import {ImageService, IUploadS3Response} from 'src/api/image/image.service';
 import {BlogChallengesRepository} from './repository/blogChallenges.repository';
@@ -77,7 +77,7 @@ export class FeedService {
 
   async create(
     files: Express.Multer.File[],
-    createFeedDTO: CreateFeedDTO,
+    createFeedDTO: CreateFeedDTOV2,
     userId: number,
   ): Promise<void> {
     const queryRunner = this.connection.createQueryRunner();
@@ -85,8 +85,22 @@ export class FeedService {
     await queryRunner.startTransaction();
 
     try {
+      const {content, scale, storeAddress, storeName, locationX, locationY} =
+        createFeedDTO;
+
       // 1. 포스트 저장
-      const post = await this.savePost(queryRunner, createFeedDTO, userId);
+      const post = await this.savePost(
+        queryRunner,
+        {
+          content,
+          scale,
+          storeAddress,
+          storeName,
+          locationX,
+          locationY,
+        } as CreateBlogPostDTO,
+        userId,
+      );
       const postId: number = post.id;
 
       // 2. 챌린지 저장
