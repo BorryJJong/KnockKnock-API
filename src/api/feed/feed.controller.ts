@@ -28,6 +28,7 @@ import {
   UpdateFeedReqDTO,
   UpdateFeedReqParamDTO,
   CreateFeedDTOV2,
+  CreateFeedResDTO,
 } from './dto/feed.dto';
 import {
   ApiBearerAuth,
@@ -137,7 +138,7 @@ export class FeedController {
   @ApiBearerAuth()
   @UseInterceptors(FilesInterceptor('images'))
   @ApiConsumes('multipart/form-data')
-  @OkApiResponseNoneDataDTO()
+  @OkApiResponseDTO(CreateFeedResDTO)
   @ForbiddenApiResponseDTO()
   @InternalServerApiResponseDTO()
   @DefaultErrorApiResponseDTO()
@@ -145,14 +146,19 @@ export class FeedController {
     @UploadedFiles() files: Express.Multer.File[],
     @Body() createFeedDTO: CreateFeedDTOV2,
     @UserDeco() user: IUser,
-  ): Promise<ApiResponseDTO<void | ErrorDTO>> {
+  ): Promise<ApiResponseDTO<CreateFeedResDTO | ErrorDTO>> {
     try {
       await this.feedValidator.checkPermissionCreateFeed(user.id);
-      await this.feedService.create(files, createFeedDTO, user.id);
+      const postId = await this.feedService.create(
+        files,
+        createFeedDTO,
+        user.id,
+      );
 
-      return new ApiResponseDTO<void>(
+      return new ApiResponseDTO<CreateFeedResDTO>(
         HttpStatus.OK,
         API_RESPONSE_MEESAGE.SUCCESS,
+        postId,
       );
     } catch (error) {
       return new ApiResponseDTO<ErrorDTO>(

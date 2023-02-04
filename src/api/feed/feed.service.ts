@@ -25,6 +25,7 @@ import {
   DeleteFeedReqDTO,
   UpdateFeedReqDTO,
   CreateFeedDTOV2,
+  CreateFeedResDTO,
 } from './dto/feed.dto';
 import {ImageService, IUploadS3Response} from 'src/api/image/image.service';
 import {BlogChallengesRepository} from './repository/blogChallenges.repository';
@@ -79,7 +80,7 @@ export class FeedService {
     files: Express.Multer.File[],
     createFeedDTO: CreateFeedDTOV2,
     userId: number,
-  ): Promise<void> {
+  ): Promise<CreateFeedResDTO> {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -121,6 +122,7 @@ export class FeedService {
       // throw new InternalServerErrorException(); // 일부러 에러를 발생시켜 본다
       // await queryRunner.commitTransaction();
       await queryRunner.commitTransaction();
+      return new CreateFeedResDTO(postId);
     } catch (e) {
       await queryRunner.rollbackTransaction();
       throw new HttpException(

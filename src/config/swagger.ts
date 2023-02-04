@@ -12,6 +12,7 @@ import {
   ParticipantUserDTO,
 } from 'src/api/challenges/dto/challenges.dto';
 import {
+  CreateFeedResDTO,
   GetFeedViewResDTO,
   GetListFeedCommentResDTO,
   GetListFeedLikeResDTO,
@@ -58,6 +59,7 @@ export function swaggerBuilder(app) {
       ApiResponseDTO,
       GetListChallengeResDTOV2,
       ParticipantUserDTO,
+      CreateFeedResDTO,
     ],
   });
   SwaggerModule.setup('api-docs', app, document, swaggerCustomOptions);
