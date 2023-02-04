@@ -61,4 +61,32 @@ export class Challenges {
   beforeInsert() {
     this.regDate = new Date();
   }
+
+  @ApiProperty({
+    description: '챌린지 목록 이미지',
+    example: '챌린지 목록 이미지',
+    required: true,
+  })
+  @Column({
+    name: 'main_image',
+    type: 'varchar',
+    length: 255,
+    nullable: false,
+    comment: '챌린지 이미지',
+  })
+  mainImage: string;
+
+  @ApiProperty({
+    description: '챌린지 상세 메인 이미지',
+    example: '챌린지 상세 메인 목록 이미지',
+    required: true,
+  })
+  @Column({
+    name: 'content_image',
+    type: 'varchar',
+    length: 255,
+    nullable: false,
+    comment: '챌린지 이미지',
+  })
+  contentImage: string;
 }

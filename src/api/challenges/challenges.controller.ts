@@ -10,12 +10,12 @@ import {ApiResponseDTO, ErrorDTO} from '@shared/dto/response.dto';
 import {API_RESPONSE_MEESAGE} from '@shared/enums/enum';
 import {ChallengesService} from './challenges.service';
 import {
-  GetListChallengeResDTO,
   GetChallengeReqDTO,
   GetChallengeResDTO,
   GetChallengeTitleReqDTO,
   GetChallengeDetailResDTO,
   GetChallengeListReqQueryDTO,
+  GetListChallengeResDTOV2,
 } from './dto/challenges.dto';
 
 @ApiTags('challenges')
@@ -81,16 +81,16 @@ export class ChallengesController {
 
   @Get('/')
   @ApiOperation({summary: '챌린지 목록조회'})
-  @OkApiResponseListDataDTO(GetChallengeResDTO)
+  @OkApiResponseListDataDTO(GetListChallengeResDTOV2)
   @DefaultErrorApiResponseDTO()
   @InternalServerApiResponseDTO()
   public async getChallengeList(
     @Query() query: GetChallengeListReqQueryDTO,
-  ): Promise<ApiResponseDTO<GetListChallengeResDTO[] | ErrorDTO>> {
+  ): Promise<ApiResponseDTO<GetListChallengeResDTOV2[] | ErrorDTO>> {
     try {
       const challenges = await this.challengesService.getChallengeList(query);
 
-      return new ApiResponseDTO<GetListChallengeResDTO[]>(
+      return new ApiResponseDTO<GetListChallengeResDTOV2[]>(
         HttpStatus.OK,
         API_RESPONSE_MEESAGE.SUCCESS,
         challenges,

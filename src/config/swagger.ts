@@ -8,6 +8,8 @@ import {ApiResponseDTO} from '@shared/dto/response.dto';
 import {
   GetChallengeResDTO,
   GetChallengeTitleReqDTO,
+  GetListChallengeResDTOV2,
+  ParticipantUserDTO,
 } from 'src/api/challenges/dto/challenges.dto';
 import {
   GetFeedViewResDTO,
@@ -54,6 +56,8 @@ export function swaggerBuilder(app) {
       GetListFeedResDTO,
       GetListFeedMainResDTO,
       ApiResponseDTO,
+      GetListChallengeResDTOV2,
+      ParticipantUserDTO,
     ],
   });
   SwaggerModule.setup('api-docs', app, document, swaggerCustomOptions);

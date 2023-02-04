@@ -1,8 +1,9 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
+import {isAfter, subDays} from 'date-fns';
+import {IGetListChallengeRes} from 'src/api/challenges/challenges.interface';
 import {ChallengesRepository} from './challenges.repository';
 import {
-  GetListChallengeResDTO,
   GetChallengeReqDTO,
   GetChallengeResDTO,
   GetChallengeTitleReqDTO,
@@ -10,6 +11,7 @@ import {
   ChallengeContentDTO,
   ChallengeSubContentDTO,
   GetChallengeListReqQueryDTO,
+  GetListChallengeResDTOV2,
 } from './dto/challenges.dto';
 
 export type ChallengeSubContentJsonType = {
@@ -93,21 +95,35 @@ export class ChallengesService {
 
   async getChallengeList(
     query: GetChallengeListReqQueryDTO,
-  ): Promise<GetListChallengeResDTO[]> {
+  ): Promise<GetListChallengeResDTOV2[]> {
     const {sort} = query;
-    const challengeList = await this.challengesRepository.getChallengeList(
-      sort,
-    );
+    const challenges: IGetListChallengeRes[] =
+      await this.challengesRepository.getChallengeList(sort);
 
-    for (let index = 0; index < challengeList.length; index++) {
-      const challengeId = challengeList[index].id;
+    for (let index = 0; index < challenges.length; index++) {
+      const challengeId = challenges[index].id;
 
       const participantList =
         await this.challengesRepository.getParticipantList(challengeId);
-      challengeList[index].participants = participantList;
+      challenges[index].participants = participantList;
     }
 
-    return challengeList;
+    return challenges.map(challenge => {
+      return new GetListChallengeResDTOV2(
+        challenge.id,
+        challenge.title,
+        challenge.subTitle,
+        this.makeChallgenImageUrl(challenge.mainImage),
+        challenge.rnk < 3,
+        isAfter(challenge.regDate, subDays(new Date(), 7)),
+        challenge.participants.length + 1,
+        challenge.participants,
+      );
+    });
+  }
+
+  private makeChallgenImageUrl(imageUrl: string): string {
+    return process.env.AWS_S3_ENDPOINT + `challenges/` + imageUrl;
   }
 
   async getChallengeTitles(): Promise<GetChallengeTitleReqDTO[]> {

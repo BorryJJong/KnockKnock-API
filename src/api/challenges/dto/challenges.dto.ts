@@ -129,11 +129,9 @@ export class GetListChallengeResDTO extends PickType(Challenges, [
   'subTitle',
   'content',
   'regDate',
+  'mainImage',
+  'contentImage',
 ] as const) {
-  // 재구현 => refactoring
-  // "newYn": "N",
-  // "postCnt": "2",
-  //  "rnk": "1",
   @Column({
     name: 'new_yn',
     nullable: true,
@@ -160,6 +158,81 @@ export class GetListChallengeResDTO extends PickType(Challenges, [
     type: [ParticipantUserDTO],
   })
   participants: ParticipantUserDTO[];
+}
+
+export class GetListChallengeResDTOV2 {
+  @ApiProperty({description: '챌린지 id', example: '1'})
+  id: number;
+
+  @ApiProperty({
+    description: '챌린지명',
+    example: '용기내챌린지',
+    required: true,
+  })
+  title: string;
+
+  @ApiProperty({
+    description: '서브타이틀',
+    example: '용기내챌린지',
+    required: true,
+  })
+  subTitle: string;
+
+  @ApiProperty({
+    description: '챌린지 목록 이미지',
+    example: '챌린지 목록 이미지',
+    required: true,
+  })
+  mainImage: string;
+
+  @ApiProperty({
+    description: 'Hot 여부',
+    example: 'true',
+    nullable: false,
+  })
+  isHotBadge: boolean;
+
+  @ApiProperty({
+    description: 'new 여부',
+    example: 'true',
+    nullable: false,
+  })
+  isNewBadge: boolean;
+
+  @ApiProperty({
+    description: '챌린지 참여중인 인원 수',
+    example: '3',
+    nullable: false,
+  })
+  participantCount: number;
+
+  @ApiProperty({
+    description: '챌린지 참여자 목록',
+    isArray: true,
+    example: ParticipantUserDTO,
+    type: ParticipantUserDTO,
+  })
+  participants: ParticipantUserDTO[];
+
+  constructor(
+    id: number,
+    title: string,
+    subTitle: string,
+    mainImage: string,
+    isHotBadge: boolean,
+    isNewBadge: boolean,
+    participantCount: number,
+    participants: ParticipantUserDTO[],
+  ) {
+    this.id = id;
+    this.title = title;
+    this.subTitle = subTitle;
+    this.mainImage = mainImage;
+    this.isHotBadge = isHotBadge;
+    this.isNewBadge = isNewBadge;
+    this.participantCount = participantCount;
+    this.participants = participants;
+  }
 }
 
 export class GetChallengeTitleReqDTO implements IChallengeTitle {

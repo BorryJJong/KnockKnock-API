@@ -11,9 +11,8 @@ export class LikeService {
     private blogLikeRepository: BlogLikeRepository,
   ) {}
 
-  async feedLike(id: number, userId: number): Promise<boolean> {
+  async feedLike(id: number, userId: number): Promise<void> {
     await this.blogLikeRepository.insertFeedLike(id, userId);
-    return true;
   }
 
   async feedUnLike(id: number, userId: number): Promise<boolean> {
