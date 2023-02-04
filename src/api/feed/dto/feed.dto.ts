@@ -714,3 +714,12 @@ export class PostFeedBlogPostHideReqDTO {
   @ApiProperty({description: '피드 id', example: '1'})
   id: number;
 }
+
+export class CreateFeedResDTO {
+  @ApiProperty({description: '피드 ID', example: '1'})
+  private id: number;
+
+  constructor(id: number) {
+    this.id = id;
+  }
+}
