@@ -40,6 +40,9 @@ function swaggerBuilder(app) {
             feed_dto_1.GetListFeedResDTO,
             feed_dto_1.GetListFeedMainResDTO,
             response_dto_1.ApiResponseDTO,
+            challenges_dto_1.GetListChallengeResDTOV2,
+            challenges_dto_1.ParticipantUserDTO,
+            feed_dto_1.CreateFeedResDTO,
         ],
     });
     swagger_1.SwaggerModule.setup('api-docs', app, document, swaggerCustomOptions);

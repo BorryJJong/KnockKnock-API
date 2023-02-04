@@ -15,51 +15,44 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChallengesService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const date_fns_1 = require("date-fns");
 const challenges_repository_1 = require("./challenges.repository");
 const challenges_dto_1 = require("./dto/challenges.dto");
 let ChallengesService = class ChallengesService {
     constructor(challengesRepository) {
         this.challengesRepository = challengesRepository;
     }
-    async getChallenge({ id }) {
-        const challenge = await this.challengesRepository.findChallengeById(id);
-        const { title, subTitle, content, regDate } = challenge;
-        return {
-            id,
-            title,
-            subTitle,
-            content,
-            regDate,
-        };
-    }
     async getAllChallenges() {
         const challenges = await this.challengesRepository.findChallengeAll();
         return challenges;
     }
     async getChallengeDetail({ id, }) {
-        const challengeDTO = await this.challengesRepository.findChallengeById(id);
+        const challenge = await this.challengesRepository.findChallengeById(id);
         const participantList = await this.challengesRepository.getParticipantList(id);
-        const challengeContentJson = JSON.parse(challengeDTO.content);
+        const challengeContent = JSON.parse(challenge.content);
         const subContents = [];
-        if (challengeContentJson.subContents !== undefined) {
-            challengeContentJson.subContents.forEach((_, index) => {
-                const subContent = challengeContentJson.subContents[index];
-                subContents[index] = new challenges_dto_1.ChallengeSubContentDTO(subContent.title, subContent.image, subContent.content);
+        if (challengeContent.subContents !== undefined) {
+            challengeContent.subContents.forEach((_, index) => {
+                const subContent = challengeContent.subContents[index];
+                subContents[index] = new challenges_dto_1.ChallengeSubContentDTO(subContent.title, this.makeChallgenImageUrl(subContent.image), subContent.content);
             });
         }
-        const challengeContent = new challenges_dto_1.ChallengeContentDTO(challengeContentJson.image, challengeContentJson.title, challengeContentJson.subTitle, challengeContentJson.rule, subContents);
-        const challenge = new challenges_dto_1.GetChallengeDetailResDTO(challengeDTO, participantList, challengeContent);
-        return challenge;
+        return new challenges_dto_1.GetChallengeDetailResDTO(challenge.id, challenge.title, challenge.subTitle, this.makeChallgenImageUrl(challenge.contentImage), participantList, new challenges_dto_1.ChallengeContentDTO(this.makeChallgenImageUrl(challengeContent.image), challengeContent.rule, subContents));
     }
     async getChallengeList(query) {
         const { sort } = query;
-        const challengeList = await this.challengesRepository.getChallengeList(sort);
-        for (let index = 0; index < challengeList.length; index++) {
-            const challengeId = challengeList[index].id;
+        const challenges = await this.challengesRepository.getChallengeList(sort);
+        for (let index = 0; index < challenges.length; index++) {
+            const challengeId = challenges[index].id;
             const participantList = await this.challengesRepository.getParticipantList(challengeId);
-            challengeList[index].participants = participantList;
+            challenges[index].participants = participantList;
         }
-        return challengeList;
+        return challenges.map(challenge => {
+            return new challenges_dto_1.GetListChallengeResDTOV2(challenge.id, challenge.title, challenge.subTitle, this.makeChallgenImageUrl(challenge.mainImage), challenge.rnk < 3, (0, date_fns_1.isAfter)(challenge.regDate, (0, date_fns_1.subDays)(new Date(), 7)), challenge.participants.length + 1, challenge.participants);
+        });
+    }
+    makeChallgenImageUrl(imageUrl) {
+        return process.env.AWS_S3_ENDPOINT + `challenges/` + imageUrl;
     }
     async getChallengeTitles() {
         const challengeTitles = await this.challengesRepository.getChallengeTitles();

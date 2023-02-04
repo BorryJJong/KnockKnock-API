@@ -51,8 +51,8 @@ let FeedController = class FeedController {
     async create(files, createFeedDTO, user) {
         try {
             await this.feedValidator.checkPermissionCreateFeed(user.id);
-            await this.feedService.create(files, createFeedDTO, user.id);
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
+            const postId = await this.feedService.create(files, createFeedDTO, user.id);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, postId);
         }
         catch (error) {
             return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
@@ -167,7 +167,8 @@ __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images')),
-    (0, swagger_decorator_1.OkApiResponseNoneDataDTO)(),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, swagger_decorator_1.OkApiResponseDTO)(feed_dto_1.CreateFeedResDTO),
     (0, swagger_decorator_1.ForbiddenApiResponseDTO)(),
     (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
@@ -175,7 +176,7 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __param(2, (0, user_decorator_1.UserDeco)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array, feed_dto_1.CreateFeedDTO, Object]),
+    __metadata("design:paramtypes", [Array, feed_dto_1.CreateFeedDTOV2, Object]),
     __metadata("design:returntype", Promise)
 ], FeedController.prototype, "create", null);
 __decorate([

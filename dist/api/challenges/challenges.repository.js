@@ -27,7 +27,7 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
     }
     async findChallengeById(id) {
         const challenge = await this.findOne({
-            select: ['id', 'title', 'subTitle', 'content', 'regDate'],
+            select: ['id', 'title', 'subTitle', 'content', 'contentImage'],
             where: { id },
         });
         if (!challenge) {
@@ -68,6 +68,7 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
             .addSelect("case when date_format(ma.reg_date,'%Y%m%d') between date_format(timestampadd(month, -1, sysdate()),'%Y%m%d') and date_format(sysdate(),'%Y%m%d') then 'Y' else 'N' end", 'newYn')
             .addSelect('IFNULL(mb.post_cnt,0)', 'postCnt')
             .addSelect('rank() over(order by mb.post_cnt desc)', 'rnk')
+            .addSelect('ma.main_image', 'mainImage')
             .from(Challenges_1.Challenges, 'ma')
             .leftJoin('(' + challengePostCnt.getQuery() + ')', 'mb', 'ma.id = mb.id');
         if (sort === enum_1.CHALLENGES_SORT.BRAND_NEW) {
@@ -76,22 +77,7 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
         else {
             challengeList.orderBy('rnk', 'ASC');
         }
-        const challengeListRaws = await challengeList.getRawMany();
-        const challenges = challengeListRaws.map((s) => {
-            const item = {
-                id: s.id,
-                title: s.title,
-                subTitle: s.subTitle,
-                content: s.content,
-                regDate: s.regDate,
-                newYn: s.newYn,
-                postCnt: s.postCnt,
-                rnk: s.rnk,
-                participants: [],
-            };
-            return item;
-        });
-        return challenges;
+        return await challengeList.getRawMany();
     }
     async getParticipantList(challengeId) {
         const userPostChallengeQuery = (0, typeorm_1.getManager)()

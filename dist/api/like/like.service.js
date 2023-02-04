@@ -24,7 +24,6 @@ let LikeService = class LikeService {
     }
     async feedLike(id, userId) {
         await this.blogLikeRepository.insertFeedLike(id, userId);
-        return true;
     }
     async feedUnLike(id, userId) {
         await this.blogLikeRepository.deleteFeedLike(id, userId);

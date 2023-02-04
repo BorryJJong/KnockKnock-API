@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PostFeedBlogPostHideReqDTO = exports.DeleteFeedReqDTO = exports.GetListFeedLikeResDTO = exports.GetFeedLikeDTO = exports.GetListFeedCommentReqDTO = exports.GetListFeedCommentResDTO = exports.GetBlogCommentDTO = exports.DelBlogCommentReqDTO = exports.InsBlogCommentDTO = exports.GetFeedViewResDTO = exports.GetBlogImageDTO = exports.GetBlogChallengesDTO = exports.GetBlogPromotionDTO = exports.GetBlogPostDTO = exports.GetFeedViewReqDTO = exports.GetListFeedResDTO = exports.GetFeedResDTO = exports.GetFeedImageResDTO = exports.GetListFeedReqQueryDTO = exports.GetListBlogImageByBlogPostResDTO = exports.GetListFeedMainResDTO = exports.GetFeedMainResDTO = exports.GetListFeedMainReqDTO = exports.UpdateBlogPostDTO = exports.CreateBlogImageDTO = exports.CreateBlogPromotionDTO = exports.CreateBlogChallengesDTO = exports.CreateBlogPostDTO = exports.UpdateFeedReqDTO = exports.UpdateFeedReqParamDTO = exports.UpdateFeedDTO = exports.CreateFeedDTO = void 0;
+exports.CreateFeedResDTO = exports.PostFeedBlogPostHideReqDTO = exports.DeleteFeedReqDTO = exports.GetListFeedLikeResDTO = exports.GetFeedLikeDTO = exports.GetListFeedCommentReqDTO = exports.GetListFeedCommentResDTO = exports.GetBlogCommentDTO = exports.DelBlogCommentReqDTO = exports.InsBlogCommentDTO = exports.GetFeedViewResDTO = exports.GetBlogImageDTO = exports.GetBlogChallengesDTO = exports.GetBlogPromotionDTO = exports.GetBlogPostDTO = exports.GetFeedViewReqDTO = exports.GetListFeedResDTO = exports.GetFeedResDTO = exports.GetFeedImageResDTO = exports.GetListFeedReqQueryDTO = exports.GetListBlogImageByBlogPostResDTO = exports.GetListFeedMainResDTO = exports.GetFeedMainResDTO = exports.GetListFeedMainReqDTO = exports.UpdateBlogPostDTO = exports.CreateBlogImageDTO = exports.CreateBlogPromotionDTO = exports.CreateBlogChallengesDTO = exports.CreateBlogPostDTO = exports.UpdateFeedReqDTO = exports.UpdateFeedReqParamDTO = exports.UpdateFeedDTO = exports.CreateFeedDTOV2 = exports.CreateFeedDTO = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 const swagger_1 = require("@nestjs/swagger");
@@ -45,6 +45,85 @@ __decorate([
     __metadata("design:type", Array)
 ], CreateFeedDTO.prototype, "images", void 0);
 exports.CreateFeedDTO = CreateFeedDTO;
+class CreateFeedDTOV2 {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '내용',
+        example: '패키지 상품을 받았을때의 기쁨 후엔 늘 골치아픈 쓰레기와 분리수거의 노동시간이 뒤따릅니다.',
+        required: true,
+        nullable: false,
+    }),
+    __metadata("design:type", String)
+], CreateFeedDTOV2.prototype, "content", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '게시글 내 이미지의 비율',
+        example: '1:1',
+        required: true,
+        nullable: false,
+    }),
+    __metadata("design:type", String)
+], CreateFeedDTOV2.prototype, "scale", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '매장 주소',
+        example: '경기 성남시 분당구 대왕판교로 374',
+        required: false,
+        nullable: true,
+    }),
+    __metadata("design:type", String)
+], CreateFeedDTOV2.prototype, "storeAddress", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '매장명',
+        example: '스타벅스 리버사이드팔당DTR점',
+        required: false,
+        nullable: true,
+    }),
+    __metadata("design:type", String)
+], CreateFeedDTOV2.prototype, "storeName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '매장 주소 y좌표',
+        example: '37.3771012046504',
+        required: false,
+        nullable: true,
+    }),
+    __metadata("design:type", String)
+], CreateFeedDTOV2.prototype, "locationX", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '매장 주소 y좌표',
+        example: '37.3771012046504',
+        required: false,
+        nullable: true,
+    }),
+    __metadata("design:type", String)
+], CreateFeedDTOV2.prototype, "locationY", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({ description: '프로모션 id', example: '1 or 1,2' }),
+    __metadata("design:type", String)
+], CreateFeedDTOV2.prototype, "promotions", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, swagger_1.ApiProperty)({ description: '챌린지 id', example: '1 or 1,2,3' }),
+    __metadata("design:type", String)
+], CreateFeedDTOV2.prototype, "challenges", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이미지 binary data(multipart/form-data)',
+        type: 'array',
+        items: {
+            type: 'file',
+        },
+    }),
+    __metadata("design:type", Array)
+], CreateFeedDTOV2.prototype, "images", void 0);
+exports.CreateFeedDTOV2 = CreateFeedDTOV2;
 class UpdateFeedDTO extends (0, swagger_1.OmitType)(BlogPost_1.BlogPost, [
     'userId',
     'hits',
@@ -749,4 +828,14 @@ __decorate([
     __metadata("design:type", Number)
 ], PostFeedBlogPostHideReqDTO.prototype, "id", void 0);
 exports.PostFeedBlogPostHideReqDTO = PostFeedBlogPostHideReqDTO;
+class CreateFeedResDTO {
+    constructor(id) {
+        this.id = id;
+    }
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '피드 ID', example: '1' }),
+    __metadata("design:type", Number)
+], CreateFeedResDTO.prototype, "id", void 0);
+exports.CreateFeedResDTO = CreateFeedResDTO;
 //# sourceMappingURL=feed.dto.js.map
