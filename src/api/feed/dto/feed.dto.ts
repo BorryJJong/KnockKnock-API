@@ -40,6 +40,76 @@ export class CreateFeedDTO extends OmitType(BlogPost, [
   images: Express.Multer.File[];
 }
 
+export class CreateFeedDTOV2 {
+  @ApiProperty({
+    description: '내용',
+    example:
+      '패키지 상품을 받았을때의 기쁨 후엔 늘 골치아픈 쓰레기와 분리수거의 노동시간이 뒤따릅니다.',
+    required: true,
+    nullable: false,
+  })
+  content: string;
+
+  @ApiProperty({
+    description: '게시글 내 이미지의 비율',
+    example: '1:1',
+    required: true,
+    nullable: false,
+  })
+  scale: string;
+
+  @ApiProperty({
+    description: '매장 주소',
+    example: '경기 성남시 분당구 대왕판교로 374',
+    required: false,
+    nullable: true,
+  })
+  storeAddress?: string;
+
+  @ApiProperty({
+    description: '매장명',
+    example: '스타벅스 리버사이드팔당DTR점',
+    required: false,
+    nullable: true,
+  })
+  storeName?: string;
+
+  @ApiProperty({
+    description: '매장 주소 y좌표',
+    example: '37.3771012046504',
+    required: false,
+    nullable: true,
+  })
+  locationX?: string;
+
+  @ApiProperty({
+    description: '매장 주소 y좌표',
+    example: '37.3771012046504',
+    required: false,
+    nullable: true,
+  })
+  locationY?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({description: '프로모션 id', example: '1 or 1,2'})
+  promotions: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({description: '챌린지 id', example: '1 or 1,2,3'})
+  challenges: string;
+
+  @ApiProperty({
+    description: '이미지 binary data(multipart/form-data)',
+    type: 'array',
+    items: {
+      type: 'file',
+    },
+  })
+  images: Express.Multer.File[];
+}
+
 export class UpdateFeedDTO extends OmitType(BlogPost, [
   'userId',
   'hits',

@@ -14,7 +14,6 @@ import {
 } from '@nestjs/common';
 import {FeedService} from './feed.service';
 import {
-  CreateFeedDTO,
   GetListFeedMainResDTO,
   GetListFeedMainReqDTO,
   GetListFeedReqQueryDTO,
@@ -28,8 +27,14 @@ import {
   DeleteFeedReqDTO,
   UpdateFeedReqDTO,
   UpdateFeedReqParamDTO,
+  CreateFeedDTOV2,
 } from './dto/feed.dto';
-import {ApiBearerAuth, ApiOperation, ApiTags} from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import {FilesInterceptor} from '@nestjs/platform-express';
 import {ApiResponseDTO, NoneDataDTO, ErrorDTO} from '@shared/dto/response.dto';
 import {JwtOptionalGuard} from 'src/auth/jwt/jwtNoneRequired.guard';
@@ -131,13 +136,14 @@ export class FeedController {
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
   @UseInterceptors(FilesInterceptor('images'))
+  @ApiConsumes('multipart/form-data')
   @OkApiResponseNoneDataDTO()
   @ForbiddenApiResponseDTO()
   @InternalServerApiResponseDTO()
   @DefaultErrorApiResponseDTO()
   async create(
     @UploadedFiles() files: Express.Multer.File[],
-    @Body() createFeedDTO: CreateFeedDTO,
+    @Body() createFeedDTO: CreateFeedDTOV2,
     @UserDeco() user: IUser,
   ): Promise<ApiResponseDTO<void | ErrorDTO>> {
     try {
