@@ -76,6 +76,36 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], Challenges.prototype, "beforeInsert", null);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '챌린지 목록 이미지',
+        example: '챌린지 목록 이미지',
+        required: true,
+    }),
+    (0, typeorm_1.Column)({
+        name: 'main_image',
+        type: 'varchar',
+        length: 255,
+        nullable: false,
+        comment: '챌린지 이미지',
+    }),
+    __metadata("design:type", String)
+], Challenges.prototype, "mainImage", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '챌린지 상세 메인 이미지',
+        example: '챌린지 상세 메인 목록 이미지',
+        required: true,
+    }),
+    (0, typeorm_1.Column)({
+        name: 'content_image',
+        type: 'varchar',
+        length: 255,
+        nullable: false,
+        comment: '챌린지 이미지',
+    }),
+    __metadata("design:type", String)
+], Challenges.prototype, "contentImage", void 0);
 Challenges = __decorate([
     (0, typeorm_1.Entity)('challenges', { schema: 'knockknock' })
 ], Challenges);

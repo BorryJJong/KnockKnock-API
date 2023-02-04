@@ -50,7 +50,15 @@ let FeedService = FeedService_1 = class FeedService {
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            const post = await this.savePost(queryRunner, createFeedDTO, userId);
+            const { content, scale, storeAddress, storeName, locationX, locationY } = createFeedDTO;
+            const post = await this.savePost(queryRunner, {
+                content,
+                scale,
+                storeAddress,
+                storeName,
+                locationX,
+                locationY,
+            }, userId);
             const postId = post.id;
             await this.saveChallenges(queryRunner, postId, createFeedDTO.challenges);
             await this.savePromotion(queryRunner, postId, createFeedDTO.promotions);
@@ -58,6 +66,7 @@ let FeedService = FeedService_1 = class FeedService {
                 await Promise.all(files.map(async (file) => await this.savePostImage(queryRunner, postId, file)));
             }
             await queryRunner.commitTransaction();
+            return new feed_dto_1.CreateFeedResDTO(postId);
         }
         catch (e) {
             await queryRunner.rollbackTransaction();

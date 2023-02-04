@@ -8,12 +8,10 @@ export declare class ChallengeSubContentDTO {
     constructor(title: string, image: string, content: string);
 }
 export declare class ChallengeContentDTO {
-    image: string;
-    title: string;
-    subTitle: string;
-    rule: string[];
-    subContents: ChallengeSubContentDTO[];
-    constructor(image: string, title: string, subTitle: string, rule: string[], subContents: ChallengeSubContentDTO[]);
+    private image;
+    private rule;
+    private subContents;
+    constructor(image: string, rule: string[], subContents: ChallengeSubContentDTO[]);
 }
 export declare class ParticipantUserDTO {
     readonly id: number;
@@ -30,17 +28,31 @@ declare const GetChallengeResDTO_base: import("@nestjs/common").Type<Pick<Challe
 export declare class GetChallengeResDTO extends GetChallengeResDTO_base {
 }
 export declare class GetChallengeDetailResDTO {
-    private readonly challenge;
+    private readonly id;
+    private readonly title;
+    private readonly subTitle;
+    private readonly contentImage;
     private readonly participants;
     private readonly content;
-    constructor(challenge: Challenges, participants: ParticipantUserDTO[], content: ChallengeContentDTO);
+    constructor(id: number, title: string, subTitle: string, contentImage: string, participants: ParticipantUserDTO[], content: ChallengeContentDTO);
 }
-declare const GetListChallengeResDTO_base: import("@nestjs/common").Type<Pick<Challenges, "id" | "regDate" | "title" | "content" | "subTitle">>;
+declare const GetListChallengeResDTO_base: import("@nestjs/common").Type<Pick<Challenges, "id" | "regDate" | "title" | "content" | "subTitle" | "mainImage" | "contentImage">>;
 export declare class GetListChallengeResDTO extends GetListChallengeResDTO_base {
     newYn: string;
     postCnt: number;
     rnk: number;
     participants: ParticipantUserDTO[];
+}
+export declare class GetListChallengeResDTOV2 {
+    id: number;
+    title: string;
+    subTitle: string;
+    mainImage: string;
+    isHotBadge: boolean;
+    isNewBadge: boolean;
+    participantCount: number;
+    participants: ParticipantUserDTO[];
+    constructor(id: number, title: string, subTitle: string, mainImage: string, isHotBadge: boolean, isNewBadge: boolean, participantCount: number, participants: ParticipantUserDTO[]);
 }
 export declare class GetChallengeTitleReqDTO implements IChallengeTitle {
     id: number;

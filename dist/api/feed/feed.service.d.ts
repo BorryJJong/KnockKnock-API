@@ -1,6 +1,6 @@
 /// <reference types="multer" />
 import { Connection, QueryRunner } from 'typeorm';
-import { CreateFeedDTO, CreateBlogPostDTO, GetListFeedMainReqDTO, GetListFeedMainResDTO, GetListFeedReqQueryDTO, GetListFeedResDTO, InsBlogCommentDTO, GetFeedViewReqDTO, GetFeedViewResDTO, GetListFeedCommentReqDTO, GetListFeedCommentResDTO, DelBlogCommentReqDTO, UpdateBlogPostDTO, DeleteFeedReqDTO, UpdateFeedReqDTO } from './dto/feed.dto';
+import { CreateBlogPostDTO, GetListFeedMainReqDTO, GetListFeedMainResDTO, GetListFeedReqQueryDTO, GetListFeedResDTO, InsBlogCommentDTO, GetFeedViewReqDTO, GetFeedViewResDTO, GetListFeedCommentReqDTO, GetListFeedCommentResDTO, DelBlogCommentReqDTO, UpdateBlogPostDTO, DeleteFeedReqDTO, UpdateFeedReqDTO, CreateFeedDTOV2, CreateFeedResDTO } from './dto/feed.dto';
 import { ImageService } from 'src/api/image/image.service';
 import { BlogChallengesRepository } from './repository/blogChallenges.repository';
 import { BlogImageRepository } from './repository/blogImage.repository';
@@ -25,7 +25,7 @@ export declare class FeedService {
     private readonly logger;
     private readonly s3Endpoint;
     constructor(imageService: ImageService, connection: Connection, blogPostRepository: IBlogPostRepository, blogChallengesRepository: BlogChallengesRepository, blogPromotionRepository: BlogPromotionRepository, blogImageRepository: BlogImageRepository, blogCommentRepository: BlogCommentRepository, blogLikeRepository: BlogLikeRepository, userRepository: UserRepository, userToBlogPostHideRepository: UserToBlogPostHideRepository);
-    create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTO, userId: number): Promise<void>;
+    create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTOV2, userId: number): Promise<CreateFeedResDTO>;
     savePost(queryRunner: QueryRunner, createBlogPostDTO: CreateBlogPostDTO, userId: number): Promise<BlogPost>;
     saveChallenges(queryRunner: QueryRunner, postId: number, challenges: string): Promise<void>;
     savePromotion(queryRunner: QueryRunner, postId: number, promotions: string): Promise<void>;
