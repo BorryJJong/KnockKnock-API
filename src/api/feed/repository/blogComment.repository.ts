@@ -78,6 +78,7 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       )
       .where('(bcnt.cnt != 0 OR is_deleted = 0)')
       .andWhere('bc.comment_id IS NULL')
+      .andWhere('bc.isDeleted = false')
       .andWhere('bc.post_id = :id', {id: id})
       .orderBy('bc.id', 'ASC')
       .getRawMany();
