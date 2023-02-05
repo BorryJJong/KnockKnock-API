@@ -1,6 +1,8 @@
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {SOCIAL_TYPE} from '@shared/enums/enum';
+import {IUserReportBlogPostRepository} from 'src/api/feed/interface/userReportBlogPost.interface';
+import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
 import {IUserRepository} from 'src/api/users/users.interface';
 import {UserRepository} from 'src/api/users/users.repository';
 
@@ -9,6 +11,8 @@ export class UserValidator {
   constructor(
     @InjectRepository(UserRepository)
     private userRepository: IUserRepository,
+    @InjectRepository(UserReportBlogPostRepository)
+    private userReportBlogPostRepository: IUserReportBlogPostRepository,
   ) {}
 
   public async checkExistSocialUser(
@@ -37,6 +41,26 @@ export class UserValidator {
       throw new HttpException(
         {
           message: `'${findNickname}' 닉네임은 중복입니다`,
+        },
+        HttpStatus.CONFLICT,
+      );
+    }
+  }
+
+  public async alreadyReportBlogPost(
+    userId: number,
+    postId: number,
+  ): Promise<void> {
+    const reportId =
+      await this.userReportBlogPostRepository.selectUserReportBlogPostByUser(
+        userId,
+        postId,
+      );
+
+    if (reportId) {
+      throw new HttpException(
+        {
+          message: '이미 신고된 게시글입니다',
         },
         HttpStatus.CONFLICT,
       );

@@ -1,4 +1,10 @@
-import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
+import {REPORT_TYPE} from '@shared/enums/enum';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('user_report_blog_post', {schema: 'knockknock'})
 export class UserReportBlogPost {
@@ -22,11 +28,21 @@ export class UserReportBlogPost {
   postId: number;
 
   @Column({
-    name: 'contents',
-    type: 'varchar',
-    comment: '내용',
-    length: 255,
+    name: 'report_type',
+    type: 'enum',
+    enum: REPORT_TYPE,
+    comment: '신고사유 타입',
     nullable: false,
   })
-  contents: string;
+  reportType: REPORT_TYPE;
+
+  @CreateDateColumn({
+    name: 'reg_date',
+    type: 'timestamp',
+    nullable: false,
+    precision: null,
+    default: () => 'CURRENT_TIMESTAMP',
+    comment: '신고 시간',
+  })
+  regDate: Date;
 }

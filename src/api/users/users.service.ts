@@ -1,6 +1,7 @@
 import {User} from '@entities/User';
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
+import {REPORT_TYPE} from '@shared/enums/enum';
 import {IBlogPostRepository} from 'src/api/feed/interface/blogPost.interface';
 import {BlogPostRepository} from 'src/api/feed/repository/blogPost.repository';
 import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
@@ -191,12 +192,12 @@ export class UsersService {
   public async reportBlogPost(
     userId: number,
     postId: number,
-    contents: string,
+    reportType: REPORT_TYPE,
   ): Promise<void> {
     await this.userReportBlogPostRepository.insertUserReportBlogPost(
       userId,
       postId,
-      contents,
+      reportType,
     );
   }
 }
