@@ -21,9 +21,6 @@ export class ChallengeSubContentDTO {
 }
 
 export class ChallengeContentDTO {
-  @ApiProperty({description: '서브 컨텐츠 이미지', example: 'url'})
-  private image: string;
-
   @ApiProperty({
     description: '방법',
     example: '[방법]',
@@ -39,12 +36,7 @@ export class ChallengeContentDTO {
   })
   private subContents: ChallengeSubContentDTO[];
 
-  constructor(
-    image: string,
-    rule: string[],
-    subContents: ChallengeSubContentDTO[],
-  ) {
-    this.image = image;
+  constructor(rule: string[], subContents: ChallengeSubContentDTO[]) {
     this.rule = rule;
     this.subContents = subContents;
   }
@@ -108,6 +100,13 @@ export class GetChallengeDetailResDTO {
   private readonly contentImage: string;
 
   @ApiProperty({
+    description: '챌린지 참여중인 인원 수',
+    example: '3',
+    nullable: false,
+  })
+  participantCount: number;
+
+  @ApiProperty({
     description: '챌린지 참여자 목록',
     isArray: true,
     required: true,
@@ -128,6 +127,7 @@ export class GetChallengeDetailResDTO {
     title: string,
     subTitle: string,
     contentImage: string,
+    participantCount: number,
     participants: ParticipantUserDTO[],
     content: ChallengeContentDTO,
   ) {
@@ -135,6 +135,7 @@ export class GetChallengeDetailResDTO {
     this.title = title;
     this.subTitle = subTitle;
     this.contentImage = contentImage;
+    this.participantCount = participantCount;
     this.participants = participants;
     this.content = content;
   }
@@ -177,7 +178,7 @@ export class GetListChallengeResDTO extends PickType(Challenges, [
   participants: ParticipantUserDTO[];
 }
 
-export class GetListChallengeResDTOV2 {
+export class GetListChallengeInfoResDTO {
   @ApiProperty({description: '챌린지 id', example: '1'})
   id: number;
 
@@ -249,6 +250,40 @@ export class GetListChallengeResDTOV2 {
     this.isNewBadge = isNewBadge;
     this.participantCount = participantCount;
     this.participants = participants;
+  }
+}
+
+export class GetChallengeListResDTO {
+  @ApiProperty({
+    description: '챌린지 총 개수',
+    example: '4',
+    nullable: false,
+  })
+  challengeTotalCount: number;
+
+  @ApiProperty({
+    description: '신규 챌린지 개수',
+    example: '2',
+    nullable: false,
+  })
+  challengeNewCount: number;
+
+  @ApiProperty({
+    description: '챌린지 정보',
+    example: GetListChallengeInfoResDTO,
+    type: [GetListChallengeInfoResDTO],
+    nullable: false,
+  })
+  challenges: GetListChallengeInfoResDTO[];
+
+  constructor(
+    challengeTotalCount: number,
+    challengeNewCount: number,
+    challenges: GetListChallengeInfoResDTO[],
+  ) {
+    this.challengeTotalCount = challengeTotalCount;
+    this.challengeNewCount = challengeNewCount;
+    this.challenges = challenges;
   }
 }
 
