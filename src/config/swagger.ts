@@ -6,9 +6,10 @@ import {
 } from '@nestjs/swagger';
 import {ApiResponseDTO} from '@shared/dto/response.dto';
 import {
+  GetChallengeListResDTO,
   GetChallengeResDTO,
   GetChallengeTitleReqDTO,
-  GetListChallengeResDTOV2,
+  GetListChallengeInfoResDTO,
   ParticipantUserDTO,
 } from 'src/api/challenges/dto/challenges.dto';
 import {
@@ -57,9 +58,10 @@ export function swaggerBuilder(app) {
       GetListFeedResDTO,
       GetListFeedMainResDTO,
       ApiResponseDTO,
-      GetListChallengeResDTOV2,
+      GetListChallengeInfoResDTO,
       ParticipantUserDTO,
       CreateFeedResDTO,
+      GetChallengeListResDTO,
     ],
   });
   SwaggerModule.setup('api-docs', app, document, swaggerCustomOptions);

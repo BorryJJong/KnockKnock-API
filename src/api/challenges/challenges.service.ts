@@ -2,6 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {isAfter, subDays} from 'date-fns';
 import {
+  IChallenges,
   IGetChallengeDetailRes,
   IGetListChallengeRes,
 } from 'src/api/challenges/challenges.interface';
@@ -14,7 +15,8 @@ import {
   ChallengeContentDTO,
   ChallengeSubContentDTO,
   GetChallengeListReqQueryDTO,
-  GetListChallengeResDTOV2,
+  GetListChallengeInfoResDTO,
+  GetChallengeListResDTO,
 } from './dto/challenges.dto';
 
 export type ChallengeSubContentJsonType = {
@@ -74,18 +76,15 @@ export class ChallengesService {
       challenge.title,
       challenge.subTitle,
       this.makeChallgenImageUrl(challenge.contentImage),
+      participantList.length,
       participantList,
-      new ChallengeContentDTO(
-        this.makeChallgenImageUrl(challengeContent.image),
-        challengeContent.rule,
-        subContents,
-      ),
+      new ChallengeContentDTO(challengeContent.rule, subContents),
     );
   }
 
   async getChallengeList(
     query: GetChallengeListReqQueryDTO,
-  ): Promise<GetListChallengeResDTOV2[]> {
+  ): Promise<GetChallengeListResDTO> {
     const {sort} = query;
     const challenges: IGetListChallengeRes[] =
       await this.challengesRepository.getChallengeList(sort);
@@ -98,17 +97,38 @@ export class ChallengesService {
       challenges[index].participants = participantList;
     }
 
-    return challenges.map(challenge => {
-      return new GetListChallengeResDTOV2(
-        challenge.id,
-        challenge.title,
-        challenge.subTitle,
-        this.makeChallgenImageUrl(challenge.mainImage),
-        challenge.rnk < 3,
-        isAfter(challenge.regDate, subDays(new Date(), 7)),
-        challenge.participants.length + 1,
-        challenge.participants,
-      );
+    const newChallenges = this.getNewChallenges(
+      challenges as unknown as IChallenges[],
+    );
+
+    return new GetChallengeListResDTO(
+      challenges.length,
+      newChallenges.filter(c => c.isNewBadge).length,
+      challenges.map(challenge => {
+        return new GetListChallengeInfoResDTO(
+          challenge.id,
+          challenge.title,
+          challenge.subTitle,
+          this.makeChallgenImageUrl(challenge.mainImage),
+          challenge.rnk < 3,
+          newChallenges.find(nc => nc.challengeId === challenge.id)
+            ?.isNewBadge as boolean,
+          challenge.participants.length,
+          challenge.participants,
+        );
+      }),
+    );
+  }
+
+  private getNewChallenges(challenges: IChallenges[]): {
+    challengeId: number;
+    isNewBadge: boolean;
+  }[] {
+    return challenges.map(c => {
+      return {
+        challengeId: c.id,
+        isNewBadge: isAfter(c.regDate, subDays(new Date(), 7)),
+      };
     });
   }
 

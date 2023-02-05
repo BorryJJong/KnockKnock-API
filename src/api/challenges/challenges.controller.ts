@@ -15,7 +15,8 @@ import {
   GetChallengeTitleReqDTO,
   GetChallengeDetailResDTO,
   GetChallengeListReqQueryDTO,
-  GetListChallengeResDTOV2,
+  GetListChallengeInfoResDTO,
+  GetChallengeListResDTO,
 } from './dto/challenges.dto';
 
 @ApiTags('challenges')
@@ -81,16 +82,16 @@ export class ChallengesController {
 
   @Get('/')
   @ApiOperation({summary: '챌린지 목록조회'})
-  @OkApiResponseListDataDTO(GetListChallengeResDTOV2)
+  @OkApiResponseListDataDTO(GetChallengeListResDTO)
   @DefaultErrorApiResponseDTO()
   @InternalServerApiResponseDTO()
   public async getChallengeList(
     @Query() query: GetChallengeListReqQueryDTO,
-  ): Promise<ApiResponseDTO<GetListChallengeResDTOV2[] | ErrorDTO>> {
+  ): Promise<ApiResponseDTO<GetChallengeListResDTO | ErrorDTO>> {
     try {
       const challenges = await this.challengesService.getChallengeList(query);
 
-      return new ApiResponseDTO<GetListChallengeResDTOV2[]>(
+      return new ApiResponseDTO<GetChallengeListResDTO>(
         HttpStatus.OK,
         API_RESPONSE_MEESAGE.SUCCESS,
         challenges,

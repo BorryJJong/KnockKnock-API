@@ -24,3 +24,13 @@ export interface IGetChallengeDetailRes {
   content: string;
   contentImage: string;
 }
+
+export interface IChallenges {
+  id: number;
+  title: string;
+  subTitle: string;
+  content: string;
+  regDate: Date;
+  mainImage: string;
+  contentImage: string;
+}
