@@ -1,8 +1,10 @@
 import {User} from '@entities/User';
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
+import {REPORT_TYPE} from '@shared/enums/enum';
 import {IBlogPostRepository} from 'src/api/feed/interface/blogPost.interface';
 import {BlogPostRepository} from 'src/api/feed/repository/blogPost.repository';
+import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
 import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 import {ImageService, IUploadS3Response} from 'src/api/image/image.service';
 import {ICreateUser} from 'src/api/users/users.interface';
@@ -25,6 +27,8 @@ export class UsersService {
     private readonly blogPostRepository: IBlogPostRepository,
     @InjectRepository(UserToBlogPostHideRepository)
     private readonly userToBlogPostHideRepository: UserToBlogPostHideRepository,
+    @InjectRepository(UserReportBlogPostRepository)
+    private readonly userReportBlogPostRepository: UserReportBlogPostRepository,
     private readonly kakaoService: KakaoService,
     private readonly imageService: ImageService,
     private connection: Connection,
@@ -183,5 +187,17 @@ export class UsersService {
         await queryRunner.release();
       }
     }
+  }
+
+  public async reportBlogPost(
+    userId: number,
+    postId: number,
+    reportType: REPORT_TYPE,
+  ): Promise<void> {
+    await this.userReportBlogPostRepository.insertUserReportBlogPost(
+      userId,
+      postId,
+      reportType,
+    );
   }
 }

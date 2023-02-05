@@ -13,6 +13,7 @@ import {
   convertTimeToStr,
   dtoConvertBoolean,
 } from 'src/shared/utils';
+import {REPORT_TYPE} from '@shared/enums/enum';
 
 export class CreateFeedDTO extends OmitType(BlogPost, [
   'id',
@@ -713,6 +714,22 @@ export class DeleteFeedReqDTO {
 export class PostFeedBlogPostHideReqDTO {
   @ApiProperty({description: '피드 id', example: '1'})
   id: number;
+}
+
+export class ReportBlogPostReqParamDTO {
+  @ApiProperty({description: '피드 id', example: '1'})
+  id: number;
+}
+
+export class ReportBlogPostReqBodyDTO {
+  @IsString()
+  @ApiProperty({
+    description: '신고 사유 타입',
+    enum: REPORT_TYPE,
+    required: true,
+    nullable: false,
+  })
+  reportType: REPORT_TYPE;
 }
 
 export class CreateFeedResDTO {

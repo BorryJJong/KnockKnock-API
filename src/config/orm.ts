@@ -1,3 +1,4 @@
+import {UserReportBlogPost} from '@entities/UserReportBlogPost';
 import {UserToBlogPostHide} from '@entities/UserToBlogPostHide';
 import 'dotenv/config';
 import {ConnectionOptions} from 'typeorm';
@@ -31,6 +32,7 @@ export const ormConfig: ConnectionOptions = {
     Promotions,
     User,
     UserToBlogPostHide,
+    UserReportBlogPost,
   ],
   synchronize: false,
   logging: false,

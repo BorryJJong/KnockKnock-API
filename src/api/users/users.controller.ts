@@ -29,7 +29,11 @@ import {
 import {UserDeco} from '@shared/decorator/user.decorator';
 import {ApiResponseDTO, ErrorDTO} from '@shared/dto/response.dto';
 import {API_RESPONSE_MEESAGE, SOCIAL_TYPE} from '@shared/enums/enum';
-import {PostFeedBlogPostHideReqDTO} from 'src/api/feed/dto/feed.dto';
+import {
+  PostFeedBlogPostHideReqDTO,
+  ReportBlogPostReqBodyDTO,
+  ReportBlogPostReqParamDTO,
+} from 'src/api/feed/dto/feed.dto';
 import {
   GetCheckDuplicateUserNicknameReqDTO,
   GetUserResDTO,
@@ -368,6 +372,37 @@ export class UsersController {
         200,
         API_RESPONSE_MEESAGE.SUCCESS,
         getUser,
+      );
+    } catch (error) {
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        error.message,
+      );
+    }
+  }
+
+  @Post('/report/blog-post/:id')
+  @ApiOperation({summary: '피드 게시글 신고하기'})
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  @OkApiResponseNoneDataDTO()
+  @ConflictApiResponseDTO()
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
+  async reportBlogPost(
+    @UserDeco() user: IUser,
+    @Param() param: ReportBlogPostReqParamDTO,
+    @Body() body: ReportBlogPostReqBodyDTO,
+  ): Promise<ApiResponseDTO<void | ErrorDTO>> {
+    try {
+      const {id: postId} = param;
+      const {reportType} = body;
+      await this.userValidator.alreadyReportBlogPost(user.id, postId);
+      await this.userService.reportBlogPost(user.id, postId, reportType);
+
+      return new ApiResponseDTO<void>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
       );
     } catch (error) {
       return new ApiResponseDTO<ErrorDTO>(
