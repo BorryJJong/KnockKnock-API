@@ -7,6 +7,7 @@ import {
 import {ApiResponseDTO, ErrorDTO} from '@shared/dto/response.dto';
 import {API_RESPONSE_MEESAGE} from '@shared/enums/enum';
 import {
+  GetListEventResDTO,
   GetListHotFeedReqDTO,
   GetListHotFeedResDTO,
 } from 'src/api/home/dto/home.dto';
@@ -32,6 +33,29 @@ export class HomeController {
         HttpStatus.OK,
         API_RESPONSE_MEESAGE.SUCCESS,
         hotFeeds,
+      );
+    } catch (error) {
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        error.message,
+      );
+    }
+  }
+
+  @Get('/event')
+  @ApiOperation({summary: '특별한 이벤트 목록'})
+  @OkApiResponseListDataDTO(GetListEventResDTO)
+  @DefaultErrorApiResponseDTO()
+  async getListEvent(): Promise<
+    ApiResponseDTO<GetListEventResDTO[] | ErrorDTO>
+  > {
+    try {
+      const events = await this.homeService.getListEvent();
+
+      return new ApiResponseDTO<GetListEventResDTO[]>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        events,
       );
     } catch (error) {
       return new ApiResponseDTO<ErrorDTO>(

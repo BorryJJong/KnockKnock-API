@@ -1,4 +1,5 @@
 import {hash, compare, genSalt} from 'bcrypt';
+import {format} from 'date-fns';
 import {multiply} from 'ramda';
 
 export const hashPassword = async (password: string): Promise<string> => {
@@ -53,6 +54,15 @@ export const dateFormat = (date: Date): string => {
  */
 export const convertTime = (utc: Date): Date => {
   return new Date(Date.parse(utc + ''));
+};
+
+/**
+ * Format Date to String (YYYY.MM.DD)
+ * @param {Date} date
+ * @returns {string} YYYY.MM.DD
+ */
+export const dateFormatV2 = (targetDate: Date) => {
+  return `${format(targetDate, 'yyyy.MM.dd')}`;
 };
 
 /**
