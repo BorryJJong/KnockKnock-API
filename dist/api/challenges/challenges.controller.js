@@ -84,7 +84,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)('/'),
     (0, swagger_1.ApiOperation)({ summary: '챌린지 목록조회' }),
-    (0, swagger_decorator_1.OkApiResponseListDataDTO)(challenges_dto_1.GetListChallengeResDTOV2),
+    (0, swagger_decorator_1.OkApiResponseListDataDTO)(challenges_dto_1.GetChallengeListResDTO),
     (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
     (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     __param(0, (0, common_1.Query)()),

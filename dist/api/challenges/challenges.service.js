@@ -37,7 +37,7 @@ let ChallengesService = class ChallengesService {
                 subContents[index] = new challenges_dto_1.ChallengeSubContentDTO(subContent.title, this.makeChallgenImageUrl(subContent.image), subContent.content);
             });
         }
-        return new challenges_dto_1.GetChallengeDetailResDTO(challenge.id, challenge.title, challenge.subTitle, this.makeChallgenImageUrl(challenge.contentImage), participantList, new challenges_dto_1.ChallengeContentDTO(this.makeChallgenImageUrl(challengeContent.image), challengeContent.rule, subContents));
+        return new challenges_dto_1.GetChallengeDetailResDTO(challenge.id, challenge.title, challenge.subTitle, this.makeChallgenImageUrl(challenge.contentImage), participantList.length, participantList, new challenges_dto_1.ChallengeContentDTO(challengeContent.rule, subContents));
     }
     async getChallengeList(query) {
         const { sort } = query;
@@ -47,8 +47,18 @@ let ChallengesService = class ChallengesService {
             const participantList = await this.challengesRepository.getParticipantList(challengeId);
             challenges[index].participants = participantList;
         }
-        return challenges.map(challenge => {
-            return new challenges_dto_1.GetListChallengeResDTOV2(challenge.id, challenge.title, challenge.subTitle, this.makeChallgenImageUrl(challenge.mainImage), challenge.rnk < 3, (0, date_fns_1.isAfter)(challenge.regDate, (0, date_fns_1.subDays)(new Date(), 7)), challenge.participants.length + 1, challenge.participants);
+        const newChallenges = this.getNewChallenges(challenges);
+        return new challenges_dto_1.GetChallengeListResDTO(challenges.length, newChallenges.filter(c => c.isNewBadge).length, challenges.map(challenge => {
+            var _a;
+            return new challenges_dto_1.GetListChallengeInfoResDTO(challenge.id, challenge.title, challenge.subTitle, this.makeChallgenImageUrl(challenge.mainImage), challenge.rnk < 3, (_a = newChallenges.find(nc => nc.challengeId === challenge.id)) === null || _a === void 0 ? void 0 : _a.isNewBadge, challenge.participants.length, challenge.participants);
+        }));
+    }
+    getNewChallenges(challenges) {
+        return challenges.map(c => {
+            return {
+                challengeId: c.id,
+                isNewBadge: (0, date_fns_1.isAfter)(c.regDate, (0, date_fns_1.subDays)(new Date(), 7)),
+            };
         });
     }
     makeChallgenImageUrl(imageUrl) {

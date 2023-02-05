@@ -22,6 +22,7 @@ const like_repository_1 = require("../like/repository/like.repository");
 const users_repository_1 = require("../users/users.repository");
 const feed_validator_1 = require("./feed.validator");
 const UserToBlogPostHide_repository_1 = require("./repository/UserToBlogPostHide.repository");
+const UserReportBlogPost_repository_1 = require("./repository/UserReportBlogPost.repository");
 let FeedModule = class FeedModule {
 };
 FeedModule = __decorate([
@@ -37,6 +38,7 @@ FeedModule = __decorate([
                 like_repository_1.BlogLikeRepository,
                 users_repository_1.UserRepository,
                 UserToBlogPostHide_repository_1.UserToBlogPostHideRepository,
+                UserReportBlogPost_repository_1.UserReportBlogPostRepository,
             ]),
         ],
         controllers: [feed_controller_1.FeedController],

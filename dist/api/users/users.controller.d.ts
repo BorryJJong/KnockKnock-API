@@ -1,6 +1,6 @@
 /// <reference types="multer" />
 import { ApiResponseDTO, ErrorDTO } from '@shared/dto/response.dto';
-import { PostFeedBlogPostHideReqDTO } from 'src/api/feed/dto/feed.dto';
+import { PostFeedBlogPostHideReqDTO, ReportBlogPostReqBodyDTO, ReportBlogPostReqParamDTO } from 'src/api/feed/dto/feed.dto';
 import { GetCheckDuplicateUserNicknameReqDTO, GetUserResDTO, UpdateUserReqDTO } from 'src/api/users/dto/users.dto';
 import { IUser } from 'src/api/users/users.interface';
 import { UserValidator } from 'src/api/users/users.validator';
@@ -25,4 +25,5 @@ export declare class UsersController {
     checkDuplicateNickname(param: GetCheckDuplicateUserNicknameReqDTO): Promise<ApiResponseDTO<boolean | ErrorDTO>>;
     hideBlogPost(param: PostFeedBlogPostHideReqDTO, user: IUser): Promise<ApiResponseDTO<void | ErrorDTO>>;
     getUser(user: IUser): Promise<ApiResponseDTO<GetUserResDTO | ErrorDTO>>;
+    reportBlogPost(user: IUser, param: ReportBlogPostReqParamDTO, body: ReportBlogPostReqBodyDTO): Promise<ApiResponseDTO<void | ErrorDTO>>;
 }

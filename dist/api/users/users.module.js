@@ -20,6 +20,7 @@ const image_service_1 = require("../image/image.service");
 const config_1 = require("@nestjs/config");
 const blogPost_repository_1 = require("../feed/repository/blogPost.repository");
 const UserToBlogPostHide_repository_1 = require("../feed/repository/UserToBlogPostHide.repository");
+const UserReportBlogPost_repository_1 = require("../feed/repository/UserReportBlogPost.repository");
 let UsersModule = class UsersModule {
 };
 UsersModule = __decorate([
@@ -29,6 +30,7 @@ UsersModule = __decorate([
                 users_repository_1.UserRepository,
                 blogPost_repository_1.BlogPostRepository,
                 UserToBlogPostHide_repository_1.UserToBlogPostHideRepository,
+                UserReportBlogPost_repository_1.UserReportBlogPostRepository,
             ]),
             (0, common_1.forwardRef)(() => auth_module_1.AuthModule),
         ],

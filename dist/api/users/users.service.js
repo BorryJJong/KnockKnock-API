@@ -16,16 +16,18 @@ exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const blogPost_repository_1 = require("../feed/repository/blogPost.repository");
+const UserReportBlogPost_repository_1 = require("../feed/repository/UserReportBlogPost.repository");
 const UserToBlogPostHide_repository_1 = require("../feed/repository/UserToBlogPostHide.repository");
 const image_service_1 = require("../image/image.service");
 const kakao_service_1 = require("../../auth/kakao.service");
 const typeorm_2 = require("typeorm");
 const users_repository_1 = require("./users.repository");
 let UsersService = class UsersService {
-    constructor(userRepository, blogPostRepository, userToBlogPostHideRepository, kakaoService, imageService, connection) {
+    constructor(userRepository, blogPostRepository, userToBlogPostHideRepository, userReportBlogPostRepository, kakaoService, imageService, connection) {
         this.userRepository = userRepository;
         this.blogPostRepository = blogPostRepository;
         this.userToBlogPostHideRepository = userToBlogPostHideRepository;
+        this.userReportBlogPostRepository = userReportBlogPostRepository;
         this.kakaoService = kakaoService;
         this.imageService = imageService;
         this.connection = connection;
@@ -130,13 +132,18 @@ let UsersService = class UsersService {
             }
         }
     }
+    async reportBlogPost(userId, postId, reportType) {
+        await this.userReportBlogPostRepository.insertUserReportBlogPost(userId, postId, reportType);
+    }
 };
 UsersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(users_repository_1.UserRepository)),
     __param(1, (0, typeorm_1.InjectRepository)(blogPost_repository_1.BlogPostRepository)),
     __param(2, (0, typeorm_1.InjectRepository)(UserToBlogPostHide_repository_1.UserToBlogPostHideRepository)),
+    __param(3, (0, typeorm_1.InjectRepository)(UserReportBlogPost_repository_1.UserReportBlogPostRepository)),
     __metadata("design:paramtypes", [users_repository_1.UserRepository, Object, UserToBlogPostHide_repository_1.UserToBlogPostHideRepository,
+        UserReportBlogPost_repository_1.UserReportBlogPostRepository,
         kakao_service_1.KakaoService,
         image_service_1.ImageService,
         typeorm_2.Connection])

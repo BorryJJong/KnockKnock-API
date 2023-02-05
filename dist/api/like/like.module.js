@@ -21,6 +21,7 @@ const users_service_1 = require("../users/users.service");
 const config_1 = require("@nestjs/config");
 const blogPost_repository_1 = require("../feed/repository/blogPost.repository");
 const UserToBlogPostHide_repository_1 = require("../feed/repository/UserToBlogPostHide.repository");
+const UserReportBlogPost_repository_1 = require("../feed/repository/UserReportBlogPost.repository");
 let LikeModule = class LikeModule {
 };
 LikeModule = __decorate([
@@ -31,6 +32,7 @@ LikeModule = __decorate([
                 users_repository_1.UserRepository,
                 blogPost_repository_1.BlogPostRepository,
                 UserToBlogPostHide_repository_1.UserToBlogPostHideRepository,
+                UserReportBlogPost_repository_1.UserReportBlogPostRepository,
             ]),
         ],
         controllers: [like_controller_1.LikeController],
