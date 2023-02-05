@@ -20,6 +20,8 @@ const promotions_module_1 = require("./api/promotions/promotions.module");
 const like_module_1 = require("./api/like/like.module");
 const myPage_module_1 = require("./api/my-page/myPage.module");
 const home_module_1 = require("./api/home/home.module");
+const core_1 = require("@nestjs/core");
+const HttpException_Filter_1 = require("./shared/filter/HttpException.Filter");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -36,7 +38,13 @@ AppModule = __decorate([
             home_module_1.HomeModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [
+            app_service_1.AppService,
+            {
+                provide: core_1.APP_FILTER,
+                useClass: HttpException_Filter_1.HttpExceptionFilter,
+            },
+        ],
     })
 ], AppModule);
 exports.AppModule = AppModule;

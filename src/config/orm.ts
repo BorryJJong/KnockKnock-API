@@ -35,4 +35,5 @@ export const ormConfig: ConnectionOptions = {
     UserReportBlogPost,
   ],
   synchronize: false,
+  logging: false,
 };

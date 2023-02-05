@@ -1,12 +1,17 @@
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {EntityRepository, getManager, Repository} from 'typeorm';
-import {GetListChallengeResDTO, ParticipantUserDTO} from './dto/challenges.dto';
+import {ParticipantUserDTO} from './dto/challenges.dto';
 import {BlogChallenges} from '../../entities/BlogChallenges';
 import {Challenges} from '../../entities/Challenges';
 import {User} from '../../entities/User';
 import {BlogPost} from '../../entities/BlogPost';
-import {IChallengeTitle} from './challenges.interface';
+import {
+  IChallengeTitle,
+  IGetChallengeDetailRes,
+  IGetListChallengeRes,
+} from './challenges.interface';
 import {map} from 'ramda';
+import {CHALLENGES_SORT} from '@shared/enums/enum';
 
 @Injectable()
 @EntityRepository(Challenges)
@@ -23,11 +28,12 @@ export class ChallengesRepository extends Repository<Challenges> {
     }
   }
 
-  public async findChallengeById(id: number): Promise<Challenges> {
+  public async findChallengeById(id: number): Promise<IGetChallengeDetailRes> {
     const challenge = await this.findOne({
-      select: ['id', 'title', 'subTitle', 'content', 'regDate'],
+      select: ['id', 'title', 'subTitle', 'content', 'contentImage'],
       where: {id},
     });
+
     if (!challenge) {
       throw new HttpException(
         {
@@ -36,6 +42,7 @@ export class ChallengesRepository extends Repository<Challenges> {
         HttpStatus.BAD_REQUEST,
       );
     }
+
     return challenge;
   }
 
@@ -46,8 +53,10 @@ export class ChallengesRepository extends Repository<Challenges> {
     return challenges;
   }
 
-  public async getChallengeList(): Promise<GetListChallengeResDTO[]> {
-    const userPostChallenge: any = getManager()
+  public async getChallengeList(
+    sort: CHALLENGES_SORT,
+  ): Promise<IGetListChallengeRes[]> {
+    const userPostChallenge = getManager()
       .createQueryBuilder()
       .select('bp.user_id', 'user_id')
       .addSelect('bc.challenge_id', 'challenge_id')
@@ -55,7 +64,7 @@ export class ChallengesRepository extends Repository<Challenges> {
       .innerJoin(BlogChallenges, 'bc', 'bp.id = bc.post_id')
       .groupBy('bp.user_id, bc.challenge_id');
 
-    const challengePostCnt: any = getManager()
+    const challengePostCnt = getManager()
       .createQueryBuilder()
       .select('a.id', 'id')
       .addSelect('count(*)', 'post_cnt')
@@ -67,7 +76,7 @@ export class ChallengesRepository extends Repository<Challenges> {
       )
       .groupBy('a.id');
 
-    const challengeList: any = getManager()
+    const challengeList = getManager()
       .createQueryBuilder()
       .select('ma.id', 'id')
       .addSelect('ma.title', 'title')
@@ -80,77 +89,65 @@ export class ChallengesRepository extends Repository<Challenges> {
       )
       .addSelect('IFNULL(mb.post_cnt,0)', 'postCnt')
       .addSelect('rank() over(order by mb.post_cnt desc)', 'rnk')
+      .addSelect('ma.main_image', 'mainImage')
       .from(Challenges, 'ma')
       .leftJoin('(' + challengePostCnt.getQuery() + ')', 'mb', 'ma.id = mb.id');
 
-    // Execute the generated query
-    const challengeListRaws = await challengeList.getRawMany();
+    if (sort === CHALLENGES_SORT.BRAND_NEW) {
+      challengeList.orderBy('ma.regDate', 'DESC');
+    } else {
+      challengeList.orderBy('rnk', 'ASC');
+    }
 
-    //Convert raws to our appropriate objects
-    const challenges = challengeListRaws.map((s: any) => {
-      const item: GetListChallengeResDTO = {
-        id: s.id,
-        title: s.title,
-        subTitle: s.subTitle,
-        content: s.content,
-        regDate: s.regDate,
-        newYn: s.newYn,
-        postCnt: s.postCnt,
-        rnk: s.rnk,
-        participants: [],
-      };
-      return item;
-    });
-
-    return challenges;
+    return await challengeList.getRawMany<IGetListChallengeRes>();
   }
 
   public async getParticipantList(
     challengeId: number,
   ): Promise<ParticipantUserDTO[]> {
-    const userPostChallenge: any = getManager()
+    const userPostChallengeQuery = getManager()
       .createQueryBuilder()
       .select('bp.user_id', 'user_id')
       .addSelect('bc.challenge_id', 'challenge_id')
       .from(BlogPost, 'bp')
       .innerJoin(BlogChallenges, 'bc', 'bp.id = bc.post_id')
       .where("bc.challenge_id = ':id'", {id: challengeId})
+      .andWhere('bp.del_date IS NULL')
       .groupBy('bp.user_id, bc.challenge_id');
 
-    const challengePostCnt: any = getManager()
+    const challengePostCntQuery = getManager()
       .createQueryBuilder()
-      .select('a.id', 'id')
+      .select('challenge.id', 'id')
       .addSelect('min(reg_date)', 'reg_date')
-      .from(Challenges, 'a')
+      .from(Challenges, 'challenge')
       .innerJoin(
-        '(' + userPostChallenge.getQuery() + ')',
-        'b',
-        'a.id = b.challenge_id',
+        '(' + userPostChallengeQuery.getQuery() + ')',
+        'userPostChallenge',
+        'challenge.id = userPostChallenge.challenge_id',
       )
-      .groupBy('a.id');
+      .groupBy('challenge.id');
 
-    const participantList: any = getManager()
+    const participantsQuery = getManager()
       .createQueryBuilder()
-      .select('ma.id', 'id')
-      .addSelect('ma.nickname', 'nickname')
-      .addSelect('ma.image', 'image')
-      .from(User, 'ma')
-      .leftJoin('(' + challengePostCnt.getQuery() + ')', 'mb', 'ma.id = mb.id')
-      .orderBy('mb.reg_date', 'ASC');
+      .select('user.id', 'id')
+      .addSelect('user.image', 'image')
+      .from(User, 'user')
+      .leftJoin(
+        '(' + challengePostCntQuery.getQuery() + ')',
+        'cp',
+        'user.id = cp.id',
+      )
+      .where('user.deletedAt IS NULL')
+      .orderBy('RAND()')
+      .limit(3);
 
-    const participantListRaws = await participantList.getRawMany();
+    const participants: ParticipantUserDTO[] =
+      await participantsQuery.getRawMany();
 
-    //Convert raws to our appropriate objects
-    const participants = participantListRaws.map((s: any) => {
-      const item: ParticipantUserDTO = {
-        id: s.id,
-        nickname: s.nickname,
-        image: s.image,
-      };
-      return item;
-    });
-
-    return participants;
+    return participants.map(
+      (participant: ParticipantUserDTO) =>
+        new ParticipantUserDTO(participant.id, participant.image),
+    );
   }
 
   public async getChallengeTitles(): Promise<IChallengeTitle[]> {

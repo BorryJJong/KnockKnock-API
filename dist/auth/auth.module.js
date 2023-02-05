@@ -32,7 +32,6 @@ AuthModule = __decorate([
         providers: [
             auth_service_1.AuthService,
             jwtAccessToken_strategy_1.JwtAccessTokenStrategy,
-            jwtAccessToken_strategy_1.JwtAccessTokenStrategy,
             kakao_service_1.KakaoService,
             config_1.ConfigService,
             apple_service_1.AppleService,

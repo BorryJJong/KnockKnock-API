@@ -1,5 +1,5 @@
 import { ChallengesRepository } from './challenges.repository';
-import { GetListChallengeResDTO, GetChallengeReqDTO, GetChallengeResDTO, GetChallengeTitleReqDTO, GetChallengeDetailResDTO } from './dto/challenges.dto';
+import { GetChallengeReqDTO, GetChallengeResDTO, GetChallengeTitleReqDTO, GetChallengeDetailResDTO, GetChallengeListReqQueryDTO, GetListChallengeResDTOV2 } from './dto/challenges.dto';
 export declare type ChallengeSubContentJsonType = {
     title: string;
     image: string;
@@ -15,9 +15,9 @@ export declare type ChallengeContentType = {
 export declare class ChallengesService {
     private readonly challengesRepository;
     constructor(challengesRepository: ChallengesRepository);
-    getChallenge({ id }: GetChallengeReqDTO): Promise<GetChallengeResDTO>;
     getAllChallenges(): Promise<GetChallengeResDTO[]>;
     getChallengeDetail({ id, }: GetChallengeReqDTO): Promise<GetChallengeDetailResDTO>;
-    getChallengeList(): Promise<GetListChallengeResDTO[]>;
+    getChallengeList(query: GetChallengeListReqQueryDTO): Promise<GetListChallengeResDTOV2[]>;
+    private makeChallgenImageUrl;
     getChallengeTitles(): Promise<GetChallengeTitleReqDTO[]>;
 }

@@ -9,11 +9,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChallengesRepository = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
+const challenges_dto_1 = require("./dto/challenges.dto");
 const BlogChallenges_1 = require("../../entities/BlogChallenges");
 const Challenges_1 = require("../../entities/Challenges");
 const User_1 = require("../../entities/User");
 const BlogPost_1 = require("../../entities/BlogPost");
 const ramda_1 = require("ramda");
+const enum_1 = require("../../shared/enums/enum");
 let ChallengesRepository = class ChallengesRepository extends typeorm_1.Repository {
     async checkExistChallenge({ id }) {
         const challenge = await this.findOne({ select: ['id'], where: { id } });
@@ -25,7 +27,7 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
     }
     async findChallengeById(id) {
         const challenge = await this.findOne({
-            select: ['id', 'title', 'subTitle', 'content', 'regDate'],
+            select: ['id', 'title', 'subTitle', 'content', 'contentImage'],
             where: { id },
         });
         if (!challenge) {
@@ -41,7 +43,7 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
         });
         return challenges;
     }
-    async getChallengeList() {
+    async getChallengeList(sort) {
         const userPostChallenge = (0, typeorm_1.getManager)()
             .createQueryBuilder()
             .select('bp.user_id', 'user_id')
@@ -66,59 +68,45 @@ let ChallengesRepository = class ChallengesRepository extends typeorm_1.Reposito
             .addSelect("case when date_format(ma.reg_date,'%Y%m%d') between date_format(timestampadd(month, -1, sysdate()),'%Y%m%d') and date_format(sysdate(),'%Y%m%d') then 'Y' else 'N' end", 'newYn')
             .addSelect('IFNULL(mb.post_cnt,0)', 'postCnt')
             .addSelect('rank() over(order by mb.post_cnt desc)', 'rnk')
+            .addSelect('ma.main_image', 'mainImage')
             .from(Challenges_1.Challenges, 'ma')
             .leftJoin('(' + challengePostCnt.getQuery() + ')', 'mb', 'ma.id = mb.id');
-        const challengeListRaws = await challengeList.getRawMany();
-        const challenges = challengeListRaws.map((s) => {
-            const item = {
-                id: s.id,
-                title: s.title,
-                subTitle: s.subTitle,
-                content: s.content,
-                regDate: s.regDate,
-                newYn: s.newYn,
-                postCnt: s.postCnt,
-                rnk: s.rnk,
-                participants: [],
-            };
-            return item;
-        });
-        return challenges;
+        if (sort === enum_1.CHALLENGES_SORT.BRAND_NEW) {
+            challengeList.orderBy('ma.regDate', 'DESC');
+        }
+        else {
+            challengeList.orderBy('rnk', 'ASC');
+        }
+        return await challengeList.getRawMany();
     }
     async getParticipantList(challengeId) {
-        const userPostChallenge = (0, typeorm_1.getManager)()
+        const userPostChallengeQuery = (0, typeorm_1.getManager)()
             .createQueryBuilder()
             .select('bp.user_id', 'user_id')
             .addSelect('bc.challenge_id', 'challenge_id')
             .from(BlogPost_1.BlogPost, 'bp')
             .innerJoin(BlogChallenges_1.BlogChallenges, 'bc', 'bp.id = bc.post_id')
             .where("bc.challenge_id = ':id'", { id: challengeId })
+            .andWhere('bp.del_date IS NULL')
             .groupBy('bp.user_id, bc.challenge_id');
-        const challengePostCnt = (0, typeorm_1.getManager)()
+        const challengePostCntQuery = (0, typeorm_1.getManager)()
             .createQueryBuilder()
-            .select('a.id', 'id')
+            .select('challenge.id', 'id')
             .addSelect('min(reg_date)', 'reg_date')
-            .from(Challenges_1.Challenges, 'a')
-            .innerJoin('(' + userPostChallenge.getQuery() + ')', 'b', 'a.id = b.challenge_id')
-            .groupBy('a.id');
-        const participantList = (0, typeorm_1.getManager)()
+            .from(Challenges_1.Challenges, 'challenge')
+            .innerJoin('(' + userPostChallengeQuery.getQuery() + ')', 'userPostChallenge', 'challenge.id = userPostChallenge.challenge_id')
+            .groupBy('challenge.id');
+        const participantsQuery = (0, typeorm_1.getManager)()
             .createQueryBuilder()
-            .select('ma.id', 'id')
-            .addSelect('ma.nickname', 'nickname')
-            .addSelect('ma.image', 'image')
-            .from(User_1.User, 'ma')
-            .leftJoin('(' + challengePostCnt.getQuery() + ')', 'mb', 'ma.id = mb.id')
-            .orderBy('mb.reg_date', 'ASC');
-        const participantListRaws = await participantList.getRawMany();
-        const participants = participantListRaws.map((s) => {
-            const item = {
-                id: s.id,
-                nickname: s.nickname,
-                image: s.image,
-            };
-            return item;
-        });
-        return participants;
+            .select('user.id', 'id')
+            .addSelect('user.image', 'image')
+            .from(User_1.User, 'user')
+            .leftJoin('(' + challengePostCntQuery.getQuery() + ')', 'cp', 'user.id = cp.id')
+            .where('user.deletedAt IS NULL')
+            .orderBy('RAND()')
+            .limit(3);
+        const participants = await participantsQuery.getRawMany();
+        return participants.map((participant) => new challenges_dto_1.ParticipantUserDTO(participant.id, participant.image));
     }
     async getChallengeTitles() {
         return await this.manager

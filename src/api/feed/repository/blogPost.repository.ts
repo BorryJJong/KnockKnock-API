@@ -17,6 +17,12 @@ import {GetListHotFeedResDTO} from 'src/api/home/dto/home.dto';
 import {BlogImage} from '@entities/BlogImage';
 import {BlogChallenges} from '@entities/BlogChallenges';
 
+export interface test {
+  postId: number;
+  scale: string;
+  nickname: string;
+  fileUrl: string;
+}
 @Injectable()
 @EntityRepository(BlogPost)
 export class BlogPostRepository
@@ -241,7 +247,7 @@ export class BlogPostRepository
         });
     }
 
-    const hotFeeds = await queryBuilder.getRawMany<GetListHotFeedResDTO>();
+    const hotFeeds = await queryBuilder.limit(6).getRawMany<test>();
 
     return hotFeeds.map(feed => {
       return new GetListHotFeedResDTO(

@@ -10,23 +10,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Promotions = void 0;
-const swagger_1 = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 let Promotions = class Promotions {
 };
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '프로모션 id',
-        example: '1',
-    }),
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
 ], Promotions.prototype, "id", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '프로모션 종류',
-        example: '다회용기 할인',
-    }),
     (0, typeorm_1.Column)({
         name: 'type',
         type: 'varchar',

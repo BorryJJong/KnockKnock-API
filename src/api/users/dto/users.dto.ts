@@ -36,19 +36,22 @@ export class UserInfoResDTO {
     this.deletedAt = deletedAt;
   }
 }
-
 export class UpdateUserReqDTO {
   @ApiProperty({
     type: String,
     nullable: true,
-    example: 'jerry',
+    required: false,
     description: '닉네임',
   })
   nickname?: string;
 
-  constructor(nickname: string) {
-    this.nickname = nickname;
-  }
+  @ApiProperty({
+    type: 'file',
+    nullable: true,
+    required: false,
+    description: '이미지 파일 업로드',
+  })
+  image?: Express.Multer.File;
 }
 
 export class GetCheckDuplicateUserNicknameReqDTO {
@@ -62,5 +65,31 @@ export class GetCheckDuplicateUserNicknameReqDTO {
 
   constructor(nickname: string) {
     this.nickname = nickname;
+  }
+}
+
+export class GetUserResDTO {
+  @ApiProperty({type: String, example: 'jerry', description: '닉네임'})
+  private nickname: string;
+
+  @ApiProperty({enum: SOCIAL_TYPE, example: 'KAKAO', description: '소셜 종류'})
+  private socialType: string;
+
+  @ApiProperty({type: String, example: '', description: '회원 프로필 이미지'})
+  private image: string;
+
+  @ApiProperty({type: Date, example: '', description: '회원 가입 날짜'})
+  private regDate: Date;
+
+  constructor(
+    nickname: string,
+    socialType: SOCIAL_TYPE,
+    image: string,
+    regDate: Date,
+  ) {
+    this.nickname = nickname;
+    this.socialType = socialType;
+    this.image = image;
+    this.regDate = regDate;
   }
 }

@@ -18,7 +18,7 @@ const BlogImage_1 = require("../../../entities/BlogImage");
 const BlogChallenges_1 = require("../../../entities/BlogChallenges");
 let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
     createBlogPost(createBlogPostDTO, userId) {
-        return this.create(Object.assign(Object.assign({}, createBlogPostDTO), { userId }));
+        return this.create({ ...createBlogPostDTO, userId });
     }
     async saveBlogPost(queryRunner, blogPost) {
         if (queryRunner === null) {
@@ -179,7 +179,7 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
                 challengeId,
             });
         }
-        const hotFeeds = await queryBuilder.getRawMany();
+        const hotFeeds = await queryBuilder.limit(6).getRawMany();
         return hotFeeds.map(feed => {
             return new home_dto_1.GetListHotFeedResDTO(feed.postId, feed.scale, feed.nickname, feed.fileUrl);
         });

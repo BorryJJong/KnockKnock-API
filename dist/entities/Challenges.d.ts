@@ -5,4 +5,6 @@ export declare class Challenges {
     content: string;
     regDate: Date;
     beforeInsert(): void;
+    mainImage: string;
+    contentImage: string;
 }

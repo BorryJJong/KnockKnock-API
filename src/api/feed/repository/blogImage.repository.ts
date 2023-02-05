@@ -46,4 +46,17 @@ export class BlogImageRepository extends Repository<BlogImage> {
 
     return images;
   }
+
+  async deleteBlogImageByPostId(
+    queryRunner: QueryRunner,
+    postId: number,
+  ): Promise<void> {
+    await this.createQueryBuilder('blogImage', queryRunner)
+      .delete()
+      .from(BlogImage)
+      .where('postId = :postId', {
+        postId,
+      })
+      .execute();
+  }
 }

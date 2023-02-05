@@ -31,9 +31,7 @@ let UsersService = class UsersService {
         this.connection = connection;
     }
     async saveUser(request, file) {
-        console.log('file', file);
         const fileUrl = await this.getUserProfileImageUrl(file);
-        console.log('fileUrl', fileUrl);
         return await this.userRepository.insertUser(request, fileUrl);
     }
     async getSocialUser({ socialUuid, socialType, }) {
@@ -73,12 +71,12 @@ let UsersService = class UsersService {
             }
         }
     }
-    async profileUpdate(userId, updateUserReqDTO, file) {
-        const { nickname } = updateUserReqDTO;
-        console.log('file', file);
-        const fileUrl = await this.getUserProfileImageUrl(file);
-        console.log('fileUrl', fileUrl);
-        return await this.userRepository.updateUser(userId, nickname);
+    async profileUpdate(userId, nickname, file) {
+        let requestFileUrl;
+        if (file) {
+            requestFileUrl = await this.getUserProfileImageUrl(file);
+        }
+        return await this.userRepository.updateUser(userId, nickname, requestFileUrl);
     }
     async getUserProfileImageUrl(file) {
         let resultS3 = {

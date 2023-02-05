@@ -43,14 +43,22 @@ let FeedService = FeedService_1 = class FeedService {
         this.userRepository = userRepository;
         this.userToBlogPostHideRepository = userToBlogPostHideRepository;
         this.logger = new common_1.Logger(FeedService_1.name);
+        this.s3Endpoint = process.env.AWS_S3_ENDPOINT;
     }
     async create(files, createFeedDTO, userId) {
         const queryRunner = this.connection.createQueryRunner();
-        let result = false;
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            const post = await this.savePost(queryRunner, createFeedDTO, userId);
+            const { content, scale, storeAddress, storeName, locationX, locationY } = createFeedDTO;
+            const post = await this.savePost(queryRunner, {
+                content,
+                scale,
+                storeAddress,
+                storeName,
+                locationX,
+                locationY,
+            }, userId);
             const postId = post.id;
             await this.saveChallenges(queryRunner, postId, createFeedDTO.challenges);
             await this.savePromotion(queryRunner, postId, createFeedDTO.promotions);
@@ -58,16 +66,18 @@ let FeedService = FeedService_1 = class FeedService {
                 await Promise.all(files.map(async (file) => await this.savePostImage(queryRunner, postId, file)));
             }
             await queryRunner.commitTransaction();
-            result = true;
+            return new feed_dto_1.CreateFeedResDTO(postId);
         }
         catch (e) {
-            this.logger.error(e);
             await queryRunner.rollbackTransaction();
+            throw new common_1.HttpException({
+                error: e.message,
+                message: e.message,
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
         finally {
             await queryRunner.release();
         }
-        return result;
     }
     async savePost(queryRunner, createBlogPostDTO, userId) {
         const post = this.blogPostRepository.createBlogPost(createBlogPostDTO, userId);
@@ -91,6 +101,16 @@ let FeedService = FeedService_1 = class FeedService {
             });
             await this.blogPromotionRepository.saveBlogPromotion(queryRunner, promotion);
         }));
+    }
+    async deletePostImage(queryRunner, postId, fileUrls) {
+        if (fileUrls.length === 0) {
+            return;
+        }
+        await this.blogImageRepository.deleteBlogImageByPostId(queryRunner, postId);
+        fileUrls.forEach(file => {
+            const convertFileUrl = file.replace(this.s3Endpoint || '', '');
+            this.imageService.deleteS3(convertFileUrl);
+        });
     }
     async savePostImage(queryRunner, postId, file) {
         let resultS3 = {
@@ -162,27 +182,26 @@ let FeedService = FeedService_1 = class FeedService {
             }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async update(updateFeedDTO) {
+    async update(postId, updateFeedDTO) {
         const queryRunner = this.connection.createQueryRunner();
-        let result = false;
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            const postId = updateFeedDTO.id;
-            const post = await this.updatePost(queryRunner, postId, updateFeedDTO);
+            await this.updatePost(queryRunner, postId, updateFeedDTO);
             await this.updateChallenges(queryRunner, postId, updateFeedDTO.challenges);
             await this.updatePromotion(queryRunner, postId, updateFeedDTO.promotions);
             await queryRunner.commitTransaction();
-            result = true;
         }
         catch (e) {
-            this.logger.error(e);
             await queryRunner.rollbackTransaction();
+            throw new common_1.HttpException({
+                error: e.message,
+                message: e.message,
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
         finally {
             await queryRunner.release();
         }
-        return result;
     }
     async updatePost(queryRunner, postId, updateBlogPostDTO) {
         const post = this.blogPostRepository.createBlogPost(updateBlogPostDTO);
@@ -192,23 +211,27 @@ let FeedService = FeedService_1 = class FeedService {
     }
     async updateChallenges(queryRunner, postId, challenges) {
         await this.blogChallengesRepository.deleteBlogChallengesByPostId(queryRunner, postId);
-        await Promise.all(challenges.split(',').map(async (id) => {
-            const challenge = this.blogChallengesRepository.createBlogChallenges({
-                postId: postId,
-                challengeId: Number(id),
-            });
-            await this.blogChallengesRepository.saveBlogChallenges(queryRunner, challenge);
-        }));
+        const challengeInfos = challenges
+            .split(',')
+            .map(challengeId => {
+            return {
+                postId: +postId,
+                challengeId: +challengeId,
+            };
+        });
+        await this.blogChallengesRepository.insertBlogChallenges(challengeInfos, queryRunner);
     }
     async updatePromotion(queryRunner, postId, promotions) {
         await this.blogPromotionRepository.deleteBlogPromotionByPostId(queryRunner, postId);
-        await Promise.all(promotions.split(',').map(async (id) => {
-            const promotion = this.blogPromotionRepository.createBlogPromotion({
-                postId: postId,
-                promotionId: Number(id),
-            });
-            await this.blogPromotionRepository.saveBlogPromotion(queryRunner, promotion);
-        }));
+        const promotionInfos = promotions
+            .split(',')
+            .map(promotionId => {
+            return {
+                postId,
+                promotionId: +promotionId,
+            };
+        });
+        await this.blogPromotionRepository.insertBlogPromotion(promotionInfos, queryRunner);
     }
     async getFeedsByChallengesFilter(query, userId) {
         let blogPostIds = [];

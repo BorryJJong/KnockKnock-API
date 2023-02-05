@@ -34,5 +34,6 @@ exports.ormConfig = {
         UserToBlogPostHide_1.UserToBlogPostHide,
     ],
     synchronize: false,
+    logging: false,
 };
 //# sourceMappingURL=orm.js.map

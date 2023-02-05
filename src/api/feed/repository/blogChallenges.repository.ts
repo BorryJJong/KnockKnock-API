@@ -3,6 +3,7 @@ import {EntityRepository, getManager, QueryRunner, Repository} from 'typeorm';
 import {CreateBlogChallengesDTO, GetBlogChallengesDTO} from '../dto/feed.dto';
 import {BlogChallenges} from 'src/entities/BlogChallenges';
 import {Challenges} from 'src/entities/Challenges';
+import {IBlogChallenge} from 'src/api/feed/interface/blogChallenges.interface';
 
 @Injectable()
 @EntityRepository(BlogChallenges)
@@ -22,6 +23,17 @@ export class BlogChallengesRepository extends Repository<BlogChallenges> {
     } else {
       return await queryRunner.manager.save(blogChallenges);
     }
+  }
+
+  async insertBlogChallenges(
+    challenges: IBlogChallenge[],
+    queryRunner?: QueryRunner,
+  ): Promise<void> {
+    await this.createQueryBuilder('blogChallenges', queryRunner)
+      .insert()
+      .into(BlogChallenges)
+      .values(challenges)
+      .execute();
   }
 
   async getBlogChallengesByChallengeId(

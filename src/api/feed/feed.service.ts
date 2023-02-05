@@ -3,8 +3,6 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {Connection, QueryRunner} from 'typeorm';
 import {plainToInstance} from 'class-transformer';
 import {
-  CreateFeedDTO,
-  UpdateFeedDTO,
   CreateBlogPostDTO,
   GetListFeedMainReqDTO,
   GetListFeedMainResDTO,
@@ -25,6 +23,9 @@ import {
   DelBlogCommentReqDTO,
   UpdateBlogPostDTO,
   DeleteFeedReqDTO,
+  UpdateFeedReqDTO,
+  CreateFeedDTOV2,
+  CreateFeedResDTO,
 } from './dto/feed.dto';
 import {ImageService, IUploadS3Response} from 'src/api/image/image.service';
 import {BlogChallengesRepository} from './repository/blogChallenges.repository';
@@ -46,10 +47,13 @@ import {UserRepository} from 'src/api/users/users.repository';
 import {User} from '@entities/User';
 import {IUser} from 'src/api/users/users.interface';
 import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
+import {IBlogChallenge} from 'src/api/feed/interface/blogChallenges.interface';
+import {IBlogPromotion} from 'src/api/feed/interface/blogPromotion.interface';
 
 @Injectable()
 export class FeedService {
   private readonly logger = new Logger(FeedService.name);
+  private readonly s3Endpoint = process.env.AWS_S3_ENDPOINT;
 
   constructor(
     private readonly imageService: ImageService,
@@ -74,18 +78,30 @@ export class FeedService {
 
   async create(
     files: Express.Multer.File[],
-    createFeedDTO: CreateFeedDTO,
+    createFeedDTO: CreateFeedDTOV2,
     userId: number,
-  ) {
+  ): Promise<CreateFeedResDTO> {
     const queryRunner = this.connection.createQueryRunner();
-    let result = false;
-
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
+      const {content, scale, storeAddress, storeName, locationX, locationY} =
+        createFeedDTO;
+
       // 1. 포스트 저장
-      const post = await this.savePost(queryRunner, createFeedDTO, userId);
+      const post = await this.savePost(
+        queryRunner,
+        {
+          content,
+          scale,
+          storeAddress,
+          storeName,
+          locationX,
+          locationY,
+        } as CreateBlogPostDTO,
+        userId,
+      );
       const postId: number = post.id;
 
       // 2. 챌린지 저장
@@ -106,15 +122,19 @@ export class FeedService {
       // throw new InternalServerErrorException(); // 일부러 에러를 발생시켜 본다
       // await queryRunner.commitTransaction();
       await queryRunner.commitTransaction();
-      result = true;
+      return new CreateFeedResDTO(postId);
     } catch (e) {
-      this.logger.error(e);
       await queryRunner.rollbackTransaction();
+      throw new HttpException(
+        {
+          error: e.message,
+          message: e.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     } finally {
       await queryRunner.release();
     }
-
-    return result;
   }
 
   async savePost(
@@ -170,6 +190,22 @@ export class FeedService {
         );
       }),
     );
+  }
+
+  async deletePostImage(
+    queryRunner: QueryRunner,
+    postId: number,
+    fileUrls: string[],
+  ): Promise<void> {
+    if (fileUrls.length === 0) {
+      return;
+    }
+
+    await this.blogImageRepository.deleteBlogImageByPostId(queryRunner, postId);
+    fileUrls.forEach(file => {
+      const convertFileUrl = file.replace(this.s3Endpoint || '', '');
+      this.imageService.deleteS3(convertFileUrl);
+    });
   }
 
   async savePostImage(
@@ -278,38 +314,54 @@ export class FeedService {
     }
   }
 
-  async update(updateFeedDTO: UpdateFeedDTO) {
+  async update(postId: number, updateFeedDTO: UpdateFeedReqDTO): Promise<void> {
     const queryRunner = this.connection.createQueryRunner();
-    let result = false;
-
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      // 1. 포스트 저장
-      const postId: number = updateFeedDTO.id;
-      const post = await this.updatePost(queryRunner, postId, updateFeedDTO);
+      //포스트 저장
+      await this.updatePost(queryRunner, postId, updateFeedDTO);
 
-      // 2. 챌린지 저장
+      //챌린지 저장
       await this.updateChallenges(
         queryRunner,
         postId,
         updateFeedDTO.challenges,
       );
 
-      // // 3. 프로모션 저장
+      //프로모션 저장
       await this.updatePromotion(queryRunner, postId, updateFeedDTO.promotions);
 
+      // //기존 이미지 삭제
+      // const getFiles = await this.blogImageRepository.getBlogImageByPostId(
+      //   postId,
+      // );
+      // const fileUrls = getFiles.map(file => file.fileUrl);
+      // await this.deletePostImage(queryRunner, postId, fileUrls);
+
+      // //이미지 저장
+      // if (files !== undefined) {
+      //   await Promise.all(
+      //     files.map(
+      //       async file => await this.savePostImage(queryRunner, postId, file),
+      //     ),
+      //   );
+      // }
+
       await queryRunner.commitTransaction();
-      result = true;
     } catch (e) {
-      this.logger.error(e);
       await queryRunner.rollbackTransaction();
+      throw new HttpException(
+        {
+          error: e.message,
+          message: e.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     } finally {
       await queryRunner.release();
     }
-
-    return result;
   }
 
   async updatePost(
@@ -332,25 +384,24 @@ export class FeedService {
     queryRunner: QueryRunner,
     postId: number,
     challenges: string,
-  ) {
-    // 1. 모든 챌린지 삭제
+  ): Promise<void> {
     await this.blogChallengesRepository.deleteBlogChallengesByPostId(
       queryRunner,
       postId,
     );
 
-    // 2. 재저장
-    await Promise.all(
-      challenges.split(',').map(async id => {
-        const challenge = this.blogChallengesRepository.createBlogChallenges({
-          postId: postId,
-          challengeId: Number(id),
-        });
-        await this.blogChallengesRepository.saveBlogChallenges(
-          queryRunner,
-          challenge,
-        );
-      }),
+    const challengeInfos: IBlogChallenge[] = challenges
+      .split(',')
+      .map(challengeId => {
+        return {
+          postId: +postId,
+          challengeId: +challengeId,
+        };
+      });
+
+    await this.blogChallengesRepository.insertBlogChallenges(
+      challengeInfos,
+      queryRunner,
     );
   }
 
@@ -359,24 +410,23 @@ export class FeedService {
     postId: number,
     promotions: string,
   ) {
-    // 1. 모든 프로모션 삭제
     await this.blogPromotionRepository.deleteBlogPromotionByPostId(
       queryRunner,
       postId,
     );
 
-    // 2. 재저장
-    await Promise.all(
-      promotions.split(',').map(async id => {
-        const promotion = this.blogPromotionRepository.createBlogPromotion({
-          postId: postId,
-          promotionId: Number(id),
-        });
-        await this.blogPromotionRepository.saveBlogPromotion(
-          queryRunner,
-          promotion,
-        );
-      }),
+    const promotionInfos: IBlogPromotion[] = promotions
+      .split(',')
+      .map(promotionId => {
+        return {
+          postId,
+          promotionId: +promotionId,
+        };
+      });
+
+    await this.blogPromotionRepository.insertBlogPromotion(
+      promotionInfos,
+      queryRunner,
     );
   }
 

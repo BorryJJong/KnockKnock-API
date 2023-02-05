@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.API_RESPONSE_MEESAGE = exports.ERRPR_CODE = exports.SOCIAL_TYPE = exports.FEED_SEARCH_TYPE = void 0;
+exports.API_RESPONSE_MEESAGE = exports.CHALLENGES_SORT = exports.ERRPR_CODE = exports.SOCIAL_TYPE = exports.FEED_SEARCH_TYPE = void 0;
 var FEED_SEARCH_TYPE;
 (function (FEED_SEARCH_TYPE) {
     FEED_SEARCH_TYPE["POPULAR"] = "POPULAR";
@@ -20,6 +20,11 @@ var ERRPR_CODE;
     ERRPR_CODE["UNAUTHENTICATED"] = "UNAUTHENTICATED";
     ERRPR_CODE["UNAUTHORIZED"] = "UNAUTHORIZED";
 })(ERRPR_CODE = exports.ERRPR_CODE || (exports.ERRPR_CODE = {}));
+var CHALLENGES_SORT;
+(function (CHALLENGES_SORT) {
+    CHALLENGES_SORT["BRAND_NEW"] = "BRAND_NEW";
+    CHALLENGES_SORT["POPULAR"] = "POPULAR";
+})(CHALLENGES_SORT = exports.CHALLENGES_SORT || (exports.CHALLENGES_SORT = {}));
 var API_RESPONSE_MEESAGE;
 (function (API_RESPONSE_MEESAGE) {
     API_RESPONSE_MEESAGE["SUCCESS"] = "SUCCESS";

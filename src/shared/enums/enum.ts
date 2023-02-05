@@ -17,6 +17,11 @@ export enum ERRPR_CODE {
   UNAUTHORIZED = 'UNAUTHORIZED', // 권한 없음
 }
 
+export enum CHALLENGES_SORT {
+  BRAND_NEW = 'BRAND_NEW',
+  POPULAR = 'POPULAR',
+}
+
 export enum API_RESPONSE_MEESAGE {
   SUCCESS = 'SUCCESS',
   FAIL = 'FAIL',

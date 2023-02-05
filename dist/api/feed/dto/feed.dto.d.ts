@@ -12,11 +12,34 @@ export declare class CreateFeedDTO extends CreateFeedDTO_base {
     challenges: string;
     images: Express.Multer.File[];
 }
+export declare class CreateFeedDTOV2 {
+    content: string;
+    scale: string;
+    storeAddress?: string;
+    storeName?: string;
+    locationX?: string;
+    locationY?: string;
+    promotions: string;
+    challenges: string;
+    images: Express.Multer.File[];
+}
 declare const UpdateFeedDTO_base: import("@nestjs/common").Type<Omit<BlogPost, "regDate" | "userId" | "hits" | "modDate" | "delDate">>;
 export declare class UpdateFeedDTO extends UpdateFeedDTO_base {
     id: number;
     promotions: string;
     challenges: string;
+}
+export declare class UpdateFeedReqParamDTO {
+    id: number;
+}
+export declare class UpdateFeedReqDTO {
+    promotions: string;
+    challenges: string;
+    content: string;
+    storeAddress?: string;
+    storeName?: string;
+    locationX?: string;
+    locationY?: string;
 }
 declare const CreateBlogPostDTO_base: import("@nestjs/common").Type<Omit<BlogPost, "id" | "regDate" | "hits" | "modDate" | "delDate">>;
 export declare class CreateBlogPostDTO extends CreateBlogPostDTO_base {
@@ -152,5 +175,9 @@ export declare class DeleteFeedReqDTO {
 }
 export declare class PostFeedBlogPostHideReqDTO {
     id: number;
+}
+export declare class CreateFeedResDTO {
+    private id;
+    constructor(id: number);
 }
 export {};

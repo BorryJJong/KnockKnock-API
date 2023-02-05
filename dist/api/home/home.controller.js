@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HomeController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
+const swagger_decorator_1 = require("../../shared/decorator/swagger.decorator");
 const response_dto_1 = require("../../shared/dto/response.dto");
 const enum_1 = require("../../shared/enums/enum");
 const home_dto_1 = require("./dto/home.dto");
@@ -30,22 +31,15 @@ let HomeController = class HomeController {
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, hotFeeds);
         }
         catch (error) {
-            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.INTERNAL_SERVER_ERROR, enum_1.API_RESPONSE_MEESAGE.FAIL, error.message);
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
 };
 __decorate([
     (0, common_1.Get)('/hot-post'),
     (0, swagger_1.ApiOperation)({ summary: '오늘의 인기 게시글' }),
-    (0, swagger_1.ApiResponse)({
-        status: 200,
-        description: '성공',
-        type: home_dto_1.GetListHotFeedResDTO,
-    }),
-    (0, swagger_1.ApiDefaultResponse)({
-        description: '기본 응답 형태',
-        type: response_dto_1.ApiResponseDTO,
-    }),
+    (0, swagger_decorator_1.OkApiResponseListDataDTO)(home_dto_1.GetListHotFeedResDTO),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [home_dto_1.GetListHotFeedReqDTO]),

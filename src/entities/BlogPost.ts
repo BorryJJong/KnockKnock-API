@@ -49,6 +49,8 @@ export class BlogPost {
   @ApiProperty({
     description: '매장 주소',
     example: '경기 성남시 분당구 대왕판교로 374',
+    required: false,
+    nullable: true,
   })
   @Column({
     name: 'store_address',
@@ -62,6 +64,8 @@ export class BlogPost {
   @ApiProperty({
     description: '매장명',
     example: '스타벅스 리버사이드팔당DTR점',
+    required: false,
+    nullable: true,
   })
   @Column({
     name: 'store_name',
@@ -75,6 +79,8 @@ export class BlogPost {
   @ApiProperty({
     description: '매장 주소 x좌표',
     example: '127.102269186127',
+    required: false,
+    nullable: true,
   })
   @Column({
     name: 'location_x',
@@ -89,6 +95,8 @@ export class BlogPost {
   @ApiProperty({
     description: '매장 주소 y좌표',
     example: '37.3771012046504',
+    required: false,
+    nullable: true,
   })
   @Column({
     name: 'location_y',

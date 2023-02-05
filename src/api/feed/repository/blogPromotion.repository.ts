@@ -2,7 +2,8 @@ import {Injectable} from '@nestjs/common';
 import {EntityRepository, getManager, QueryRunner, Repository} from 'typeorm';
 import {CreateBlogPromotionDTO, GetBlogPromotionDTO} from '../dto/feed.dto';
 import {BlogPromotion} from 'src/entities/BlogPromotion';
-import { Promotions } from 'src/entities/Promotions';
+import {Promotions} from 'src/entities/Promotions';
+import {IBlogPromotion} from 'src/api/feed/interface/blogPromotion.interface';
 
 @Injectable()
 @EntityRepository(BlogPromotion)
@@ -22,6 +23,17 @@ export class BlogPromotionRepository extends Repository<BlogPromotion> {
     } else {
       return await queryRunner.manager.save(blogPromotion);
     }
+  }
+
+  async insertBlogPromotion(
+    blogPromotions: IBlogPromotion[],
+    queryRunner?: QueryRunner,
+  ): Promise<void> {
+    await this.createQueryBuilder('blogPromotion', queryRunner)
+      .insert()
+      .into(BlogPromotion)
+      .values(blogPromotions)
+      .execute();
   }
 
   async getBlogPromotionByPostId(id: number): Promise<GetBlogPromotionDTO[]> {

@@ -72,8 +72,11 @@ export class SignUpRequestDTO extends SocialLoginRequestDTO {
   @ApiProperty({description: '닉네임', example: 'hiYong94'})
   nickname: string;
 
-  //이미지 추가
-  @ApiProperty({description: '이미지 파일 업로드', example: ''})
+  @ApiProperty({
+    description: '이미지 파일 업로드',
+    example: '',
+    type: 'file',
+  })
   image: string;
 }
 
