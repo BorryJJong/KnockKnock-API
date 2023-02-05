@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetChallengeListReqQueryDTO = exports.GetChallengeTitleReqDTO = exports.GetListChallengeResDTOV2 = exports.GetListChallengeResDTO = exports.GetChallengeDetailResDTO = exports.GetChallengeResDTO = exports.GetChallengeReqDTO = exports.insChallengeReqDTO = exports.ParticipantUserDTO = exports.ChallengeContentDTO = exports.ChallengeSubContentDTO = void 0;
+exports.GetChallengeListReqQueryDTO = exports.GetChallengeTitleReqDTO = exports.GetChallengeListResDTO = exports.GetListChallengeInfoResDTO = exports.GetListChallengeResDTO = exports.GetChallengeDetailResDTO = exports.GetChallengeResDTO = exports.GetChallengeReqDTO = exports.insChallengeReqDTO = exports.ParticipantUserDTO = exports.ChallengeContentDTO = exports.ChallengeSubContentDTO = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const enum_1 = require("../../../shared/enums/enum");
 const typeorm_1 = require("typeorm");
@@ -35,16 +35,11 @@ __decorate([
 ], ChallengeSubContentDTO.prototype, "content", void 0);
 exports.ChallengeSubContentDTO = ChallengeSubContentDTO;
 class ChallengeContentDTO {
-    constructor(image, rule, subContents) {
-        this.image = image;
+    constructor(rule, subContents) {
         this.rule = rule;
         this.subContents = subContents;
     }
 }
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: '서브 컨텐츠 이미지', example: 'url' }),
-    __metadata("design:type", String)
-], ChallengeContentDTO.prototype, "image", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '방법',
@@ -102,11 +97,12 @@ class GetChallengeResDTO extends (0, swagger_1.PickType)(Challenges_1.Challenges
 }
 exports.GetChallengeResDTO = GetChallengeResDTO;
 class GetChallengeDetailResDTO {
-    constructor(id, title, subTitle, contentImage, participants, content) {
+    constructor(id, title, subTitle, contentImage, participantCount, participants, content) {
         this.id = id;
         this.title = title;
         this.subTitle = subTitle;
         this.contentImage = contentImage;
+        this.participantCount = participantCount;
         this.participants = participants;
         this.content = content;
     }
@@ -139,6 +135,14 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], GetChallengeDetailResDTO.prototype, "contentImage", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '챌린지 참여중인 인원 수',
+        example: '3',
+        nullable: false,
+    }),
+    __metadata("design:type", Number)
+], GetChallengeDetailResDTO.prototype, "participantCount", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '챌린지 참여자 목록',
@@ -200,7 +204,7 @@ __decorate([
     __metadata("design:type", Array)
 ], GetListChallengeResDTO.prototype, "participants", void 0);
 exports.GetListChallengeResDTO = GetListChallengeResDTO;
-class GetListChallengeResDTOV2 {
+class GetListChallengeInfoResDTO {
     constructor(id, title, subTitle, mainImage, isHotBadge, isNewBadge, participantCount, participants) {
         this.id = id;
         this.title = title;
@@ -215,7 +219,7 @@ class GetListChallengeResDTOV2 {
 __decorate([
     (0, swagger_1.ApiProperty)({ description: '챌린지 id', example: '1' }),
     __metadata("design:type", Number)
-], GetListChallengeResDTOV2.prototype, "id", void 0);
+], GetListChallengeInfoResDTO.prototype, "id", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '챌린지명',
@@ -223,7 +227,7 @@ __decorate([
         required: true,
     }),
     __metadata("design:type", String)
-], GetListChallengeResDTOV2.prototype, "title", void 0);
+], GetListChallengeInfoResDTO.prototype, "title", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '서브타이틀',
@@ -231,7 +235,7 @@ __decorate([
         required: true,
     }),
     __metadata("design:type", String)
-], GetListChallengeResDTOV2.prototype, "subTitle", void 0);
+], GetListChallengeInfoResDTO.prototype, "subTitle", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '챌린지 목록 이미지',
@@ -239,7 +243,7 @@ __decorate([
         required: true,
     }),
     __metadata("design:type", String)
-], GetListChallengeResDTOV2.prototype, "mainImage", void 0);
+], GetListChallengeInfoResDTO.prototype, "mainImage", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'Hot 여부',
@@ -247,7 +251,7 @@ __decorate([
         nullable: false,
     }),
     __metadata("design:type", Boolean)
-], GetListChallengeResDTOV2.prototype, "isHotBadge", void 0);
+], GetListChallengeInfoResDTO.prototype, "isHotBadge", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'new 여부',
@@ -255,7 +259,7 @@ __decorate([
         nullable: false,
     }),
     __metadata("design:type", Boolean)
-], GetListChallengeResDTOV2.prototype, "isNewBadge", void 0);
+], GetListChallengeInfoResDTO.prototype, "isNewBadge", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '챌린지 참여중인 인원 수',
@@ -263,7 +267,7 @@ __decorate([
         nullable: false,
     }),
     __metadata("design:type", Number)
-], GetListChallengeResDTOV2.prototype, "participantCount", void 0);
+], GetListChallengeInfoResDTO.prototype, "participantCount", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '챌린지 참여자 목록',
@@ -272,8 +276,41 @@ __decorate([
         type: ParticipantUserDTO,
     }),
     __metadata("design:type", Array)
-], GetListChallengeResDTOV2.prototype, "participants", void 0);
-exports.GetListChallengeResDTOV2 = GetListChallengeResDTOV2;
+], GetListChallengeInfoResDTO.prototype, "participants", void 0);
+exports.GetListChallengeInfoResDTO = GetListChallengeInfoResDTO;
+class GetChallengeListResDTO {
+    constructor(challengeTotalCount, challengeNewCount, challenges) {
+        this.challengeTotalCount = challengeTotalCount;
+        this.challengeNewCount = challengeNewCount;
+        this.challenges = challenges;
+    }
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '챌린지 총 개수',
+        example: '4',
+        nullable: false,
+    }),
+    __metadata("design:type", Number)
+], GetChallengeListResDTO.prototype, "challengeTotalCount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '신규 챌린지 개수',
+        example: '2',
+        nullable: false,
+    }),
+    __metadata("design:type", Number)
+], GetChallengeListResDTO.prototype, "challengeNewCount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '챌린지 정보',
+        example: GetListChallengeInfoResDTO,
+        type: [GetListChallengeInfoResDTO],
+        nullable: false,
+    }),
+    __metadata("design:type", Array)
+], GetChallengeListResDTO.prototype, "challenges", void 0);
+exports.GetChallengeListResDTO = GetChallengeListResDTO;
 class GetChallengeTitleReqDTO {
 }
 __decorate([

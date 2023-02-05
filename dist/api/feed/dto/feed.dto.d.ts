@@ -6,6 +6,7 @@ import { BlogPost } from '../../../entities/BlogPost';
 import { BlogComment } from '../../../entities/BlogComment';
 import { PagenationReqDTO, PagenationResDTO } from '@shared/dto/pagenation.dto';
 import { IGetBlogImagesByBlogPost } from '../interface/blogImage.interface';
+import { REPORT_TYPE } from '@shared/enums/enum';
 declare const CreateFeedDTO_base: import("@nestjs/common").Type<Omit<BlogPost, "id" | "regDate" | "hits" | "modDate" | "delDate">>;
 export declare class CreateFeedDTO extends CreateFeedDTO_base {
     promotions: string;
@@ -175,6 +176,12 @@ export declare class DeleteFeedReqDTO {
 }
 export declare class PostFeedBlogPostHideReqDTO {
     id: number;
+}
+export declare class ReportBlogPostReqParamDTO {
+    id: number;
+}
+export declare class ReportBlogPostReqBodyDTO {
+    reportType: REPORT_TYPE;
 }
 export declare class CreateFeedResDTO {
     private id;

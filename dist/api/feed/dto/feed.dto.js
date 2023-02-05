@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateFeedResDTO = exports.PostFeedBlogPostHideReqDTO = exports.DeleteFeedReqDTO = exports.GetListFeedLikeResDTO = exports.GetFeedLikeDTO = exports.GetListFeedCommentReqDTO = exports.GetListFeedCommentResDTO = exports.GetBlogCommentDTO = exports.DelBlogCommentReqDTO = exports.InsBlogCommentDTO = exports.GetFeedViewResDTO = exports.GetBlogImageDTO = exports.GetBlogChallengesDTO = exports.GetBlogPromotionDTO = exports.GetBlogPostDTO = exports.GetFeedViewReqDTO = exports.GetListFeedResDTO = exports.GetFeedResDTO = exports.GetFeedImageResDTO = exports.GetListFeedReqQueryDTO = exports.GetListBlogImageByBlogPostResDTO = exports.GetListFeedMainResDTO = exports.GetFeedMainResDTO = exports.GetListFeedMainReqDTO = exports.UpdateBlogPostDTO = exports.CreateBlogImageDTO = exports.CreateBlogPromotionDTO = exports.CreateBlogChallengesDTO = exports.CreateBlogPostDTO = exports.UpdateFeedReqDTO = exports.UpdateFeedReqParamDTO = exports.UpdateFeedDTO = exports.CreateFeedDTOV2 = exports.CreateFeedDTO = void 0;
+exports.CreateFeedResDTO = exports.ReportBlogPostReqBodyDTO = exports.ReportBlogPostReqParamDTO = exports.PostFeedBlogPostHideReqDTO = exports.DeleteFeedReqDTO = exports.GetListFeedLikeResDTO = exports.GetFeedLikeDTO = exports.GetListFeedCommentReqDTO = exports.GetListFeedCommentResDTO = exports.GetBlogCommentDTO = exports.DelBlogCommentReqDTO = exports.InsBlogCommentDTO = exports.GetFeedViewResDTO = exports.GetBlogImageDTO = exports.GetBlogChallengesDTO = exports.GetBlogPromotionDTO = exports.GetBlogPostDTO = exports.GetFeedViewReqDTO = exports.GetListFeedResDTO = exports.GetFeedResDTO = exports.GetFeedImageResDTO = exports.GetListFeedReqQueryDTO = exports.GetListBlogImageByBlogPostResDTO = exports.GetListFeedMainResDTO = exports.GetFeedMainResDTO = exports.GetListFeedMainReqDTO = exports.UpdateBlogPostDTO = exports.CreateBlogImageDTO = exports.CreateBlogPromotionDTO = exports.CreateBlogChallengesDTO = exports.CreateBlogPostDTO = exports.UpdateFeedReqDTO = exports.UpdateFeedReqParamDTO = exports.UpdateFeedDTO = exports.CreateFeedDTOV2 = exports.CreateFeedDTO = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 const swagger_1 = require("@nestjs/swagger");
@@ -20,6 +20,7 @@ const BlogPost_1 = require("../../../entities/BlogPost");
 const BlogComment_1 = require("../../../entities/BlogComment");
 const pagenation_dto_1 = require("../../../shared/dto/pagenation.dto");
 const utils_1 = require("../../../shared/utils");
+const enum_1 = require("../../../shared/enums/enum");
 class CreateFeedDTO extends (0, swagger_1.OmitType)(BlogPost_1.BlogPost, [
     'id',
     'hits',
@@ -828,6 +829,26 @@ __decorate([
     __metadata("design:type", Number)
 ], PostFeedBlogPostHideReqDTO.prototype, "id", void 0);
 exports.PostFeedBlogPostHideReqDTO = PostFeedBlogPostHideReqDTO;
+class ReportBlogPostReqParamDTO {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '피드 id', example: '1' }),
+    __metadata("design:type", Number)
+], ReportBlogPostReqParamDTO.prototype, "id", void 0);
+exports.ReportBlogPostReqParamDTO = ReportBlogPostReqParamDTO;
+class ReportBlogPostReqBodyDTO {
+}
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({
+        description: '신고 사유 타입',
+        enum: enum_1.REPORT_TYPE,
+        required: true,
+        nullable: false,
+    }),
+    __metadata("design:type", String)
+], ReportBlogPostReqBodyDTO.prototype, "reportType", void 0);
+exports.ReportBlogPostReqBodyDTO = ReportBlogPostReqBodyDTO;
 class CreateFeedResDTO {
     constructor(id) {
         this.id = id;

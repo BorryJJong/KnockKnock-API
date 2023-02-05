@@ -150,6 +150,18 @@ let UsersController = class UsersController {
             return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
+    async reportBlogPost(user, param, body) {
+        try {
+            const { id: postId } = param;
+            const { reportType } = body;
+            await this.userValidator.alreadyReportBlogPost(user.id, postId);
+            await this.userService.reportBlogPost(user.id, postId, reportType);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
+        }
+    }
 };
 __decorate([
     (0, common_1.Post)('/social-login'),
@@ -266,6 +278,23 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getUser", null);
+__decorate([
+    (0, common_1.Post)('/report/blog-post/:id'),
+    (0, swagger_1.ApiOperation)({ summary: '피드 게시글 신고하기' }),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_decorator_1.OkApiResponseNoneDataDTO)(),
+    (0, swagger_decorator_1.ConflictApiResponseDTO)(),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
+    __param(0, (0, user_decorator_1.UserDeco)()),
+    __param(1, (0, common_1.Param)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, feed_dto_1.ReportBlogPostReqParamDTO,
+        feed_dto_1.ReportBlogPostReqBodyDTO]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "reportBlogPost", null);
 UsersController = __decorate([
     (0, swagger_1.ApiTags)('users'),
     (0, common_1.Controller)('users'),

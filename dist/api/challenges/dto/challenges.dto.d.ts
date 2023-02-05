@@ -8,10 +8,9 @@ export declare class ChallengeSubContentDTO {
     constructor(title: string, image: string, content: string);
 }
 export declare class ChallengeContentDTO {
-    private image;
     private rule;
     private subContents;
-    constructor(image: string, rule: string[], subContents: ChallengeSubContentDTO[]);
+    constructor(rule: string[], subContents: ChallengeSubContentDTO[]);
 }
 export declare class ParticipantUserDTO {
     readonly id: number;
@@ -32,9 +31,10 @@ export declare class GetChallengeDetailResDTO {
     private readonly title;
     private readonly subTitle;
     private readonly contentImage;
+    participantCount: number;
     private readonly participants;
     private readonly content;
-    constructor(id: number, title: string, subTitle: string, contentImage: string, participants: ParticipantUserDTO[], content: ChallengeContentDTO);
+    constructor(id: number, title: string, subTitle: string, contentImage: string, participantCount: number, participants: ParticipantUserDTO[], content: ChallengeContentDTO);
 }
 declare const GetListChallengeResDTO_base: import("@nestjs/common").Type<Pick<Challenges, "id" | "regDate" | "title" | "content" | "subTitle" | "mainImage" | "contentImage">>;
 export declare class GetListChallengeResDTO extends GetListChallengeResDTO_base {
@@ -43,7 +43,7 @@ export declare class GetListChallengeResDTO extends GetListChallengeResDTO_base 
     rnk: number;
     participants: ParticipantUserDTO[];
 }
-export declare class GetListChallengeResDTOV2 {
+export declare class GetListChallengeInfoResDTO {
     id: number;
     title: string;
     subTitle: string;
@@ -53,6 +53,12 @@ export declare class GetListChallengeResDTOV2 {
     participantCount: number;
     participants: ParticipantUserDTO[];
     constructor(id: number, title: string, subTitle: string, mainImage: string, isHotBadge: boolean, isNewBadge: boolean, participantCount: number, participants: ParticipantUserDTO[]);
+}
+export declare class GetChallengeListResDTO {
+    challengeTotalCount: number;
+    challengeNewCount: number;
+    challenges: GetListChallengeInfoResDTO[];
+    constructor(challengeTotalCount: number, challengeNewCount: number, challenges: GetListChallengeInfoResDTO[]);
 }
 export declare class GetChallengeTitleReqDTO implements IChallengeTitle {
     id: number;

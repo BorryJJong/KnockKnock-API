@@ -54,6 +54,7 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             .leftJoinAndSelect('(' + cntQb.getQuery() + ')', 'bcnt', 'bc.id = bcnt.reply_id')
             .where('(bcnt.cnt != 0 OR is_deleted = 0)')
             .andWhere('bc.comment_id IS NULL')
+            .andWhere('bc.isDeleted = false')
             .andWhere('bc.post_id = :id', { id: id })
             .orderBy('bc.id', 'ASC')
             .getRawMany();

@@ -15,10 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserValidator = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const UserReportBlogPost_repository_1 = require("../feed/repository/UserReportBlogPost.repository");
 const users_repository_1 = require("./users.repository");
 let UserValidator = class UserValidator {
-    constructor(userRepository) {
+    constructor(userRepository, userReportBlogPostRepository) {
         this.userRepository = userRepository;
+        this.userReportBlogPostRepository = userReportBlogPostRepository;
     }
     async checkExistSocialUser(socialUuid, socialType) {
         const user = await this.userRepository.isExistSocialUser(socialUuid, socialType);
@@ -36,11 +38,20 @@ let UserValidator = class UserValidator {
             }, common_1.HttpStatus.CONFLICT);
         }
     }
+    async alreadyReportBlogPost(userId, postId) {
+        const reportId = await this.userReportBlogPostRepository.selectUserReportBlogPostByUser(userId, postId);
+        if (reportId) {
+            throw new common_1.HttpException({
+                message: '이미 신고된 게시글입니다',
+            }, common_1.HttpStatus.CONFLICT);
+        }
+    }
 };
 UserValidator = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(users_repository_1.UserRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, typeorm_1.InjectRepository)(UserReportBlogPost_repository_1.UserReportBlogPostRepository)),
+    __metadata("design:paramtypes", [Object, Object])
 ], UserValidator);
 exports.UserValidator = UserValidator;
 //# sourceMappingURL=users.validator.js.map
