@@ -29,6 +29,15 @@ export class Event implements IEvent {
   })
   image: string;
 
+  @Column({
+    name: 'url',
+    type: 'varchar',
+    length: 255,
+    nullable: false,
+    comment: '이벤트 홈페이지 URL',
+  })
+  url: string;
+
   @CreateDateColumn({
     name: 'reg_date',
     type: 'timestamp',
