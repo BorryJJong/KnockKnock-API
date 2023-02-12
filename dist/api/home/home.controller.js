@@ -34,20 +34,62 @@ let HomeController = class HomeController {
             return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
+    async getHomeListEvent() {
+        try {
+            const events = await this.homeService.getHomeListEvent();
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, events);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
+        }
+    }
+    async getListEvent(query) {
+        try {
+            const events = await this.homeService.getListEvent(query);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, events);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
+        }
+    }
 };
 __decorate([
+    (0, swagger_1.ApiTags)('home'),
     (0, common_1.Get)('/hot-post'),
     (0, swagger_1.ApiOperation)({ summary: '오늘의 인기 게시글' }),
     (0, swagger_decorator_1.OkApiResponseListDataDTO)(home_dto_1.GetListHotFeedResDTO),
     (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [home_dto_1.GetListHotFeedReqDTO]),
     __metadata("design:returntype", Promise)
 ], HomeController.prototype, "getListHotFeed", null);
-HomeController = __decorate([
+__decorate([
     (0, swagger_1.ApiTags)('home'),
-    (0, common_1.Controller)('home'),
+    (0, common_1.Get)('/home-event'),
+    (0, swagger_1.ApiOperation)({ summary: '홈화면 특별한 이벤트 목록' }),
+    (0, swagger_decorator_1.OkApiResponseListDataDTO)(home_dto_1.GetHomeListEventResDTO),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], HomeController.prototype, "getHomeListEvent", null);
+__decorate([
+    (0, swagger_1.ApiTags)('home'),
+    (0, common_1.Get)('/event'),
+    (0, swagger_1.ApiOperation)({ summary: '특별한 이벤트 목록 조회' }),
+    (0, swagger_decorator_1.OkApiResponseListDataDTO)(home_dto_1.GetListEventResDTO),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [home_dto_1.GetListEventReqQueryDTO]),
+    __metadata("design:returntype", Promise)
+], HomeController.prototype, "getListEvent", null);
+HomeController = __decorate([
+    (0, common_1.Controller)(),
     __metadata("design:paramtypes", [home_service_1.HomeService])
 ], HomeController);
 exports.HomeController = HomeController;

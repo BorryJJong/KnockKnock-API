@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ormConfig = void 0;
+const Event_1 = require("../entities/Event");
 const UserReportBlogPost_1 = require("../entities/UserReportBlogPost");
 const UserToBlogPostHide_1 = require("../entities/UserToBlogPostHide");
 require("dotenv/config");
@@ -34,6 +35,7 @@ exports.ormConfig = {
         User_1.User,
         UserToBlogPostHide_1.UserToBlogPostHide,
         UserReportBlogPost_1.UserReportBlogPost,
+        Event_1.Event,
     ],
     synchronize: false,
     logging: false,
