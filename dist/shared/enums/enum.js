@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.REPORT_TYPE = exports.API_RESPONSE_MEESAGE = exports.CHALLENGES_SORT = exports.ERRPR_CODE = exports.SOCIAL_TYPE = exports.FEED_SEARCH_TYPE = void 0;
+exports.EVENT_TAP = exports.REPORT_TYPE = exports.API_RESPONSE_MEESAGE = exports.CHALLENGES_SORT = exports.ERRPR_CODE = exports.SOCIAL_TYPE = exports.FEED_SEARCH_TYPE = void 0;
 var FEED_SEARCH_TYPE;
 (function (FEED_SEARCH_TYPE) {
     FEED_SEARCH_TYPE["POPULAR"] = "POPULAR";
@@ -36,4 +36,9 @@ var REPORT_TYPE;
     REPORT_TYPE["UNAUTHORIZED_USE"] = "UNAUTHORIZED_USE";
     REPORT_TYPE["PERSONAL_INFORMATION_EXTRUSION"] = "PERSONAL_INFORMATION_EXTRUSION";
 })(REPORT_TYPE = exports.REPORT_TYPE || (exports.REPORT_TYPE = {}));
+var EVENT_TAP;
+(function (EVENT_TAP) {
+    EVENT_TAP["ONGOING"] = "ONGOING";
+    EVENT_TAP["END"] = "END";
+})(EVENT_TAP = exports.EVENT_TAP || (exports.EVENT_TAP = {}));
 //# sourceMappingURL=enum.js.map

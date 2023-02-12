@@ -9,8 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetListHotFeedReqDTO = exports.GetListHotFeedResDTO = void 0;
+exports.GetListEventReqQueryDTO = exports.GetListEventResDTO = exports.GetHomeListEventResDTO = exports.GetListHotFeedReqDTO = exports.GetListHotFeedResDTO = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const enum_1 = require("../../../shared/enums/enum");
 class GetListHotFeedResDTO {
     constructor(postId, scale, nickname, fileUrl) {
         this.postId = postId;
@@ -52,4 +53,147 @@ __decorate([
     __metadata("design:type", Number)
 ], GetListHotFeedReqDTO.prototype, "challengeId", void 0);
 exports.GetListHotFeedReqDTO = GetListHotFeedReqDTO;
+class GetHomeListEventResDTO {
+    constructor(id, isNewBadge, title, eventPeriod, image) {
+        this.id = id;
+        this.isNewBadge = isNewBadge;
+        this.title = title;
+        this.eventPeriod = eventPeriod;
+        this.image = image;
+    }
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이벤트 ID',
+        example: '1',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", Number)
+], GetHomeListEventResDTO.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'New 뱃지 여부(생성일 2주이내)',
+        example: 'true',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", Boolean)
+], GetHomeListEventResDTO.prototype, "isNewBadge", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이벤트 제목',
+        example: '[스타벅스] 지구의날 온라인',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetHomeListEventResDTO.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이벤트 기간',
+        example: '시작일~종료일(혹은 미정) / YYYY.MM.DD ~ YYYY.MM.DD or 미정',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetHomeListEventResDTO.prototype, "eventPeriod", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이벤트 대표 이미지 URL',
+        example: '{aws.s3.endpoint}/event/filename.png',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetHomeListEventResDTO.prototype, "image", void 0);
+exports.GetHomeListEventResDTO = GetHomeListEventResDTO;
+class GetListEventResDTO {
+    constructor(id, isNewBadge, isEndEvent, title, eventPeriod, image, url) {
+        this.id = id;
+        this.isNewBadge = isNewBadge;
+        this.isEndEvent = isEndEvent;
+        this.title = title;
+        this.eventPeriod = eventPeriod;
+        this.image = image;
+        this.url = url;
+    }
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이벤트 ID',
+        example: '1',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", Number)
+], GetListEventResDTO.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'New 뱃지 여부(생성일 2주이내)',
+        example: 'true',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", Boolean)
+], GetListEventResDTO.prototype, "isNewBadge", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이벤트 종료 여부',
+        example: 'true',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", Boolean)
+], GetListEventResDTO.prototype, "isEndEvent", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이벤트 제목',
+        example: '[스타벅스] 지구의날 온라인',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetListEventResDTO.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이벤트 기간',
+        example: '시작일~종료일(혹은 미정) / YYYY.MM.DD ~ YYYY.MM.DD or 미정',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetListEventResDTO.prototype, "eventPeriod", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이벤트 대표 이미지 URL',
+        example: '{aws.s3.endpoint}/event/filename.png',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetListEventResDTO.prototype, "image", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '이벤트 홈페이지 URL',
+        example: 'https://github.com',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetListEventResDTO.prototype, "url", void 0);
+exports.GetListEventResDTO = GetListEventResDTO;
+class GetListEventReqQueryDTO {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        required: true,
+        default: enum_1.EVENT_TAP.ONGOING,
+        enum: enum_1.EVENT_TAP,
+        description: '이벤트 탭별 조회(default 진행중)',
+        example: 'ONGOING',
+    }),
+    __metadata("design:type", String)
+], GetListEventReqQueryDTO.prototype, "eventTap", void 0);
+exports.GetListEventReqQueryDTO = GetListEventReqQueryDTO;
 //# sourceMappingURL=home.dto.js.map

@@ -44,6 +44,7 @@ function swaggerBuilder(app) {
             challenges_dto_1.ParticipantUserDTO,
             feed_dto_1.CreateFeedResDTO,
             challenges_dto_1.GetChallengeListResDTO,
+            home_dto_1.GetHomeListEventResDTO,
         ],
     });
     swagger_1.SwaggerModule.setup('api-docs', app, document, swaggerCustomOptions);

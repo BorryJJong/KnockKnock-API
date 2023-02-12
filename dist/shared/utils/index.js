@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.dtoConvertBoolean = exports.commafy = exports.isPageNext = exports.getCurrentPageCount = exports.convertTimeToStr = exports.convertTime = exports.dateFormat = exports.zeroFill = exports.isComparePassword = exports.hashPassword = void 0;
+exports.dtoConvertBoolean = exports.commafy = exports.isPageNext = exports.getCurrentPageCount = exports.convertTimeToStr = exports.dateFormatV2 = exports.convertTime = exports.dateFormat = exports.zeroFill = exports.isComparePassword = exports.hashPassword = void 0;
 const bcrypt_1 = require("bcrypt");
+const date_fns_1 = require("date-fns");
 const ramda_1 = require("ramda");
 const hashPassword = async (password) => {
     const saltRound = 10;
@@ -36,6 +37,10 @@ const convertTime = (utc) => {
     return new Date(Date.parse(utc + ''));
 };
 exports.convertTime = convertTime;
+const dateFormatV2 = (targetDate) => {
+    return `${(0, date_fns_1.format)(targetDate, 'yyyy.MM.dd')}`;
+};
+exports.dateFormatV2 = dateFormatV2;
 const convertTimeToStr = (t) => {
     const now = new Date();
     const time = t;
