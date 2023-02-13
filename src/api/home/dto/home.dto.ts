@@ -1,5 +1,5 @@
 import {ApiProperty} from '@nestjs/swagger';
-import {EVENT_TAP} from '@shared/enums/enum';
+import {BANNER_TYPE, EVENT_TAP} from '@shared/enums/enum';
 
 export class GetListHotFeedResDTO {
   @ApiProperty({description: '게시글 id', example: '1'})
@@ -183,4 +183,37 @@ export class GetListEventReqQueryDTO {
     example: 'ONGOING',
   })
   eventTap: EVENT_TAP;
+}
+
+export class GetListBannerReqQueryDTO {
+  @ApiProperty({
+    required: true,
+    enum: BANNER_TYPE,
+    description: '배너 종류별 목록 조회',
+    example: 'MAIN',
+  })
+  bannerType: BANNER_TYPE;
+}
+
+export class GetListBannerResDTO {
+  @ApiProperty({
+    description: '배너 ID',
+    example: '1',
+    nullable: false,
+    required: true,
+  })
+  private id: number;
+
+  @ApiProperty({
+    description: '배너 이미지 URL',
+    example: '{aws.s3.endpoint}/event/filename.png',
+    nullable: false,
+    required: true,
+  })
+  private image: string;
+
+  constructor(id: number, image: string) {
+    this.id = id;
+    this.image = image;
+  }
 }

@@ -1,3 +1,4 @@
+import {Banner} from '@entities/Banner';
 import {Event} from '@entities/Event';
 import {UserReportBlogPost} from '@entities/UserReportBlogPost';
 import {UserToBlogPostHide} from '@entities/UserToBlogPostHide';
@@ -35,6 +36,7 @@ export const ormConfig: ConnectionOptions = {
     UserToBlogPostHide,
     UserReportBlogPost,
     Event,
+    Banner,
   ],
   synchronize: false,
   logging: false,
