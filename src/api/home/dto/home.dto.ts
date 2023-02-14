@@ -212,8 +212,17 @@ export class GetListBannerResDTO {
   })
   private image: string;
 
-  constructor(id: number, image: string) {
+  @ApiProperty({
+    required: true,
+    enum: BANNER_TYPE,
+    description: '배너 타입(MAIN, BAR)',
+    example: 'MAIN',
+  })
+  type: BANNER_TYPE;
+
+  constructor(id: number, image: string, type: BANNER_TYPE) {
     this.id = id;
     this.image = image;
+    this.type = type;
   }
 }
