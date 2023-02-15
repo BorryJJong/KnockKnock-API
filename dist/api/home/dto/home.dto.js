@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetListEventReqQueryDTO = exports.GetListEventResDTO = exports.GetHomeListEventResDTO = exports.GetListHotFeedReqDTO = exports.GetListHotFeedResDTO = void 0;
+exports.GetListBannerResDTO = exports.GetListBannerReqQueryDTO = exports.GetListEventReqQueryDTO = exports.GetListEventResDTO = exports.GetHomeListEventResDTO = exports.GetListHotFeedReqDTO = exports.GetListHotFeedResDTO = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const enum_1 = require("../../../shared/enums/enum");
 class GetListHotFeedResDTO {
@@ -196,4 +196,51 @@ __decorate([
     __metadata("design:type", String)
 ], GetListEventReqQueryDTO.prototype, "eventTap", void 0);
 exports.GetListEventReqQueryDTO = GetListEventReqQueryDTO;
+class GetListBannerReqQueryDTO {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        required: true,
+        enum: enum_1.BANNER_TYPE,
+        description: '배너 종류별 목록 조회',
+        example: 'MAIN',
+    }),
+    __metadata("design:type", String)
+], GetListBannerReqQueryDTO.prototype, "bannerType", void 0);
+exports.GetListBannerReqQueryDTO = GetListBannerReqQueryDTO;
+class GetListBannerResDTO {
+    constructor(id, image, type) {
+        this.id = id;
+        this.image = image;
+        this.type = type;
+    }
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '배너 ID',
+        example: '1',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", Number)
+], GetListBannerResDTO.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '배너 이미지 URL',
+        example: '{aws.s3.endpoint}/event/filename.png',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetListBannerResDTO.prototype, "image", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        required: true,
+        enum: enum_1.BANNER_TYPE,
+        description: '배너 타입(MAIN, BAR)',
+        example: 'MAIN',
+    }),
+    __metadata("design:type", String)
+], GetListBannerResDTO.prototype, "type", void 0);
+exports.GetListBannerResDTO = GetListBannerResDTO;
 //# sourceMappingURL=home.dto.js.map
