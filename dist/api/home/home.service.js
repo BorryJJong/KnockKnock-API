@@ -20,11 +20,13 @@ const utils_1 = require("../../shared/utils");
 const date_fns_1 = require("date-fns");
 const blogPost_repository_1 = require("../feed/repository/blogPost.repository");
 const home_dto_1 = require("./dto/home.dto");
+const Banner_Repository_1 = require("./repository/Banner.Repository");
 const Event_Repository_1 = require("./repository/Event.Repository");
 let HomeService = class HomeService {
-    constructor(blogPostRepository, eventRepository) {
+    constructor(blogPostRepository, eventRepository, bannerRepository) {
         this.blogPostRepository = blogPostRepository;
         this.eventRepository = eventRepository;
+        this.bannerRepository = bannerRepository;
     }
     async getListHotFeed(challengeId) {
         return this.blogPostRepository.selectBlogPostByHotFeeds(challengeId);
@@ -51,12 +53,20 @@ let HomeService = class HomeService {
             return new home_dto_1.GetListEventResDTO(e.id, this.getIsNewBadge(e.regDate), query.eventTap === enum_1.EVENT_TAP.END, e.title, this.makeEventPeriod(e.startDate, e.endDate), this.makeEventImageUrl(e.image), e.url);
         });
     }
+    async getListBanner(query) {
+        const { bannerType } = query;
+        const banners = await this.bannerRepository.selectBanners(bannerType);
+        return banners.map(b => {
+            return new home_dto_1.GetListBannerResDTO(b.id, b.image, b.type);
+        });
+    }
 };
 HomeService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(blogPost_repository_1.BlogPostRepository)),
     __param(1, (0, typeorm_1.InjectRepository)(Event_Repository_1.EventRepository)),
-    __metadata("design:paramtypes", [blogPost_repository_1.BlogPostRepository, Object])
+    __param(2, (0, typeorm_1.InjectRepository)(Banner_Repository_1.BannerRepository)),
+    __metadata("design:paramtypes", [blogPost_repository_1.BlogPostRepository, Object, Object])
 ], HomeService);
 exports.HomeService = HomeService;
 //# sourceMappingURL=home.service.js.map
