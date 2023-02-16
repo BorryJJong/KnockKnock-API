@@ -10,8 +10,12 @@ export class EventRepository
   extends Repository<Event>
   implements IEventRepository
 {
-  async selectEvents(eventTap?: EVENT_TAP): Promise<IEvent[]> {
+  async selectEvents(
+    isLimit: boolean,
+    eventTap?: EVENT_TAP,
+  ): Promise<IEvent[]> {
     let queryBuilder = await this.createQueryBuilder('event');
+
     if (eventTap) {
       const isOngoing = eventTap === EVENT_TAP.ONGOING;
       queryBuilder = queryBuilder.where(
@@ -21,6 +25,10 @@ export class EventRepository
       if (isOngoing) {
         queryBuilder = queryBuilder.orWhere(`event.endDate IS NULL`);
       }
+    }
+
+    if (isLimit) {
+      queryBuilder = queryBuilder.limit(4);
     }
 
     return queryBuilder.orderBy('event.startDate', 'DESC').getMany();

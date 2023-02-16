@@ -33,7 +33,7 @@ export class HomeService {
   }
 
   async getHomeListEvent(): Promise<GetHomeListEventResDTO[]> {
-    const events = await this.eventRepository.selectEvents();
+    const events = await this.eventRepository.selectEvents(true);
     return events.map(e => {
       return new GetHomeListEventResDTO(
         e.id,
@@ -63,7 +63,7 @@ export class HomeService {
     query: GetListEventReqQueryDTO,
   ): Promise<GetListEventResDTO[]> {
     const {eventTap} = query;
-    const events = await this.eventRepository.selectEvents(eventTap);
+    const events = await this.eventRepository.selectEvents(false, eventTap);
 
     return events.map(e => {
       return new GetListEventResDTO(
