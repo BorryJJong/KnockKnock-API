@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EVENT_TAP = exports.REPORT_TYPE = exports.API_RESPONSE_MEESAGE = exports.CHALLENGES_SORT = exports.ERRPR_CODE = exports.SOCIAL_TYPE = exports.FEED_SEARCH_TYPE = void 0;
+exports.BANNER_TYPE = exports.EVENT_TAP = exports.REPORT_TYPE = exports.API_RESPONSE_MEESAGE = exports.CHALLENGES_SORT = exports.ERRPR_CODE = exports.SOCIAL_TYPE = exports.FEED_SEARCH_TYPE = void 0;
 var FEED_SEARCH_TYPE;
 (function (FEED_SEARCH_TYPE) {
     FEED_SEARCH_TYPE["POPULAR"] = "POPULAR";
@@ -41,4 +41,9 @@ var EVENT_TAP;
     EVENT_TAP["ONGOING"] = "ONGOING";
     EVENT_TAP["END"] = "END";
 })(EVENT_TAP = exports.EVENT_TAP || (exports.EVENT_TAP = {}));
+var BANNER_TYPE;
+(function (BANNER_TYPE) {
+    BANNER_TYPE["MAIN"] = "MAIN";
+    BANNER_TYPE["BAR"] = "BAR";
+})(BANNER_TYPE = exports.BANNER_TYPE || (exports.BANNER_TYPE = {}));
 //# sourceMappingURL=enum.js.map

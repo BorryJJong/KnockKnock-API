@@ -1,16 +1,20 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {EVENT_TAP} from '@shared/enums/enum';
+import {BANNER_TYPE, EVENT_TAP} from '@shared/enums/enum';
 import {dateFormatV2} from '@shared/utils';
 import {isAfter, subDays} from 'date-fns';
 import {BlogPostRepository} from 'src/api/feed/repository/blogPost.repository';
 import {
   GetHomeListEventResDTO,
+  GetListBannerReqQueryDTO,
+  GetListBannerResDTO,
   GetListEventReqQueryDTO,
   GetListEventResDTO,
   GetListHotFeedResDTO,
 } from 'src/api/home/dto/home.dto';
+import {IBannerRepository} from 'src/api/home/interface/banner.interface';
 import {IEventRepository} from 'src/api/home/interface/event.interface';
+import {BannerRepository} from 'src/api/home/repository/Banner.Repository';
 import {EventRepository} from 'src/api/home/repository/Event.Repository';
 
 @Injectable()
@@ -20,6 +24,8 @@ export class HomeService {
     private readonly blogPostRepository: BlogPostRepository,
     @InjectRepository(EventRepository)
     private readonly eventRepository: IEventRepository,
+    @InjectRepository(BannerRepository)
+    private readonly bannerRepository: IBannerRepository,
   ) {}
 
   async getListHotFeed(challengeId: number): Promise<GetListHotFeedResDTO[]> {
@@ -27,7 +33,7 @@ export class HomeService {
   }
 
   async getHomeListEvent(): Promise<GetHomeListEventResDTO[]> {
-    const events = await this.eventRepository.selectEvents();
+    const events = await this.eventRepository.selectEvents(true);
     return events.map(e => {
       return new GetHomeListEventResDTO(
         e.id,
@@ -57,7 +63,7 @@ export class HomeService {
     query: GetListEventReqQueryDTO,
   ): Promise<GetListEventResDTO[]> {
     const {eventTap} = query;
-    const events = await this.eventRepository.selectEvents(eventTap);
+    const events = await this.eventRepository.selectEvents(false, eventTap);
 
     return events.map(e => {
       return new GetListEventResDTO(
@@ -69,6 +75,17 @@ export class HomeService {
         this.makeEventImageUrl(e.image),
         e.url,
       );
+    });
+  }
+
+  async getListBanner(
+    query: GetListBannerReqQueryDTO,
+  ): Promise<GetListBannerResDTO[]> {
+    const {bannerType} = query;
+    const banners = await this.bannerRepository.selectBanners(bannerType);
+
+    return banners.map(b => {
+      return new GetListBannerResDTO(b.id, b.image, b.type);
     });
   }
 }

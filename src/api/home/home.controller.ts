@@ -9,6 +9,8 @@ import {ApiResponseDTO, ErrorDTO} from '@shared/dto/response.dto';
 import {API_RESPONSE_MEESAGE} from '@shared/enums/enum';
 import {
   GetHomeListEventResDTO,
+  GetListBannerReqQueryDTO,
+  GetListBannerResDTO,
   GetListEventReqQueryDTO,
   GetListEventResDTO,
   GetListHotFeedReqDTO,
@@ -87,6 +89,31 @@ export class HomeController {
         HttpStatus.OK,
         API_RESPONSE_MEESAGE.SUCCESS,
         events,
+      );
+    } catch (error) {
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        error.message,
+      );
+    }
+  }
+
+  @ApiTags('home')
+  @Get('/banner')
+  @ApiOperation({summary: '배너 목록 조회'})
+  @OkApiResponseListDataDTO(GetListBannerResDTO)
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
+  async getListBanner(
+    @Query() query: GetListBannerReqQueryDTO,
+  ): Promise<ApiResponseDTO<GetListBannerResDTO[] | ErrorDTO>> {
+    try {
+      const banners = await this.homeService.getListBanner(query);
+
+      return new ApiResponseDTO<GetListBannerResDTO[]>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        banners,
       );
     } catch (error) {
       return new ApiResponseDTO<ErrorDTO>(

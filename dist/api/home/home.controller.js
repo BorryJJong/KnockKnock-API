@@ -52,6 +52,15 @@ let HomeController = class HomeController {
             return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
+    async getListBanner(query) {
+        try {
+            const banners = await this.homeService.getListBanner(query);
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, banners);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
+        }
+    }
 };
 __decorate([
     (0, swagger_1.ApiTags)('home'),
@@ -88,6 +97,18 @@ __decorate([
     __metadata("design:paramtypes", [home_dto_1.GetListEventReqQueryDTO]),
     __metadata("design:returntype", Promise)
 ], HomeController.prototype, "getListEvent", null);
+__decorate([
+    (0, swagger_1.ApiTags)('home'),
+    (0, common_1.Get)('/banner'),
+    (0, swagger_1.ApiOperation)({ summary: '배너 목록 조회' }),
+    (0, swagger_decorator_1.OkApiResponseListDataDTO)(home_dto_1.GetListBannerResDTO),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [home_dto_1.GetListBannerReqQueryDTO]),
+    __metadata("design:returntype", Promise)
+], HomeController.prototype, "getListBanner", null);
 HomeController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [home_service_1.HomeService])

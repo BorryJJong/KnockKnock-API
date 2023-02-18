@@ -12,12 +12,19 @@ const typeorm_1 = require("@nestjs/typeorm");
 const blogPost_repository_1 = require("../feed/repository/blogPost.repository");
 const home_controller_1 = require("./home.controller");
 const home_service_1 = require("./home.service");
+const Banner_Repository_1 = require("./repository/Banner.Repository");
 const Event_Repository_1 = require("./repository/Event.Repository");
 let HomeModule = class HomeModule {
 };
 HomeModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([blogPost_repository_1.BlogPostRepository, Event_Repository_1.EventRepository])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([
+                blogPost_repository_1.BlogPostRepository,
+                Event_Repository_1.EventRepository,
+                Banner_Repository_1.BannerRepository,
+            ]),
+        ],
         controllers: [home_controller_1.HomeController],
         providers: [home_service_1.HomeService],
     })

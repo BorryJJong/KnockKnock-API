@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ormConfig = void 0;
+const Banner_1 = require("../entities/Banner");
 const Event_1 = require("../entities/Event");
 const UserReportBlogPost_1 = require("../entities/UserReportBlogPost");
 const UserToBlogPostHide_1 = require("../entities/UserToBlogPostHide");
@@ -36,6 +37,7 @@ exports.ormConfig = {
         UserToBlogPostHide_1.UserToBlogPostHide,
         UserReportBlogPost_1.UserReportBlogPost,
         Event_1.Event,
+        Banner_1.Banner,
     ],
     synchronize: false,
     logging: false,

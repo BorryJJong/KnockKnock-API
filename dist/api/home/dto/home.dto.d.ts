@@ -1,4 +1,4 @@
-import { EVENT_TAP } from '@shared/enums/enum';
+import { BANNER_TYPE, EVENT_TAP } from '@shared/enums/enum';
 export declare class GetListHotFeedResDTO {
     private postId;
     private scale;
@@ -30,4 +30,13 @@ export declare class GetListEventResDTO {
 }
 export declare class GetListEventReqQueryDTO {
     eventTap: EVENT_TAP;
+}
+export declare class GetListBannerReqQueryDTO {
+    bannerType: BANNER_TYPE;
+}
+export declare class GetListBannerResDTO {
+    private id;
+    private image;
+    type: BANNER_TYPE;
+    constructor(id: number, image: string, type: BANNER_TYPE);
 }

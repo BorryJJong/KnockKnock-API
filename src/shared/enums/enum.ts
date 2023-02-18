@@ -37,3 +37,8 @@ export enum EVENT_TAP {
   ONGOING = 'ONGOING',
   END = 'END',
 }
+
+export enum BANNER_TYPE {
+  MAIN = 'MAIN',
+  BAR = 'BAR',
+}
