@@ -40,7 +40,7 @@ import {
 } from './interface/blogPost.interface';
 import {commafy, convertTimeToStr, isPageNext} from '../../shared/utils';
 import {BlogPost} from '@entities/BlogPost';
-import {BlogComment} from '@entities/BlogComment';
+import {IBlogComment} from '@entities/BlogComment';
 import {BlogLikeRepository} from 'src/api/like/repository/like.repository';
 import {BlogLike} from '@entities/BlogLike';
 import {UserRepository} from 'src/api/users/users.repository';
@@ -533,15 +533,15 @@ export class FeedService {
 
     const feedsCommentCount =
       await this.blogCommentRepository.selectFeedsByCommentCount(blogPostIds);
+
     const feedsLikeCount = await this.blogLikeRepository.selectFeedsByLikeCount(
       blogPostIds,
     );
 
     // 비회원의 경우 false, 회원인 경우 좋아요 여부 확인
-    let likes: BlogLike[] = [];
-    if (userId) {
-      likes = await this.getFeedListByUserLikes(blogPostIds, userId);
-    }
+    const likes: BlogLike[] = userId
+      ? await this.getFeedListByUserLikes(blogPostIds, userId)
+      : [];
 
     const findUsers = await this.getFeedListByUserInfo(
       blogPosts.items.map(b => b.userId),
@@ -620,12 +620,12 @@ export class FeedService {
     userId: number,
   ): Promise<GetListFeedCommentResDTO[]> {
     try {
-      let comments = await this.blogCommentRepository.getBlogCommentByPostId(
-        id,
+      const comments = plainToInstance(
+        GetListFeedCommentResDTO,
+        await this.blogCommentRepository.getBlogCommentByPostId(id),
       );
-      comments = plainToInstance(GetListFeedCommentResDTO, comments);
 
-      const result: GetListFeedCommentResDTO[] = await Promise.all(
+      return Promise.all(
         comments.map(async comment => {
           if (comment.replyCnt != 0) {
             const reply: GetBlogCommentDTO[] =
@@ -646,8 +646,6 @@ export class FeedService {
           return comment;
         }),
       );
-
-      return result;
     } catch (e) {
       throw new HttpException(
         {
@@ -668,11 +666,16 @@ export class FeedService {
 
   async deleteBlogComment({id}: DelBlogCommentReqDTO) {
     try {
-      const comment: BlogComment =
+      const comment: IBlogComment =
         await this.blogCommentRepository.getBlogComment(id);
-      comment.isDeleted = true;
-      comment.delDate = new Date();
-      await this.blogCommentRepository.saveBlogComment(null, comment);
+      const replies: IBlogComment[] =
+        await this.blogCommentRepository.getReplyBlogComments(id);
+
+      const blogCommentIds: number[] = [comment, ...replies].map(
+        comment => comment.id,
+      );
+
+      await this.blogCommentRepository.deleteBlogComment(blogCommentIds);
     } catch (e) {
       throw new HttpException(
         {

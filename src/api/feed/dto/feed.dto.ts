@@ -575,7 +575,6 @@ export class InsBlogCommentDTO extends OmitType(BlogComment, [
   'id',
   'regDate',
   'delDate',
-  'isDeleted',
 ]) {}
 
 export class DelBlogCommentReqDTO {
