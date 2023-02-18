@@ -49,6 +49,7 @@ import {IUser} from 'src/api/users/users.interface';
 import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 import {IBlogChallenge} from 'src/api/feed/interface/blogChallenges.interface';
 import {IBlogPromotion} from 'src/api/feed/interface/blogPromotion.interface';
+import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
 
 @Injectable()
 export class FeedService {
@@ -74,6 +75,8 @@ export class FeedService {
     private userRepository: UserRepository,
     @InjectRepository(UserToBlogPostHideRepository)
     private userToBlogPostHideRepository: UserToBlogPostHideRepository,
+    @InjectRepository(UserReportBlogPostRepository)
+    private userReportBlogPostRepository: UserReportBlogPostRepository,
   ) {}
 
   async create(
@@ -448,11 +451,7 @@ export class FeedService {
       query.page,
       query.take,
       blogPostIds,
-      userId
-        ? await this.userToBlogPostHideRepository
-            .selectBlogPostHideByUser(userId)
-            .then(datas => datas.map(data => data.postId))
-        : [],
+      await this.getExcludeBlogPostIds(userId),
     );
 
     const blogImages: IGetBlogImagesByBlogPost[] =
@@ -480,6 +479,24 @@ export class FeedService {
     };
   }
 
+  private async getExcludeBlogPostIds(userId?: number): Promise<number[]> {
+    const excludeBlogPostIds: number[] = [];
+
+    if (userId) {
+      const hideBlogPostIds = await this.userToBlogPostHideRepository
+        .selectBlogPostHideByUser(userId)
+        .then(datas => datas.map(data => data.postId));
+      excludeBlogPostIds.push(...hideBlogPostIds);
+    }
+
+    const reportBlogPostIds = await this.userReportBlogPostRepository
+      .selectUserReportBlogPost()
+      .then(datas => datas.map(data => data.postId));
+    excludeBlogPostIds.push(...reportBlogPostIds);
+
+    return [...new Set(excludeBlogPostIds)];
+  }
+
   public async getListFeed(
     query: GetListFeedReqQueryDTO,
     userId?: number,
@@ -505,12 +522,7 @@ export class FeedService {
       blogPostIds = blogChallenges.map(bc => bc.postId);
     }
 
-    if (userId) {
-      const hideBlogPostIds = await this.userToBlogPostHideRepository
-        .selectBlogPostHideByUser(userId)
-        .then(datas => datas.map(data => data.postId));
-      excludeBlogPostIds.push(...hideBlogPostIds);
-    }
+    excludeBlogPostIds.push(...(await this.getExcludeBlogPostIds(userId)));
 
     const blogPosts = await this.blogPostRepository.getListBlogPost(
       skip,
