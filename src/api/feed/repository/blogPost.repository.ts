@@ -63,7 +63,7 @@ export class BlogPostRepository
     page: number,
     take: number,
     blogPostIds: number[],
-    hideBlogPostIds: number[],
+    excludeBlogPostIds: number[],
   ): Promise<IGetBlogPostItems> {
     let queryBuilder = await this.createQueryBuilder('blogPost');
 
@@ -71,11 +71,11 @@ export class BlogPostRepository
       queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
     }
 
-    if (hideBlogPostIds.length > 0) {
+    if (excludeBlogPostIds.length > 0) {
       queryBuilder = queryBuilder.andWhere(
-        'blogPost.id NOT IN (:...hideBlogPostIds)',
+        'blogPost.id NOT IN (:...excludeBlogPostIds)',
         {
-          hideBlogPostIds,
+          excludeBlogPostIds,
         },
       );
     }

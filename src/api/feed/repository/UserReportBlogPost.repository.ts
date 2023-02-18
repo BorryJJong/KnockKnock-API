@@ -1,7 +1,11 @@
 import {Injectable} from '@nestjs/common';
 import {EntityRepository, Repository} from 'typeorm';
-import {UserReportBlogPost} from '@entities/UserReportBlogPost';
+import {
+  IUserReportBlogPost,
+  UserReportBlogPost,
+} from '@entities/UserReportBlogPost';
 import {REPORT_TYPE} from '@shared/enums/enum';
+import {BlogPost} from '@entities/BlogPost';
 
 @Injectable()
 @EntityRepository(UserReportBlogPost)
@@ -35,5 +39,11 @@ export class UserReportBlogPostRepository extends Repository<UserReportBlogPost>
         postId,
       })
       .getRawOne<number>();
+  }
+
+  async selectUserReportBlogPost(): Promise<IUserReportBlogPost[]> {
+    return await this.createQueryBuilder('userReportBlogPost')
+      .innerJoin(BlogPost, 'BP', 'BP.id = userReportBlogPost.post_id')
+      .getMany();
   }
 }

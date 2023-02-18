@@ -6,8 +6,16 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+export interface IUserReportBlogPost {
+  id: number;
+  userId: number;
+  postId: number;
+  reportType: REPORT_TYPE;
+  regDate: Date;
+}
+
 @Entity('user_report_blog_post', {schema: 'knockknock'})
-export class UserReportBlogPost {
+export class UserReportBlogPost implements IUserReportBlogPost {
   @PrimaryGeneratedColumn()
   id: number;
 
