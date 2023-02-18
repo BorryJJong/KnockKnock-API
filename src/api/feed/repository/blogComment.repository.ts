@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {EntityRepository, getManager, QueryRunner, Repository} from 'typeorm';
-import {BlogComment} from 'src/entities/BlogComment';
+import {BlogComment, IBlogComment} from 'src/entities/BlogComment';
 import {
   GetBlogCommentDTO,
   GetListFeedCommentResDTO,
@@ -53,7 +53,6 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       .from(BlogComment, 'b')
       .innerJoin(User, 'u', 'b.user_id = u.id')
       .where('b.comment_id IS NOT NULL')
-      .andWhere('b.isDeleted = false')
       .groupBy('b.comment_id');
 
     const comment: GetListFeedCommentResDTO[] = await getManager()
@@ -62,9 +61,9 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       .addSelect('bc.user_id', 'userId')
       .addSelect('u.nickname', 'nickname')
       .addSelect('u.image', 'image')
-      .addSelect('bc.is_deleted', 'isDeleted')
+      .addSelect('IF(bc.del_date IS NULL, false, true) ', 'isDeleted')
       .addSelect(
-        'IF( bc.is_deleted = 1, "삭제된 댓글입니다.", bc.content )',
+        'IF( bc.del_date IS NOT NULL, "삭제된 댓글입니다.", bc.content )',
         'content',
       )
       .addSelect('bc.reg_date', 'regDate')
@@ -76,9 +75,8 @@ export class BlogCommentRepository extends Repository<BlogComment> {
         'bcnt',
         'bc.id = bcnt.reply_id',
       )
-      .where('(bcnt.cnt != 0 OR is_deleted = 0)')
+      .where('(bcnt.cnt != 0 OR del_date IS NULL)')
       .andWhere('bc.comment_id IS NULL')
-      .andWhere('bc.isDeleted = false')
       .andWhere('bc.post_id = :id', {id: id})
       .orderBy('bc.id', 'ASC')
       .getRawMany();
@@ -98,21 +96,28 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       .addSelect('bc.user_id', 'userId')
       .addSelect('u.nickname', 'nickname')
       .addSelect('u.image', 'image')
-      .addSelect('bc.is_deleted', 'isDeleted')
+      .addSelect('IF(bc.del_date IS NULL, false, true) ', 'isDeleted')
       .addSelect('bc.content', 'content')
       .addSelect('bc.reg_date', 'regDate')
       .from(BlogComment, 'bc')
       .innerJoin(User, 'u', 'bc.user_id = u.id')
-      .where('bc.is_deleted = 0')
-      .andWhere('bc.comment_id = :id', {id: id})
+      .where('bc.comment_id = :id', {id: id})
       .orderBy('bc.id', 'ASC')
       .getRawMany();
 
     return comment;
   }
 
-  async getBlogComment(id: number): Promise<BlogComment> {
+  async getBlogComment(id: number): Promise<IBlogComment> {
     return await this.findOneOrFail(id);
+  }
+
+  async getReplyBlogComments(id: number): Promise<IBlogComment[]> {
+    return await this.find({
+      where: {
+        commentId: id,
+      },
+    });
   }
 
   async selectFeedsByCommentCount(
@@ -121,11 +126,9 @@ export class BlogCommentRepository extends Repository<BlogComment> {
     return await this.createQueryBuilder('blogComment')
       .select('blogComment.postId', 'postId')
       .addSelect('count(*)', 'commentCount')
+      .innerJoin(User, 'u', 'blogComment.user_id = u.id')
       .where('blogComment.postId IN (:...postIds)', {
         postIds: postIds.length === 0 ? [] : postIds,
-      })
-      .andWhere('blogComment.isDeleted = :isDeleted', {
-        isDeleted: false,
       })
       .groupBy('blogComment.postId')
       .getRawMany<IGetFeedsByCommentCountResponse>();
@@ -143,5 +146,15 @@ export class BlogCommentRepository extends Repository<BlogComment> {
         userId,
       })
       .getOne();
+  }
+
+  async deleteBlogComment(ids: number[]): Promise<void> {
+    await this.createQueryBuilder('blogComment')
+      .softDelete()
+      .from(BlogComment)
+      .where('id IN (:...ids)', {
+        ids,
+      })
+      .execute();
   }
 }

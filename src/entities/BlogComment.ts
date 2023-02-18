@@ -1,14 +1,24 @@
 import {ApiProperty} from '@nestjs/swagger';
 import {
-  BeforeInsert,
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+export interface IBlogComment {
+  id: number;
+  postId: number;
+  userId: number;
+  content: string;
+  commentId: number | null;
+  regDate: Date;
+  delDate?: Date;
+}
+
 @Entity('blog_comment', {schema: 'knockknock'})
-export class BlogComment {
+export class BlogComment implements IBlogComment {
   @ApiProperty({
     description: '댓글 id',
     example: 1,
@@ -68,11 +78,13 @@ export class BlogComment {
     name: 'reg_date',
     type: 'timestamp',
     nullable: false,
+    precision: null,
+    default: () => 'CURRENT_TIMESTAMP',
     comment: '생성 날짜',
   })
   regDate: Date;
 
-  @Column({
+  @DeleteDateColumn({
     name: 'del_date',
     type: 'timestamp',
     precision: 0,
@@ -80,17 +92,4 @@ export class BlogComment {
     nullable: true,
   })
   delDate?: Date;
-
-  @Column({
-    name: 'is_deleted',
-    type: 'tinyint',
-    default: false,
-    comment: '삭제 여부',
-  })
-  isDeleted: boolean;
-
-  @BeforeInsert()
-  beforeInsert() {
-    this.regDate = new Date();
-  }
 }
