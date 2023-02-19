@@ -120,3 +120,13 @@ export const commafy = (num: number) => {
 export const dtoConvertBoolean = (value: any): boolean => {
   return value === 'true' || value === true || value === 1 || value === '1';
 };
+
+// Used to unmarshal: typeorm column string ids to array
+export const stringIdsToArrayTransformer = {
+  from(str: string): number[] {
+    return str.split(',').map(data => +data);
+  },
+  to(ids: number[]): string {
+    return ids.join(',').toString();
+  },
+};

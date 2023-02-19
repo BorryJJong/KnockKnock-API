@@ -1,5 +1,6 @@
 import {Banner} from '@entities/Banner';
 import {Event} from '@entities/Event';
+import {Shop} from '@entities/Shop';
 import {UserReportBlogPost} from '@entities/UserReportBlogPost';
 import {UserToBlogPostHide} from '@entities/UserToBlogPostHide';
 import 'dotenv/config';
@@ -37,6 +38,7 @@ export const ormConfig: ConnectionOptions = {
     UserReportBlogPost,
     Event,
     Banner,
+    Shop,
   ],
   synchronize: false,
   logging: false,

@@ -22,9 +22,11 @@ import {
 } from 'src/api/feed/dto/feed.dto';
 import {
   GetHomeListEventResDTO,
+  GetHomeListVerifiredShopResDTO,
   GetListBannerResDTO,
   GetListEventResDTO,
   GetListHotFeedResDTO,
+  GetListVerifiredShopResDTO,
 } from 'src/api/home/dto/home.dto';
 import {GetPromotionResDTO} from 'src/api/promotions/dto/promotions.dto';
 import {GetUserResDTO} from 'src/api/users/dto/users.dto';
@@ -70,6 +72,8 @@ export function swaggerBuilder(app) {
       GetHomeListEventResDTO,
       GetListEventResDTO,
       GetListBannerResDTO,
+      GetHomeListVerifiredShopResDTO,
+      GetListVerifiredShopResDTO,
     ],
   });
   SwaggerModule.setup('api-docs', app, document, swaggerCustomOptions);

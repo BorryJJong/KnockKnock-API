@@ -81,7 +81,7 @@ export class GetHomeListEventResDTO {
     nullable: false,
     required: true,
   })
-  image: string;
+  private image: string;
 
   constructor(
     id: number,
@@ -145,7 +145,7 @@ export class GetListEventResDTO {
     nullable: false,
     required: true,
   })
-  image: string;
+  private image: string;
 
   @ApiProperty({
     description: '이벤트 홈페이지 URL',
@@ -153,7 +153,7 @@ export class GetListEventResDTO {
     nullable: false,
     required: true,
   })
-  url: string;
+  private url: string;
 
   constructor(
     id: number,
@@ -218,11 +218,123 @@ export class GetListBannerResDTO {
     description: '배너 타입(MAIN, BAR)',
     example: 'MAIN',
   })
-  type: BANNER_TYPE;
+  private type: BANNER_TYPE;
 
   constructor(id: number, image: string, type: BANNER_TYPE) {
     this.id = id;
     this.image = image;
     this.type = type;
+  }
+}
+
+export class GetHomeListVerifiredShopResDTO {
+  @ApiProperty({
+    description: '매장명',
+    example: '제로띵스',
+    nullable: false,
+    required: true,
+  })
+  private name: string;
+
+  @ApiProperty({
+    description: '매장 설명',
+    example: '일상에 스며드는 초록색 소비를 제안합니다',
+    nullable: false,
+    required: true,
+  })
+  private description: string;
+
+  @ApiProperty({
+    description: '매장 이미지',
+    example: '{aws.s3.endpoint}/event/filename.png',
+    nullable: false,
+    required: true,
+  })
+  private image: string;
+
+  @ApiProperty({
+    description: '상점의 프로모션 이름들',
+    example: '[텀블러 할인, 사은품 증정]',
+    nullable: false,
+    required: true,
+  })
+  private shopPromotionNames: string[];
+
+  constructor(
+    name: string,
+    description: string,
+    image: string,
+    shopPromotionNames: string[],
+  ) {
+    this.name = name;
+    this.description = description;
+    this.image = image;
+    this.shopPromotionNames = shopPromotionNames;
+  }
+}
+
+export class GetListVerifiredShopResDTO {
+  @ApiProperty({
+    description: '상점 ID',
+    example: '1',
+    nullable: false,
+    required: true,
+  })
+  private id: number;
+
+  @ApiProperty({
+    description: '매장명',
+    example: '제로띵스',
+    nullable: false,
+    required: true,
+  })
+  private name: string;
+
+  @ApiProperty({
+    description: '매장 설명',
+    example: '일상에 스며드는 초록색 소비를 제안합니다',
+    nullable: false,
+    required: true,
+  })
+  private description: string;
+
+  @ApiProperty({
+    description: '매장 이미지',
+    example: '{aws.s3.endpoint}/event/filename.png',
+    nullable: false,
+    required: true,
+  })
+  private image: string;
+
+  @ApiProperty({
+    description: '상점의 프로모션 이름들',
+    example: '[텀블러 할인, 사은품 증정]',
+    nullable: false,
+    required: true,
+  })
+  private shopPromotionNames: string[];
+
+  @ApiProperty({
+    description: '인증된 상점 홈페이지 URL or 주소',
+    example: 'https://github.com',
+    nullable: false,
+    required: true,
+  })
+  private url: string;
+
+  constructor(
+    id: number,
+    name: string,
+    description: string,
+    image: string,
+    shopPromotionNames: string[],
+    url: string,
+  ) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.image = image;
+    this.shopPromotionNames = shopPromotionNames;
+    this.url = url;
   }
 }

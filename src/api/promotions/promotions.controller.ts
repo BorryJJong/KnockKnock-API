@@ -16,18 +16,20 @@ export class PromotionsController {
   constructor(private readonly promotionsService: PromotionsService) {}
 
   @Get()
-  @ApiOperation({summary: '프로모션 리스트'})
+  @ApiOperation({summary: '프로모션 목록'})
   @OkApiResponseListDataDTO(GetPromotionResDTO)
   @DefaultErrorApiResponseDTO()
   @InternalServerApiResponseDTO()
-  async findAll(): Promise<ApiResponseDTO<GetPromotionResDTO[] | ErrorDTO>> {
+  async getListPromotion(): Promise<
+    ApiResponseDTO<GetPromotionResDTO[] | ErrorDTO>
+  > {
     try {
-      const promotions = await this.promotionsService.findAll();
+      const promotions = await this.promotionsService.getListPromotion();
 
       return new ApiResponseDTO<GetPromotionResDTO[]>(
         HttpStatus.OK,
         API_RESPONSE_MEESAGE.SUCCESS,
-        promotions.map(p => new GetPromotionResDTO(p.id, p.type)),
+        promotions,
       );
     } catch (error) {
       return new ApiResponseDTO<ErrorDTO>(

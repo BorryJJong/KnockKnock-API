@@ -16,6 +16,7 @@ AddressFinder.Documents(
   longtitude: "127.102269186127", 
   latitude: "37.3771012046504"),
 */
+
 @Entity('blog_post', {schema: 'knockknock'})
 export class BlogPost {
   @PrimaryGeneratedColumn()
