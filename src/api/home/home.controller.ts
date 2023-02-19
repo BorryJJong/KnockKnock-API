@@ -9,12 +9,14 @@ import {ApiResponseDTO, ErrorDTO} from '@shared/dto/response.dto';
 import {API_RESPONSE_MEESAGE} from '@shared/enums/enum';
 import {
   GetHomeListEventResDTO,
+  GetHomeListVerifiredShopResDTO,
   GetListBannerReqQueryDTO,
   GetListBannerResDTO,
   GetListEventReqQueryDTO,
   GetListEventResDTO,
   GetListHotFeedReqDTO,
   GetListHotFeedResDTO,
+  GetListVerifiredShopResDTO,
 } from 'src/api/home/dto/home.dto';
 import {HomeService} from 'src/api/home/home.service';
 
@@ -114,6 +116,56 @@ export class HomeController {
         HttpStatus.OK,
         API_RESPONSE_MEESAGE.SUCCESS,
         banners,
+      );
+    } catch (error) {
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        error.message,
+      );
+    }
+  }
+
+  @ApiTags('home')
+  @Get('/home-verification-shop')
+  @ApiOperation({summary: '홈화면 인증된 상점 목록 조회'})
+  @OkApiResponseListDataDTO(GetHomeListVerifiredShopResDTO)
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
+  async getHomeListVerifiedShop(): Promise<
+    ApiResponseDTO<GetHomeListVerifiredShopResDTO[] | ErrorDTO>
+  > {
+    try {
+      const shops = await this.homeService.getHomeListVerifiedShop();
+
+      return new ApiResponseDTO<GetHomeListVerifiredShopResDTO[]>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        shops,
+      );
+    } catch (error) {
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        error.message,
+      );
+    }
+  }
+
+  @ApiTags('home')
+  @Get('/verification-shop')
+  @ApiOperation({summary: '인증된 상점 목록 조회'})
+  @OkApiResponseListDataDTO(GetListVerifiredShopResDTO)
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
+  async getListVerifiedShop(): Promise<
+    ApiResponseDTO<GetListVerifiredShopResDTO[] | ErrorDTO>
+  > {
+    try {
+      const shops = await this.homeService.getListVerifiedShop();
+
+      return new ApiResponseDTO<GetListVerifiredShopResDTO[]>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+        shops,
       );
     } catch (error) {
       return new ApiResponseDTO<ErrorDTO>(

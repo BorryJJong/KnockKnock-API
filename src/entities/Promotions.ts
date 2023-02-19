@@ -1,5 +1,10 @@
 import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
 
+export interface IPromotions {
+  id: number;
+  type: string;
+}
+
 @Entity('promotions', {schema: 'knockknock'})
 export class Promotions {
   @PrimaryGeneratedColumn()

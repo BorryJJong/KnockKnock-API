@@ -1,21 +1,27 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {BANNER_TYPE, EVENT_TAP} from '@shared/enums/enum';
+import {EVENT_TAP} from '@shared/enums/enum';
 import {dateFormatV2} from '@shared/utils';
 import {isAfter, subDays} from 'date-fns';
 import {BlogPostRepository} from 'src/api/feed/repository/blogPost.repository';
 import {
   GetHomeListEventResDTO,
+  GetHomeListVerifiredShopResDTO,
   GetListBannerReqQueryDTO,
   GetListBannerResDTO,
   GetListEventReqQueryDTO,
   GetListEventResDTO,
   GetListHotFeedResDTO,
+  GetListVerifiredShopResDTO,
 } from 'src/api/home/dto/home.dto';
 import {IBannerRepository} from 'src/api/home/interface/banner.interface';
 import {IEventRepository} from 'src/api/home/interface/event.interface';
+import {IShopRepository} from 'src/api/home/interface/shop.interface';
 import {BannerRepository} from 'src/api/home/repository/Banner.Repository';
 import {EventRepository} from 'src/api/home/repository/Event.Repository';
+import {ShopRepository} from 'src/api/home/repository/Shop.Repository';
+import {IPromotionsRepository} from 'src/api/promotions/promotions.interface';
+import {PromotionsRepository} from 'src/api/promotions/promotions.repository';
 
 @Injectable()
 export class HomeService {
@@ -26,6 +32,10 @@ export class HomeService {
     private readonly eventRepository: IEventRepository,
     @InjectRepository(BannerRepository)
     private readonly bannerRepository: IBannerRepository,
+    @InjectRepository(ShopRepository)
+    private readonly shopRepository: IShopRepository,
+    @InjectRepository(PromotionsRepository)
+    private readonly promotionsRepository: IPromotionsRepository,
   ) {}
 
   async getListHotFeed(challengeId: number): Promise<GetListHotFeedResDTO[]> {
@@ -40,7 +50,7 @@ export class HomeService {
         this.getIsNewBadge(e.regDate),
         e.title,
         this.makeEventPeriod(e.startDate, e.endDate),
-        this.makeEventImageUrl(e.image),
+        this.makeImageUrl('event', e.image),
       );
     });
   }
@@ -53,10 +63,6 @@ export class HomeService {
     return `${dateFormatV2(startDate)} ~ ${
       endDate ? dateFormatV2(endDate) : '미정'
     }`;
-  }
-
-  private makeEventImageUrl(imageUrl: string): string {
-    return process.env.AWS_S3_ENDPOINT + `event/` + imageUrl;
   }
 
   async getListEvent(
@@ -72,7 +78,7 @@ export class HomeService {
         query.eventTap === EVENT_TAP.END,
         e.title,
         this.makeEventPeriod(e.startDate, e.endDate),
-        this.makeEventImageUrl(e.image),
+        this.makeImageUrl('event', e.image),
         e.url,
       );
     });
@@ -87,5 +93,43 @@ export class HomeService {
     return banners.map(b => {
       return new GetListBannerResDTO(b.id, b.image, b.type);
     });
+  }
+
+  async getHomeListVerifiedShop(): Promise<GetHomeListVerifiredShopResDTO[]> {
+    const shops = await this.shopRepository.selectVerifiedShops(true);
+    return Promise.all(
+      shops.map(async s => {
+        const shopPromotionNames =
+          await this.promotionsRepository.selectPromotionNames(s.promotionIds);
+        return new GetHomeListVerifiredShopResDTO(
+          s.name,
+          s.description,
+          s.image,
+          shopPromotionNames,
+        );
+      }),
+    );
+  }
+
+  async getListVerifiedShop(): Promise<GetListVerifiredShopResDTO[]> {
+    const shops = await this.shopRepository.selectVerifiedShops(false);
+    return Promise.all(
+      shops.map(async s => {
+        const shopPromotionNames =
+          await this.promotionsRepository.selectPromotionNames(s.promotionIds);
+        return new GetListVerifiredShopResDTO(
+          s.id,
+          s.name,
+          s.description,
+          this.makeImageUrl('shop', s.image),
+          shopPromotionNames,
+          s.url,
+        );
+      }),
+    );
+  }
+
+  private makeImageUrl(object: string, imageUrl: string): string {
+    return process.env.AWS_S3_ENDPOINT + object + `/` + imageUrl;
   }
 }

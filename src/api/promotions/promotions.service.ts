@@ -1,16 +1,17 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Promotions} from 'src/entities/Promotions';
-import {Repository} from 'typeorm';
-
+import {GetPromotionResDTO} from 'src/api/promotions/dto/promotions.dto';
+import {IPromotionsRepository} from 'src/api/promotions/promotions.interface';
+import {PromotionsRepository} from 'src/api/promotions/promotions.repository';
 @Injectable()
 export class PromotionsService {
   constructor(
-    @InjectRepository(Promotions)
-    private promotionsRepository: Repository<Promotions>,
+    @InjectRepository(PromotionsRepository)
+    private readonly promotionsRepository: IPromotionsRepository,
   ) {}
 
-  async findAll() {
-    return this.promotionsRepository.createQueryBuilder('promotions').getMany();
+  async getListPromotion(): Promise<GetPromotionResDTO[]> {
+    const promotions = await this.promotionsRepository.selectPromotions();
+    return promotions.map(p => new GetPromotionResDTO(p.id, p.type));
   }
 }
