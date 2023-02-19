@@ -657,7 +657,6 @@ class InsBlogCommentDTO extends (0, swagger_1.OmitType)(BlogComment_1.BlogCommen
     'id',
     'regDate',
     'delDate',
-    'isDeleted',
 ]) {
 }
 exports.InsBlogCommentDTO = InsBlogCommentDTO;

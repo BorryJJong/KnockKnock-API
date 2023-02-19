@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.dtoConvertBoolean = exports.commafy = exports.isPageNext = exports.getCurrentPageCount = exports.convertTimeToStr = exports.dateFormatV2 = exports.convertTime = exports.dateFormat = exports.zeroFill = exports.isComparePassword = exports.hashPassword = void 0;
+exports.stringIdsToArrayTransformer = exports.dtoConvertBoolean = exports.commafy = exports.isPageNext = exports.getCurrentPageCount = exports.convertTimeToStr = exports.dateFormatV2 = exports.convertTime = exports.dateFormat = exports.zeroFill = exports.isComparePassword = exports.hashPassword = void 0;
 const bcrypt_1 = require("bcrypt");
 const date_fns_1 = require("date-fns");
 const ramda_1 = require("ramda");
@@ -79,4 +79,12 @@ const dtoConvertBoolean = (value) => {
     return value === 'true' || value === true || value === 1 || value === '1';
 };
 exports.dtoConvertBoolean = dtoConvertBoolean;
+exports.stringIdsToArrayTransformer = {
+    from(str) {
+        return str.split(',').map(data => +data);
+    },
+    to(ids) {
+        return ids.join(',').toString();
+    },
+};
 //# sourceMappingURL=index.js.map

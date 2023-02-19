@@ -1,6 +1,6 @@
 import { EVENT_TAP } from '@shared/enums/enum';
 export interface IEventRepository {
-    selectEvents(eventTap?: EVENT_TAP): Promise<IEvent[]>;
+    selectEvents(isLimit: boolean, eventTap?: EVENT_TAP): Promise<IEvent[]>;
 }
 export interface IEvent {
     id: number;

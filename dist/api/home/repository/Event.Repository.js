@@ -12,7 +12,7 @@ const typeorm_1 = require("typeorm");
 const Event_1 = require("../../../entities/Event");
 const enum_1 = require("../../../shared/enums/enum");
 let EventRepository = class EventRepository extends typeorm_1.Repository {
-    async selectEvents(eventTap) {
+    async selectEvents(isLimit, eventTap) {
         let queryBuilder = await this.createQueryBuilder('event');
         if (eventTap) {
             const isOngoing = eventTap === enum_1.EVENT_TAP.ONGOING;
@@ -20,6 +20,9 @@ let EventRepository = class EventRepository extends typeorm_1.Repository {
             if (isOngoing) {
                 queryBuilder = queryBuilder.orWhere(`event.endDate IS NULL`);
             }
+        }
+        if (isLimit) {
+            queryBuilder = queryBuilder.limit(4);
         }
         return queryBuilder.orderBy('event.startDate', 'DESC').getMany();
     }

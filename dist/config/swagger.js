@@ -47,6 +47,8 @@ function swaggerBuilder(app) {
             home_dto_1.GetHomeListEventResDTO,
             home_dto_1.GetListEventResDTO,
             home_dto_1.GetListBannerResDTO,
+            home_dto_1.GetHomeListVerifiredShopResDTO,
+            home_dto_1.GetListVerifiredShopResDTO,
         ],
     });
     swagger_1.SwaggerModule.setup('api-docs', app, document, swaggerCustomOptions);

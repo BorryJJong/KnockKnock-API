@@ -37,7 +37,6 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             .from(BlogComment_1.BlogComment, 'b')
             .innerJoin(User_1.User, 'u', 'b.user_id = u.id')
             .where('b.comment_id IS NOT NULL')
-            .andWhere('b.isDeleted = false')
             .groupBy('b.comment_id');
         const comment = await (0, typeorm_1.getManager)()
             .createQueryBuilder()
@@ -45,16 +44,15 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             .addSelect('bc.user_id', 'userId')
             .addSelect('u.nickname', 'nickname')
             .addSelect('u.image', 'image')
-            .addSelect('bc.is_deleted', 'isDeleted')
-            .addSelect('IF( bc.is_deleted = 1, "삭제된 댓글입니다.", bc.content )', 'content')
+            .addSelect('IF(bc.del_date IS NULL, false, true) ', 'isDeleted')
+            .addSelect('IF( bc.del_date IS NOT NULL, "삭제된 댓글입니다.", bc.content )', 'content')
             .addSelect('bc.reg_date', 'regDate')
             .addSelect('IFNULL(bcnt.cnt, 0)', 'replyCnt')
             .from(BlogComment_1.BlogComment, 'bc')
             .innerJoin(User_1.User, 'u', 'bc.user_id = u.id')
             .leftJoinAndSelect('(' + cntQb.getQuery() + ')', 'bcnt', 'bc.id = bcnt.reply_id')
-            .where('(bcnt.cnt != 0 OR is_deleted = 0)')
+            .where('(bcnt.cnt != 0 OR del_date IS NULL)')
             .andWhere('bc.comment_id IS NULL')
-            .andWhere('bc.isDeleted = false')
             .andWhere('bc.post_id = :id', { id: id })
             .orderBy('bc.id', 'ASC')
             .getRawMany();
@@ -67,13 +65,12 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             .addSelect('bc.user_id', 'userId')
             .addSelect('u.nickname', 'nickname')
             .addSelect('u.image', 'image')
-            .addSelect('bc.is_deleted', 'isDeleted')
+            .addSelect('IF(bc.del_date IS NULL, false, true) ', 'isDeleted')
             .addSelect('bc.content', 'content')
             .addSelect('bc.reg_date', 'regDate')
             .from(BlogComment_1.BlogComment, 'bc')
             .innerJoin(User_1.User, 'u', 'bc.user_id = u.id')
-            .where('bc.is_deleted = 0')
-            .andWhere('bc.comment_id = :id', { id: id })
+            .where('bc.comment_id = :id', { id: id })
             .orderBy('bc.id', 'ASC')
             .getRawMany();
         return comment;
@@ -81,15 +78,20 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
     async getBlogComment(id) {
         return await this.findOneOrFail(id);
     }
+    async getReplyBlogComments(id) {
+        return await this.find({
+            where: {
+                commentId: id,
+            },
+        });
+    }
     async selectFeedsByCommentCount(postIds) {
         return await this.createQueryBuilder('blogComment')
             .select('blogComment.postId', 'postId')
             .addSelect('count(*)', 'commentCount')
+            .innerJoin(User_1.User, 'u', 'blogComment.user_id = u.id')
             .where('blogComment.postId IN (:...postIds)', {
             postIds: postIds.length === 0 ? [] : postIds,
-        })
-            .andWhere('blogComment.isDeleted = :isDeleted', {
-            isDeleted: false,
         })
             .groupBy('blogComment.postId')
             .getRawMany();
@@ -103,6 +105,15 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             userId,
         })
             .getOne();
+    }
+    async deleteBlogComment(ids) {
+        await this.createQueryBuilder('blogComment')
+            .softDelete()
+            .from(BlogComment_1.BlogComment)
+            .where('id IN (:...ids)', {
+            ids,
+        })
+            .execute();
     }
 };
 BlogCommentRepository = __decorate([

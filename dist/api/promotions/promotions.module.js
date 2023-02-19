@@ -11,12 +11,12 @@ const common_1 = require("@nestjs/common");
 const promotions_service_1 = require("./promotions.service");
 const promotions_controller_1 = require("./promotions.controller");
 const typeorm_1 = require("@nestjs/typeorm");
-const Promotions_1 = require("../../entities/Promotions");
+const promotions_repository_1 = require("./promotions.repository");
 let PromotionsModule = class PromotionsModule {
 };
 PromotionsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([Promotions_1.Promotions])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([promotions_repository_1.PromotionsRepository])],
         controllers: [promotions_controller_1.PromotionsController],
         providers: [promotions_service_1.PromotionsService],
     })

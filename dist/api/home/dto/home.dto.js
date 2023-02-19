@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetListBannerResDTO = exports.GetListBannerReqQueryDTO = exports.GetListEventReqQueryDTO = exports.GetListEventResDTO = exports.GetHomeListEventResDTO = exports.GetListHotFeedReqDTO = exports.GetListHotFeedResDTO = void 0;
+exports.GetListVerifiredShopResDTO = exports.GetHomeListVerifiredShopResDTO = exports.GetListBannerResDTO = exports.GetListBannerReqQueryDTO = exports.GetListEventReqQueryDTO = exports.GetListEventResDTO = exports.GetHomeListEventResDTO = exports.GetListHotFeedReqDTO = exports.GetListHotFeedResDTO = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const enum_1 = require("../../../shared/enums/enum");
 class GetListHotFeedResDTO {
@@ -243,4 +243,114 @@ __decorate([
     __metadata("design:type", String)
 ], GetListBannerResDTO.prototype, "type", void 0);
 exports.GetListBannerResDTO = GetListBannerResDTO;
+class GetHomeListVerifiredShopResDTO {
+    constructor(name, description, image, shopPromotionNames) {
+        this.name = name;
+        this.description = description;
+        this.image = image;
+        this.shopPromotionNames = shopPromotionNames;
+    }
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '매장명',
+        example: '제로띵스',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetHomeListVerifiredShopResDTO.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '매장 설명',
+        example: '일상에 스며드는 초록색 소비를 제안합니다',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetHomeListVerifiredShopResDTO.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '매장 이미지',
+        example: '{aws.s3.endpoint}/event/filename.png',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetHomeListVerifiredShopResDTO.prototype, "image", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '상점의 프로모션 이름들',
+        example: '[텀블러 할인, 사은품 증정]',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", Array)
+], GetHomeListVerifiredShopResDTO.prototype, "shopPromotionNames", void 0);
+exports.GetHomeListVerifiredShopResDTO = GetHomeListVerifiredShopResDTO;
+class GetListVerifiredShopResDTO {
+    constructor(id, name, description, image, shopPromotionNames, url) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.image = image;
+        this.shopPromotionNames = shopPromotionNames;
+        this.url = url;
+    }
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '상점 ID',
+        example: '1',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", Number)
+], GetListVerifiredShopResDTO.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '매장명',
+        example: '제로띵스',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetListVerifiredShopResDTO.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '매장 설명',
+        example: '일상에 스며드는 초록색 소비를 제안합니다',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetListVerifiredShopResDTO.prototype, "description", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '매장 이미지',
+        example: '{aws.s3.endpoint}/event/filename.png',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetListVerifiredShopResDTO.prototype, "image", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '상점의 프로모션 이름들',
+        example: '[텀블러 할인, 사은품 증정]',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", Array)
+], GetListVerifiredShopResDTO.prototype, "shopPromotionNames", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '인증된 상점 홈페이지 URL or 주소',
+        example: 'https://github.com',
+        nullable: false,
+        required: true,
+    }),
+    __metadata("design:type", String)
+], GetListVerifiredShopResDTO.prototype, "url", void 0);
+exports.GetListVerifiredShopResDTO = GetListVerifiredShopResDTO;
 //# sourceMappingURL=home.dto.js.map

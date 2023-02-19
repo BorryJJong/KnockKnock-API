@@ -30,8 +30,9 @@ const BlogPost_1 = require("../../entities/BlogPost");
 const like_repository_1 = require("../like/repository/like.repository");
 const users_repository_1 = require("../users/users.repository");
 const UserToBlogPostHide_repository_1 = require("./repository/UserToBlogPostHide.repository");
+const UserReportBlogPost_repository_1 = require("./repository/UserReportBlogPost.repository");
 let FeedService = FeedService_1 = class FeedService {
-    constructor(imageService, connection, blogPostRepository, blogChallengesRepository, blogPromotionRepository, blogImageRepository, blogCommentRepository, blogLikeRepository, userRepository, userToBlogPostHideRepository) {
+    constructor(imageService, connection, blogPostRepository, blogChallengesRepository, blogPromotionRepository, blogImageRepository, blogCommentRepository, blogLikeRepository, userRepository, userToBlogPostHideRepository, userReportBlogPostRepository) {
         this.imageService = imageService;
         this.connection = connection;
         this.blogPostRepository = blogPostRepository;
@@ -42,6 +43,7 @@ let FeedService = FeedService_1 = class FeedService {
         this.blogLikeRepository = blogLikeRepository;
         this.userRepository = userRepository;
         this.userToBlogPostHideRepository = userToBlogPostHideRepository;
+        this.userReportBlogPostRepository = userReportBlogPostRepository;
         this.logger = new common_1.Logger(FeedService_1.name);
         this.s3Endpoint = process.env.AWS_S3_ENDPOINT;
     }
@@ -239,11 +241,7 @@ let FeedService = FeedService_1 = class FeedService {
         if (blogChallenges.length > 0) {
             blogPostIds = blogChallenges.map(bc => bc.postId);
         }
-        const blogPosts = await this.blogPostRepository.getBlogPosts(query.page, query.take, blogPostIds, userId
-            ? await this.userToBlogPostHideRepository
-                .selectBlogPostHideByUser(userId)
-                .then(datas => datas.map(data => data.postId))
-            : []);
+        const blogPosts = await this.blogPostRepository.getBlogPosts(query.page, query.take, blogPostIds, await this.getExcludeBlogPostIds(userId));
         const blogImages = await this.blogImageRepository.getBlogImagesByBlogPost(blogPosts.items.map(post => post.id));
         return {
             feeds: blogPosts.items.map(blogPost => {
@@ -255,6 +253,20 @@ let FeedService = FeedService_1 = class FeedService {
             isNext: (0, utils_1.isPageNext)(blogPosts.pagination.page, blogPosts.pagination.take, blogPosts.pagination.total),
             total: blogPosts.pagination.total,
         };
+    }
+    async getExcludeBlogPostIds(userId) {
+        const excludeBlogPostIds = [];
+        if (userId) {
+            const hideBlogPostIds = await this.userToBlogPostHideRepository
+                .selectBlogPostHideByUser(userId)
+                .then(datas => datas.map(data => data.postId));
+            excludeBlogPostIds.push(...hideBlogPostIds);
+        }
+        const reportBlogPostIds = await this.userReportBlogPostRepository
+            .selectUserReportBlogPost()
+            .then(datas => datas.map(data => data.postId));
+        excludeBlogPostIds.push(...reportBlogPostIds);
+        return [...new Set(excludeBlogPostIds)];
     }
     async getListFeed(query, userId) {
         const { feedId: blogPostId, challengeId, page: skip, take } = query;
@@ -269,12 +281,7 @@ let FeedService = FeedService_1 = class FeedService {
             const blogChallenges = await this.blogChallengesRepository.getBlogChallengesByChallengeId(challengeId);
             blogPostIds = blogChallenges.map(bc => bc.postId);
         }
-        if (userId) {
-            const hideBlogPostIds = await this.userToBlogPostHideRepository
-                .selectBlogPostHideByUser(userId)
-                .then(datas => datas.map(data => data.postId));
-            excludeBlogPostIds.push(...hideBlogPostIds);
-        }
+        excludeBlogPostIds.push(...(await this.getExcludeBlogPostIds(userId)));
         const blogPosts = await this.blogPostRepository.getListBlogPost(skip, this.getFeedListTake(skip, take), blogPostIds, excludeBlogPostIds);
         if (+skip === 1) {
             blogPosts.items.unshift(selectBlogPost);
@@ -286,10 +293,9 @@ let FeedService = FeedService_1 = class FeedService {
         }
         const feedsCommentCount = await this.blogCommentRepository.selectFeedsByCommentCount(blogPostIds);
         const feedsLikeCount = await this.blogLikeRepository.selectFeedsByLikeCount(blogPostIds);
-        let likes = [];
-        if (userId) {
-            likes = await this.getFeedListByUserLikes(blogPostIds, userId);
-        }
+        const likes = userId
+            ? await this.getFeedListByUserLikes(blogPostIds, userId)
+            : [];
         const findUsers = await this.getFeedListByUserInfo(blogPosts.items.map(b => b.userId));
         return {
             feeds: blogPosts.items.map((blogPost) => {
@@ -329,9 +335,8 @@ let FeedService = FeedService_1 = class FeedService {
     }
     async getListFeedComment({ id }, userId) {
         try {
-            let comments = await this.blogCommentRepository.getBlogCommentByPostId(id);
-            comments = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetListFeedCommentResDTO, comments);
-            const result = await Promise.all(comments.map(async (comment) => {
+            const comments = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetListFeedCommentResDTO, await this.blogCommentRepository.getBlogCommentByPostId(id));
+            return Promise.all(comments.map(async (comment) => {
                 if (comment.replyCnt != 0) {
                     const reply = await this.blogCommentRepository.getBlogCommentByCommentId(comment.id);
                     reply.map((r, index) => (reply[index].isWriter = this.isFeedCommentWriter(r.userId, userId)));
@@ -340,7 +345,6 @@ let FeedService = FeedService_1 = class FeedService {
                 comment.isWriter = this.isFeedCommentWriter(comment.userId, userId);
                 return comment;
             }));
-            return result;
         }
         catch (e) {
             throw new common_1.HttpException({
@@ -355,9 +359,9 @@ let FeedService = FeedService_1 = class FeedService {
     async deleteBlogComment({ id }) {
         try {
             const comment = await this.blogCommentRepository.getBlogComment(id);
-            comment.isDeleted = true;
-            comment.delDate = new Date();
-            await this.blogCommentRepository.saveBlogComment(null, comment);
+            const replies = await this.blogCommentRepository.getReplyBlogComments(id);
+            const blogCommentIds = [comment, ...replies].map(comment => comment.id);
+            await this.blogCommentRepository.deleteBlogComment(blogCommentIds);
         }
         catch (e) {
             throw new common_1.HttpException({
@@ -388,6 +392,7 @@ FeedService = FeedService_1 = __decorate([
     __param(7, (0, typeorm_1.InjectRepository)(like_repository_1.BlogLikeRepository)),
     __param(8, (0, typeorm_1.InjectRepository)(users_repository_1.UserRepository)),
     __param(9, (0, typeorm_1.InjectRepository)(UserToBlogPostHide_repository_1.UserToBlogPostHideRepository)),
+    __param(10, (0, typeorm_1.InjectRepository)(UserReportBlogPost_repository_1.UserReportBlogPostRepository)),
     __metadata("design:paramtypes", [image_service_1.ImageService,
         typeorm_2.Connection, Object, blogChallenges_repository_1.BlogChallengesRepository,
         blogPromotion_repository_1.BlogPromotionRepository,
@@ -395,7 +400,8 @@ FeedService = FeedService_1 = __decorate([
         blogComment_repository_1.BlogCommentRepository,
         like_repository_1.BlogLikeRepository,
         users_repository_1.UserRepository,
-        UserToBlogPostHide_repository_1.UserToBlogPostHideRepository])
+        UserToBlogPostHide_repository_1.UserToBlogPostHideRepository,
+        UserReportBlogPost_repository_1.UserReportBlogPostRepository])
 ], FeedService);
 exports.FeedService = FeedService;
 //# sourceMappingURL=feed.service.js.map

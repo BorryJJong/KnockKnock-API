@@ -15,7 +15,7 @@ export declare class GetHomeListEventResDTO {
     private isNewBadge;
     private title;
     private eventPeriod;
-    image: string;
+    private image;
     constructor(id: number, isNewBadge: boolean, title: string, eventPeriod: string, image: string);
 }
 export declare class GetListEventResDTO {
@@ -24,8 +24,8 @@ export declare class GetListEventResDTO {
     private isEndEvent;
     private title;
     private eventPeriod;
-    image: string;
-    url: string;
+    private image;
+    private url;
     constructor(id: number, isNewBadge: boolean, isEndEvent: boolean, title: string, eventPeriod: string, image: string, url: string);
 }
 export declare class GetListEventReqQueryDTO {
@@ -37,6 +37,22 @@ export declare class GetListBannerReqQueryDTO {
 export declare class GetListBannerResDTO {
     private id;
     private image;
-    type: BANNER_TYPE;
+    private type;
     constructor(id: number, image: string, type: BANNER_TYPE);
+}
+export declare class GetHomeListVerifiredShopResDTO {
+    private name;
+    private description;
+    private image;
+    private shopPromotionNames;
+    constructor(name: string, description: string, image: string, shopPromotionNames: string[]);
+}
+export declare class GetListVerifiredShopResDTO {
+    private id;
+    private name;
+    private description;
+    private image;
+    private shopPromotionNames;
+    private url;
+    constructor(id: number, name: string, description: string, image: string, shopPromotionNames: string[], url: string);
 }

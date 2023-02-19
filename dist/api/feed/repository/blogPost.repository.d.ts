@@ -13,7 +13,7 @@ export declare class BlogPostRepository extends Repository<BlogPost> implements 
     createBlogPost(createBlogPostDTO: CreateBlogPostDTO | UpdateBlogPostDTO, userId?: number): BlogPost;
     saveBlogPost(queryRunner: QueryRunner | null, blogPost: BlogPost): Promise<BlogPost>;
     updateBlogPost(queryRunner: QueryRunner | null, postId: number, blogPost: BlogPost): Promise<import("typeorm").UpdateResult>;
-    getBlogPosts(page: number, take: number, blogPostIds: number[], hideBlogPostIds: number[]): Promise<IGetBlogPostItems>;
+    getBlogPosts(page: number, take: number, blogPostIds: number[], excludeBlogPostIds: number[]): Promise<IGetBlogPostItems>;
     getListBlogPost(page: number, take: number, blogPostIds: number[], excludeBlogPostId: number[]): Promise<IGetBlogPostItems>;
     getBlogPost(blogPostId: number): Promise<BlogPost>;
     getBlogPostById(id: number, userId?: number): Promise<GetBlogPostDTO | undefined>;

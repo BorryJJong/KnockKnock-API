@@ -9,71 +9,65 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BlogComment = void 0;
-const swagger_1 = require("@nestjs/swagger");
+exports.Shop = void 0;
+const utils_1 = require("../shared/utils");
 const typeorm_1 = require("typeorm");
-let BlogComment = class BlogComment {
+let Shop = class Shop {
 };
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '댓글 id',
-        example: 1,
-    }),
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], BlogComment.prototype, "id", void 0);
+], Shop.prototype, "id", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '게시글 id',
-        example: 1,
-    }),
     (0, typeorm_1.Column)({
-        name: 'post_id',
-        type: 'int',
-        comment: '게시글 id',
+        name: 'name',
+        type: 'varchar',
+        length: 255,
         nullable: false,
-    }),
-    __metadata("design:type", Number)
-], BlogComment.prototype, "postId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '사용자 id',
-        example: 1,
-    }),
-    (0, typeorm_1.Column)({
-        name: 'user_id',
-        type: 'int',
-        comment: '사용자 id',
-        nullable: false,
-    }),
-    __metadata("design:type", Number)
-], BlogComment.prototype, "userId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '내용',
-        example: '용기낸 모습이 아름답습니다.',
-    }),
-    (0, typeorm_1.Column)({
-        name: 'content',
-        type: 'text',
-        comment: '내용',
-        nullable: false,
+        comment: '상점명',
     }),
     __metadata("design:type", String)
-], BlogComment.prototype, "content", void 0);
+], Shop.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: '리댓글 대상 댓글 pk',
-        example: 'null || 리댓글 대상 댓글 pk(int)',
-    }),
     (0, typeorm_1.Column)({
-        name: 'comment_id',
-        type: 'int',
-        nullable: true,
-        comment: 'null || 리댓글 대상 댓글 pk',
+        name: 'description',
+        type: 'varchar',
+        length: 255,
+        nullable: false,
+        comment: '상점 설명',
     }),
-    __metadata("design:type", Object)
-], BlogComment.prototype, "commentId", void 0);
+    __metadata("design:type", String)
+], Shop.prototype, "description", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'image',
+        type: 'varchar',
+        length: 255,
+        nullable: false,
+        comment: '상점 이미지',
+    }),
+    __metadata("design:type", String)
+], Shop.prototype, "image", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'url',
+        type: 'text',
+        nullable: false,
+        comment: '인증된 상점 홈페이지 URL or 주소',
+    }),
+    __metadata("design:type", String)
+], Shop.prototype, "url", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'promotion_ids',
+        type: 'varchar',
+        length: 30,
+        nullable: false,
+        comment: '프로모션 아이디',
+        transformer: utils_1.stringIdsToArrayTransformer,
+    }),
+    __metadata("design:type", Array)
+], Shop.prototype, "promotionIds", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({
         name: 'reg_date',
@@ -81,22 +75,31 @@ __decorate([
         nullable: false,
         precision: null,
         default: () => 'CURRENT_TIMESTAMP',
-        comment: '생성 날짜',
+        comment: '등록 날짜',
     }),
     __metadata("design:type", Date)
-], BlogComment.prototype, "regDate", void 0);
+], Shop.prototype, "regDate", void 0);
 __decorate([
     (0, typeorm_1.DeleteDateColumn)({
         name: 'del_date',
         type: 'timestamp',
         precision: 0,
-        comment: '삭제일',
+        comment: '삭제 날짜',
         nullable: true,
     }),
     __metadata("design:type", Date)
-], BlogComment.prototype, "delDate", void 0);
-BlogComment = __decorate([
-    (0, typeorm_1.Entity)('blog_comment', { schema: 'knockknock' })
-], BlogComment);
-exports.BlogComment = BlogComment;
-//# sourceMappingURL=BlogComment.js.map
+], Shop.prototype, "delDate", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'verified_date',
+        nullable: false,
+        comment: '인증 날짜',
+        type: 'timestamp',
+    }),
+    __metadata("design:type", Date)
+], Shop.prototype, "verifiedDate", void 0);
+Shop = __decorate([
+    (0, typeorm_1.Entity)('shop', { schema: 'knockknock' })
+], Shop);
+exports.Shop = Shop;
+//# sourceMappingURL=Shop.js.map

@@ -1,5 +1,5 @@
 import { ApiResponseDTO, ErrorDTO } from '@shared/dto/response.dto';
-import { GetHomeListEventResDTO, GetListBannerReqQueryDTO, GetListBannerResDTO, GetListEventReqQueryDTO, GetListEventResDTO, GetListHotFeedReqDTO, GetListHotFeedResDTO } from 'src/api/home/dto/home.dto';
+import { GetHomeListEventResDTO, GetHomeListVerifiredShopResDTO, GetListBannerReqQueryDTO, GetListBannerResDTO, GetListEventReqQueryDTO, GetListEventResDTO, GetListHotFeedReqDTO, GetListHotFeedResDTO, GetListVerifiredShopResDTO } from 'src/api/home/dto/home.dto';
 import { HomeService } from 'src/api/home/home.service';
 export declare class HomeController {
     private readonly homeService;
@@ -8,4 +8,6 @@ export declare class HomeController {
     getHomeListEvent(): Promise<ApiResponseDTO<GetHomeListEventResDTO[] | ErrorDTO>>;
     getListEvent(query: GetListEventReqQueryDTO): Promise<ApiResponseDTO<GetListEventResDTO[] | ErrorDTO>>;
     getListBanner(query: GetListBannerReqQueryDTO): Promise<ApiResponseDTO<GetListBannerResDTO[] | ErrorDTO>>;
+    getHomeListVerifiedShop(): Promise<ApiResponseDTO<GetHomeListVerifiredShopResDTO[] | ErrorDTO>>;
+    getListVerifiedShop(): Promise<ApiResponseDTO<GetListVerifiredShopResDTO[] | ErrorDTO>>;
 }

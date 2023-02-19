@@ -9,3 +9,7 @@ export declare const getCurrentPageCount: (page: number, take: number) => number
 export declare const isPageNext: (page: number, take: number, total: number) => boolean;
 export declare const commafy: (num: number) => string;
 export declare const dtoConvertBoolean: (value: any) => boolean;
+export declare const stringIdsToArrayTransformer: {
+    from(str: string): number[];
+    to(ids: number[]): string;
+};
