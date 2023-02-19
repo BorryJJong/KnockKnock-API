@@ -10,10 +10,13 @@ exports.HomeModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const blogPost_repository_1 = require("../feed/repository/blogPost.repository");
+const blogPromotion_repository_1 = require("../feed/repository/blogPromotion.repository");
 const home_controller_1 = require("./home.controller");
 const home_service_1 = require("./home.service");
 const Banner_Repository_1 = require("./repository/Banner.Repository");
 const Event_Repository_1 = require("./repository/Event.Repository");
+const Shop_Repository_1 = require("./repository/Shop.Repository");
+const promotions_repository_1 = require("../promotions/promotions.repository");
 let HomeModule = class HomeModule {
 };
 HomeModule = __decorate([
@@ -23,6 +26,9 @@ HomeModule = __decorate([
                 blogPost_repository_1.BlogPostRepository,
                 Event_Repository_1.EventRepository,
                 Banner_Repository_1.BannerRepository,
+                Shop_Repository_1.ShopRepository,
+                blogPromotion_repository_1.BlogPromotionRepository,
+                promotions_repository_1.PromotionsRepository,
             ]),
         ],
         controllers: [home_controller_1.HomeController],

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ormConfig = void 0;
 const Banner_1 = require("../entities/Banner");
 const Event_1 = require("../entities/Event");
+const Shop_1 = require("../entities/Shop");
 const UserReportBlogPost_1 = require("../entities/UserReportBlogPost");
 const UserToBlogPostHide_1 = require("../entities/UserToBlogPostHide");
 require("dotenv/config");
@@ -38,6 +39,7 @@ exports.ormConfig = {
         UserReportBlogPost_1.UserReportBlogPost,
         Event_1.Event,
         Banner_1.Banner,
+        Shop_1.Shop,
     ],
     synchronize: false,
     logging: false,

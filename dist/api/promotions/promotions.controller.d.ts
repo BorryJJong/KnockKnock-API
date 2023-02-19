@@ -4,5 +4,5 @@ import { GetPromotionResDTO } from 'src/api/promotions/dto/promotions.dto';
 export declare class PromotionsController {
     private readonly promotionsService;
     constructor(promotionsService: PromotionsService);
-    findAll(): Promise<ApiResponseDTO<GetPromotionResDTO[] | ErrorDTO>>;
+    getListPromotion(): Promise<ApiResponseDTO<GetPromotionResDTO[] | ErrorDTO>>;
 }

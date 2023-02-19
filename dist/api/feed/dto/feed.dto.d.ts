@@ -138,7 +138,7 @@ export declare class GetFeedViewResDTO {
     challenges: GetBlogChallengesDTO[];
     images: GetBlogImageDTO[];
 }
-declare const InsBlogCommentDTO_base: import("@nestjs/common").Type<Omit<BlogComment, "id" | "regDate" | "delDate" | "isDeleted">>;
+declare const InsBlogCommentDTO_base: import("@nestjs/common").Type<Omit<BlogComment, "id" | "regDate" | "delDate">>;
 export declare class InsBlogCommentDTO extends InsBlogCommentDTO_base {
 }
 export declare class DelBlogCommentReqDTO {

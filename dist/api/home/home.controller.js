@@ -61,6 +61,24 @@ let HomeController = class HomeController {
             return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
+    async getHomeListVerifiedShop() {
+        try {
+            const shops = await this.homeService.getHomeListVerifiedShop();
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, shops);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
+        }
+    }
+    async getListVerifiedShop() {
+        try {
+            const shops = await this.homeService.getListVerifiedShop();
+            return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, shops);
+        }
+        catch (error) {
+            return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
+        }
+    }
 };
 __decorate([
     (0, swagger_1.ApiTags)('home'),
@@ -109,6 +127,28 @@ __decorate([
     __metadata("design:paramtypes", [home_dto_1.GetListBannerReqQueryDTO]),
     __metadata("design:returntype", Promise)
 ], HomeController.prototype, "getListBanner", null);
+__decorate([
+    (0, swagger_1.ApiTags)('home'),
+    (0, common_1.Get)('/home-verification-shop'),
+    (0, swagger_1.ApiOperation)({ summary: '홈화면 인증된 상점 목록 조회' }),
+    (0, swagger_decorator_1.OkApiResponseListDataDTO)(home_dto_1.GetHomeListVerifiredShopResDTO),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], HomeController.prototype, "getHomeListVerifiedShop", null);
+__decorate([
+    (0, swagger_1.ApiTags)('home'),
+    (0, common_1.Get)('/verification-shop'),
+    (0, swagger_1.ApiOperation)({ summary: '인증된 상점 목록 조회' }),
+    (0, swagger_decorator_1.OkApiResponseListDataDTO)(home_dto_1.GetListVerifiredShopResDTO),
+    (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
+    (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], HomeController.prototype, "getListVerifiedShop", null);
 HomeController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [home_service_1.HomeService])

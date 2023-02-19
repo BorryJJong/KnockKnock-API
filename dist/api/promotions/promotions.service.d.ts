@@ -1,7 +1,7 @@
-import { Promotions } from 'src/entities/Promotions';
-import { Repository } from 'typeorm';
+import { GetPromotionResDTO } from 'src/api/promotions/dto/promotions.dto';
+import { IPromotionsRepository } from 'src/api/promotions/promotions.interface';
 export declare class PromotionsService {
-    private promotionsRepository;
-    constructor(promotionsRepository: Repository<Promotions>);
-    findAll(): Promise<Promotions[]>;
+    private readonly promotionsRepository;
+    constructor(promotionsRepository: IPromotionsRepository);
+    getListPromotion(): Promise<GetPromotionResDTO[]>;
 }

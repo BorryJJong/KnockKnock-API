@@ -10,6 +10,7 @@ exports.UserReportBlogPostRepository = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const UserReportBlogPost_1 = require("../../../entities/UserReportBlogPost");
+const BlogPost_1 = require("../../../entities/BlogPost");
 let UserReportBlogPostRepository = class UserReportBlogPostRepository extends typeorm_1.Repository {
     async insertUserReportBlogPost(userId, postId, reportType) {
         await this.createQueryBuilder('userReportBlogPost')
@@ -32,6 +33,11 @@ let UserReportBlogPostRepository = class UserReportBlogPostRepository extends ty
             postId,
         })
             .getRawOne();
+    }
+    async selectUserReportBlogPost() {
+        return await this.createQueryBuilder('userReportBlogPost')
+            .innerJoin(BlogPost_1.BlogPost, 'BP', 'BP.id = userReportBlogPost.post_id')
+            .getMany();
     }
 };
 UserReportBlogPostRepository = __decorate([

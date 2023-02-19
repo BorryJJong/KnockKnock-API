@@ -15,20 +15,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PromotionsService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const Promotions_1 = require("../../entities/Promotions");
-const typeorm_2 = require("typeorm");
+const promotions_dto_1 = require("./dto/promotions.dto");
+const promotions_repository_1 = require("./promotions.repository");
 let PromotionsService = class PromotionsService {
     constructor(promotionsRepository) {
         this.promotionsRepository = promotionsRepository;
     }
-    async findAll() {
-        return this.promotionsRepository.createQueryBuilder('promotions').getMany();
+    async getListPromotion() {
+        const promotions = await this.promotionsRepository.selectPromotions();
+        return promotions.map(p => new promotions_dto_1.GetPromotionResDTO(p.id, p.type));
     }
 };
 PromotionsService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(Promotions_1.Promotions)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(0, (0, typeorm_1.InjectRepository)(promotions_repository_1.PromotionsRepository)),
+    __metadata("design:paramtypes", [Object])
 ], PromotionsService);
 exports.PromotionsService = PromotionsService;
 //# sourceMappingURL=promotions.service.js.map

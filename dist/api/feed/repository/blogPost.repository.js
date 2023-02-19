@@ -36,14 +36,14 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             return await queryRunner.manager.update(BlogPost_1.BlogPost, postId, blogPost);
         }
     }
-    async getBlogPosts(page, take, blogPostIds, hideBlogPostIds) {
+    async getBlogPosts(page, take, blogPostIds, excludeBlogPostIds) {
         let queryBuilder = await this.createQueryBuilder('blogPost');
         if (blogPostIds.length > 0) {
             queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
         }
-        if (hideBlogPostIds.length > 0) {
-            queryBuilder = queryBuilder.andWhere('blogPost.id NOT IN (:...hideBlogPostIds)', {
-                hideBlogPostIds,
+        if (excludeBlogPostIds.length > 0) {
+            queryBuilder = queryBuilder.andWhere('blogPost.id NOT IN (:...excludeBlogPostIds)', {
+                excludeBlogPostIds,
             });
         }
         const [blogPosts, total] = await queryBuilder
