@@ -24,7 +24,7 @@ export interface IBlogPostRepository {
     page: number,
     take: number,
     blogPostIds: number[],
-    hideBlogPostIds: number[],
+    excludeBlogPostIds: number[],
   ): Promise<IGetBlogPostItems>;
   getListBlogPost(
     page: number,

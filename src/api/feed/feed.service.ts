@@ -40,7 +40,7 @@ import {
 } from './interface/blogPost.interface';
 import {commafy, convertTimeToStr, isPageNext} from '../../shared/utils';
 import {BlogPost} from '@entities/BlogPost';
-import {BlogComment} from '@entities/BlogComment';
+import {IBlogComment} from '@entities/BlogComment';
 import {BlogLikeRepository} from 'src/api/like/repository/like.repository';
 import {BlogLike} from '@entities/BlogLike';
 import {UserRepository} from 'src/api/users/users.repository';
@@ -49,6 +49,7 @@ import {IUser} from 'src/api/users/users.interface';
 import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 import {IBlogChallenge} from 'src/api/feed/interface/blogChallenges.interface';
 import {IBlogPromotion} from 'src/api/feed/interface/blogPromotion.interface';
+import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
 
 @Injectable()
 export class FeedService {
@@ -74,6 +75,8 @@ export class FeedService {
     private userRepository: UserRepository,
     @InjectRepository(UserToBlogPostHideRepository)
     private userToBlogPostHideRepository: UserToBlogPostHideRepository,
+    @InjectRepository(UserReportBlogPostRepository)
+    private userReportBlogPostRepository: UserReportBlogPostRepository,
   ) {}
 
   async create(
@@ -448,11 +451,7 @@ export class FeedService {
       query.page,
       query.take,
       blogPostIds,
-      userId
-        ? await this.userToBlogPostHideRepository
-            .selectBlogPostHideByUser(userId)
-            .then(datas => datas.map(data => data.postId))
-        : [],
+      await this.getExcludeBlogPostIds(userId),
     );
 
     const blogImages: IGetBlogImagesByBlogPost[] =
@@ -480,6 +479,24 @@ export class FeedService {
     };
   }
 
+  private async getExcludeBlogPostIds(userId?: number): Promise<number[]> {
+    const excludeBlogPostIds: number[] = [];
+
+    if (userId) {
+      const hideBlogPostIds = await this.userToBlogPostHideRepository
+        .selectBlogPostHideByUser(userId)
+        .then(datas => datas.map(data => data.postId));
+      excludeBlogPostIds.push(...hideBlogPostIds);
+    }
+
+    const reportBlogPostIds = await this.userReportBlogPostRepository
+      .selectUserReportBlogPost()
+      .then(datas => datas.map(data => data.postId));
+    excludeBlogPostIds.push(...reportBlogPostIds);
+
+    return [...new Set(excludeBlogPostIds)];
+  }
+
   public async getListFeed(
     query: GetListFeedReqQueryDTO,
     userId?: number,
@@ -505,12 +522,7 @@ export class FeedService {
       blogPostIds = blogChallenges.map(bc => bc.postId);
     }
 
-    if (userId) {
-      const hideBlogPostIds = await this.userToBlogPostHideRepository
-        .selectBlogPostHideByUser(userId)
-        .then(datas => datas.map(data => data.postId));
-      excludeBlogPostIds.push(...hideBlogPostIds);
-    }
+    excludeBlogPostIds.push(...(await this.getExcludeBlogPostIds(userId)));
 
     const blogPosts = await this.blogPostRepository.getListBlogPost(
       skip,
@@ -533,15 +545,15 @@ export class FeedService {
 
     const feedsCommentCount =
       await this.blogCommentRepository.selectFeedsByCommentCount(blogPostIds);
+
     const feedsLikeCount = await this.blogLikeRepository.selectFeedsByLikeCount(
       blogPostIds,
     );
 
     // 비회원의 경우 false, 회원인 경우 좋아요 여부 확인
-    let likes: BlogLike[] = [];
-    if (userId) {
-      likes = await this.getFeedListByUserLikes(blogPostIds, userId);
-    }
+    const likes: BlogLike[] = userId
+      ? await this.getFeedListByUserLikes(blogPostIds, userId)
+      : [];
 
     const findUsers = await this.getFeedListByUserInfo(
       blogPosts.items.map(b => b.userId),
@@ -620,12 +632,12 @@ export class FeedService {
     userId: number,
   ): Promise<GetListFeedCommentResDTO[]> {
     try {
-      let comments = await this.blogCommentRepository.getBlogCommentByPostId(
-        id,
+      const comments = plainToInstance(
+        GetListFeedCommentResDTO,
+        await this.blogCommentRepository.getBlogCommentByPostId(id),
       );
-      comments = plainToInstance(GetListFeedCommentResDTO, comments);
 
-      const result: GetListFeedCommentResDTO[] = await Promise.all(
+      return Promise.all(
         comments.map(async comment => {
           if (comment.replyCnt != 0) {
             const reply: GetBlogCommentDTO[] =
@@ -646,8 +658,6 @@ export class FeedService {
           return comment;
         }),
       );
-
-      return result;
     } catch (e) {
       throw new HttpException(
         {
@@ -668,11 +678,16 @@ export class FeedService {
 
   async deleteBlogComment({id}: DelBlogCommentReqDTO) {
     try {
-      const comment: BlogComment =
+      const comment: IBlogComment =
         await this.blogCommentRepository.getBlogComment(id);
-      comment.isDeleted = true;
-      comment.delDate = new Date();
-      await this.blogCommentRepository.saveBlogComment(null, comment);
+      const replies: IBlogComment[] =
+        await this.blogCommentRepository.getReplyBlogComments(id);
+
+      const blogCommentIds: number[] = [comment, ...replies].map(
+        comment => comment.id,
+      );
+
+      await this.blogCommentRepository.deleteBlogComment(blogCommentIds);
     } catch (e) {
       throw new HttpException(
         {
