@@ -1,5 +1,6 @@
 import {Banner} from '@entities/Banner';
 import {Event} from '@entities/Event';
+import {Notice} from '@entities/Notice';
 import {Shop} from '@entities/Shop';
 import {UserReportBlogPost} from '@entities/UserReportBlogPost';
 import {UserToBlogPostHide} from '@entities/UserToBlogPostHide';
@@ -39,6 +40,7 @@ export const ormConfig: ConnectionOptions = {
     Event,
     Banner,
     Shop,
+    Notice,
   ],
   synchronize: false,
   logging: false,

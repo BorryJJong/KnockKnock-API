@@ -28,6 +28,7 @@ import {
   GetListHotFeedResDTO,
   GetListVerifiredShopResDTO,
 } from 'src/api/home/dto/home.dto';
+import {GetListNoticeResDTO} from 'src/api/my-page/dto/notice.dto';
 import {GetPromotionResDTO} from 'src/api/promotions/dto/promotions.dto';
 import {GetUserResDTO} from 'src/api/users/dto/users.dto';
 import {SocialLoginResponseDTO} from 'src/auth/dto/auth.dto';
@@ -74,6 +75,7 @@ export function swaggerBuilder(app) {
       GetListBannerResDTO,
       GetHomeListVerifiredShopResDTO,
       GetListVerifiredShopResDTO,
+      GetListNoticeResDTO,
     ],
   });
   SwaggerModule.setup('api-docs', app, document, swaggerCustomOptions);
