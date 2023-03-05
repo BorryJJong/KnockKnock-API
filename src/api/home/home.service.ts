@@ -114,16 +114,20 @@ export class HomeService {
   async getListVerifiedShop(): Promise<GetListVerifiredShopResDTO[]> {
     const shops = await this.shopRepository.selectVerifiedShops(false);
     return Promise.all(
-      shops.map(async s => {
+      shops.map(async shop => {
         const shopPromotionNames =
-          await this.promotionsRepository.selectPromotionNames(s.promotionIds);
+          await this.promotionsRepository.selectPromotionNames(
+            shop.promotionIds,
+          );
         return new GetListVerifiredShopResDTO(
-          s.id,
-          s.name,
-          s.description,
-          this.makeImageUrl('shop', s.image),
+          shop.id,
+          shop.name,
+          shop.description,
+          this.makeImageUrl('shop', shop.image),
           shopPromotionNames,
-          s.url,
+          shop.url,
+          shop.locationX,
+          shop.locationY,
         );
       }),
     );

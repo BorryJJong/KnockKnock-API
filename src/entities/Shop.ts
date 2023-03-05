@@ -17,6 +17,8 @@ export interface IShop {
   regDate: Date;
   delDate?: Date;
   verifiedDate: Date;
+  locationX: string;
+  locationY: string;
 }
 
 @Entity('shop', {schema: 'knockknock'})
@@ -95,4 +97,24 @@ export class Shop implements IShop {
     type: 'timestamp',
   })
   verifiedDate: Date;
+
+  @Column({
+    name: 'location_x',
+    type: 'decimal',
+    comment: 'x좌표',
+    precision: 10,
+    scale: 7,
+    nullable: false,
+  })
+  locationX: string;
+
+  @Column({
+    name: 'location_y',
+    type: 'decimal',
+    comment: 'y좌표',
+    precision: 10,
+    scale: 7,
+    nullable: false,
+  })
+  locationY: string;
 }

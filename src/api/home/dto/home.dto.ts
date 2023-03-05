@@ -322,6 +322,22 @@ export class GetListVerifiredShopResDTO {
   })
   private url: string;
 
+  @ApiProperty({
+    description: '매장 주소 y좌표',
+    example: '37.3771012046504',
+    required: true,
+    nullable: false,
+  })
+  locationX: string;
+
+  @ApiProperty({
+    description: '매장 주소 y좌표',
+    example: '37.3771012046504',
+    required: true,
+    nullable: false,
+  })
+  locationY: string;
+
   constructor(
     id: number,
     name: string,
@@ -329,6 +345,8 @@ export class GetListVerifiredShopResDTO {
     image: string,
     shopPromotionNames: string[],
     url: string,
+    locationX: string,
+    locationY: string,
   ) {
     this.id = id;
     this.name = name;
@@ -336,5 +354,7 @@ export class GetListVerifiredShopResDTO {
     this.image = image;
     this.shopPromotionNames = shopPromotionNames;
     this.url = url;
+    this.locationX = locationX;
+    this.locationY = locationY;
   }
 }
