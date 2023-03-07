@@ -70,9 +70,9 @@ let HomeService = class HomeService {
     }
     async getListVerifiedShop() {
         const shops = await this.shopRepository.selectVerifiedShops(false);
-        return Promise.all(shops.map(async (s) => {
-            const shopPromotionNames = await this.promotionsRepository.selectPromotionNames(s.promotionIds);
-            return new home_dto_1.GetListVerifiredShopResDTO(s.id, s.name, s.description, this.makeImageUrl('shop', s.image), shopPromotionNames, s.url);
+        return Promise.all(shops.map(async (shop) => {
+            const shopPromotionNames = await this.promotionsRepository.selectPromotionNames(shop.promotionIds);
+            return new home_dto_1.GetListVerifiredShopResDTO(shop.id, shop.name, shop.description, this.makeImageUrl('shop', shop.image), shopPromotionNames, shop.url, shop.locationX, shop.locationY);
         }));
     }
     makeImageUrl(object, imageUrl) {

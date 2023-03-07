@@ -101,7 +101,7 @@ export class Shop implements IShop {
   @Column({
     name: 'location_x',
     type: 'decimal',
-    comment: 'x좌표',
+    comment: 'x좌표(경도)',
     precision: 10,
     scale: 7,
     nullable: false,
@@ -111,7 +111,7 @@ export class Shop implements IShop {
   @Column({
     name: 'location_y',
     type: 'decimal',
-    comment: 'y좌표',
+    comment: 'y좌표(위도)',
     precision: 10,
     scale: 7,
     nullable: false,

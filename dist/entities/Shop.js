@@ -98,6 +98,28 @@ __decorate([
     }),
     __metadata("design:type", Date)
 ], Shop.prototype, "verifiedDate", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'location_x',
+        type: 'decimal',
+        comment: 'x좌표(경도)',
+        precision: 10,
+        scale: 7,
+        nullable: false,
+    }),
+    __metadata("design:type", String)
+], Shop.prototype, "locationX", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'location_y',
+        type: 'decimal',
+        comment: 'y좌표(위도)',
+        precision: 10,
+        scale: 7,
+        nullable: false,
+    }),
+    __metadata("design:type", String)
+], Shop.prototype, "locationY", void 0);
 Shop = __decorate([
     (0, typeorm_1.Entity)('shop', { schema: 'knockknock' })
 ], Shop);
