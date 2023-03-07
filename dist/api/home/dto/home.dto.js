@@ -289,13 +289,15 @@ __decorate([
 ], GetHomeListVerifiredShopResDTO.prototype, "shopPromotionNames", void 0);
 exports.GetHomeListVerifiredShopResDTO = GetHomeListVerifiredShopResDTO;
 class GetListVerifiredShopResDTO {
-    constructor(id, name, description, image, shopPromotionNames, url) {
+    constructor(id, name, description, image, shopPromotionNames, url, locationX, locationY) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.image = image;
         this.shopPromotionNames = shopPromotionNames;
         this.url = url;
+        this.locationX = locationX;
+        this.locationY = locationY;
     }
 }
 __decorate([
@@ -352,5 +354,23 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], GetListVerifiredShopResDTO.prototype, "url", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '매장 주소 x좌표(위도)',
+        example: '126.9903113',
+        required: true,
+        nullable: false,
+    }),
+    __metadata("design:type", String)
+], GetListVerifiredShopResDTO.prototype, "locationX", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '매장 주소 y좌표(경도)',
+        example: '37.3771012046504',
+        required: true,
+        nullable: false,
+    }),
+    __metadata("design:type", String)
+], GetListVerifiredShopResDTO.prototype, "locationY", void 0);
 exports.GetListVerifiredShopResDTO = GetListVerifiredShopResDTO;
 //# sourceMappingURL=home.dto.js.map

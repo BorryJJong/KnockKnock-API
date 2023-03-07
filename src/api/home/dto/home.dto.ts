@@ -323,15 +323,15 @@ export class GetListVerifiredShopResDTO {
   private url: string;
 
   @ApiProperty({
-    description: '매장 주소 y좌표',
-    example: '37.3771012046504',
+    description: '매장 주소 x좌표(위도)',
+    example: '126.9903113',
     required: true,
     nullable: false,
   })
   locationX: string;
 
   @ApiProperty({
-    description: '매장 주소 y좌표',
+    description: '매장 주소 y좌표(경도)',
     example: '37.3771012046504',
     required: true,
     nullable: false,

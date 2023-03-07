@@ -78,7 +78,7 @@ export class BlogPost {
   storeName?: string;
 
   @ApiProperty({
-    description: '매장 주소 x좌표',
+    description: '매장 주소 x좌표(경도)',
     example: '127.102269186127',
     required: false,
     nullable: true,
@@ -86,7 +86,7 @@ export class BlogPost {
   @Column({
     name: 'location_x',
     type: 'decimal',
-    comment: 'x좌표',
+    comment: 'x좌표(경도)',
     precision: 10,
     scale: 7,
     nullable: true,
@@ -94,7 +94,7 @@ export class BlogPost {
   locationX?: string;
 
   @ApiProperty({
-    description: '매장 주소 y좌표',
+    description: '매장 주소 y좌표(위도)',
     example: '37.3771012046504',
     required: false,
     nullable: true,
@@ -102,7 +102,7 @@ export class BlogPost {
   @Column({
     name: 'location_y',
     type: 'decimal',
-    comment: 'y좌표',
+    comment: 'y좌표(위도)',
     precision: 10,
     scale: 7,
     nullable: true,

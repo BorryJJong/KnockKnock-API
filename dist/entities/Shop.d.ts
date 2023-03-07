@@ -8,6 +8,8 @@ export interface IShop {
     regDate: Date;
     delDate?: Date;
     verifiedDate: Date;
+    locationX: string;
+    locationY: string;
 }
 export declare class Shop implements IShop {
     id: number;
@@ -19,4 +21,6 @@ export declare class Shop implements IShop {
     regDate: Date;
     delDate?: Date;
     verifiedDate: Date;
+    locationX: string;
+    locationY: string;
 }

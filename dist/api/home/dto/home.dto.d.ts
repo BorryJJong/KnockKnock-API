@@ -54,5 +54,7 @@ export declare class GetListVerifiredShopResDTO {
     private image;
     private shopPromotionNames;
     private url;
-    constructor(id: number, name: string, description: string, image: string, shopPromotionNames: string[], url: string);
+    locationX: string;
+    locationY: string;
+    constructor(id: number, name: string, description: string, image: string, shopPromotionNames: string[], url: string, locationX: string, locationY: string);
 }
