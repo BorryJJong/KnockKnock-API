@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {EVENT_TAP} from '@shared/enums/enum';
+import {EVENT_TAP, S3_OBJECT} from '@shared/enums/enum';
 import {dateFormatV2} from '@shared/utils';
 import {isAfter, subDays} from 'date-fns';
 import {BlogPostRepository} from 'src/api/feed/repository/blogPost.repository';
@@ -20,6 +20,7 @@ import {IShopRepository} from 'src/api/home/interface/shop.interface';
 import {BannerRepository} from 'src/api/home/repository/Banner.Repository';
 import {EventRepository} from 'src/api/home/repository/Event.Repository';
 import {ShopRepository} from 'src/api/home/repository/Shop.Repository';
+import {ImageService} from 'src/api/image/image.service';
 import {IPromotionsRepository} from 'src/api/promotions/promotions.interface';
 import {PromotionsRepository} from 'src/api/promotions/promotions.repository';
 
@@ -36,6 +37,7 @@ export class HomeService {
     private readonly shopRepository: IShopRepository,
     @InjectRepository(PromotionsRepository)
     private readonly promotionsRepository: IPromotionsRepository,
+    private readonly imageService: ImageService,
   ) {}
 
   async getListHotFeed(challengeId: number): Promise<GetListHotFeedResDTO[]> {
@@ -44,13 +46,13 @@ export class HomeService {
 
   async getHomeListEvent(): Promise<GetHomeListEventResDTO[]> {
     const events = await this.eventRepository.selectEvents(true);
-    return events.map(e => {
+    return events.map(event => {
       return new GetHomeListEventResDTO(
-        e.id,
-        this.getIsNewBadge(e.regDate),
-        e.title,
-        this.makeEventPeriod(e.startDate, e.endDate),
-        this.makeImageUrl('event', e.image),
+        event.id,
+        this.getIsNewBadge(event.regDate),
+        event.title,
+        this.makeEventPeriod(event.startDate, event.endDate),
+        this.imageService.getFileFullUrl(S3_OBJECT.EVENT, event.image),
       );
     });
   }
@@ -71,15 +73,15 @@ export class HomeService {
     const {eventTap} = query;
     const events = await this.eventRepository.selectEvents(false, eventTap);
 
-    return events.map(e => {
+    return events.map(event => {
       return new GetListEventResDTO(
-        e.id,
-        this.getIsNewBadge(e.regDate),
+        event.id,
+        this.getIsNewBadge(event.regDate),
         query.eventTap === EVENT_TAP.END,
-        e.title,
-        this.makeEventPeriod(e.startDate, e.endDate),
-        this.makeImageUrl('event', e.image),
-        e.url,
+        event.title,
+        this.makeEventPeriod(event.startDate, event.endDate),
+        this.imageService.getFileFullUrl(S3_OBJECT.EVENT, event.image),
+        event.url,
       );
     });
   }
@@ -98,13 +100,15 @@ export class HomeService {
   async getHomeListVerifiedShop(): Promise<GetHomeListVerifiredShopResDTO[]> {
     const shops = await this.shopRepository.selectVerifiedShops(true);
     return Promise.all(
-      shops.map(async s => {
+      shops.map(async shop => {
         const shopPromotionNames =
-          await this.promotionsRepository.selectPromotionNames(s.promotionIds);
+          await this.promotionsRepository.selectPromotionNames(
+            shop.promotionIds,
+          );
         return new GetHomeListVerifiredShopResDTO(
-          s.name,
-          s.description,
-          s.image,
+          shop.name,
+          shop.description,
+          this.imageService.getFileFullUrl(S3_OBJECT.SHOP, shop.image),
           shopPromotionNames,
         );
       }),
@@ -123,7 +127,7 @@ export class HomeService {
           shop.id,
           shop.name,
           shop.description,
-          this.makeImageUrl('shop', shop.image),
+          this.imageService.getFileFullUrl(S3_OBJECT.SHOP, shop.image),
           shopPromotionNames,
           shop.url,
           shop.locationX,
@@ -131,9 +135,5 @@ export class HomeService {
         );
       }),
     );
-  }
-
-  private makeImageUrl(object: string, imageUrl: string): string {
-    return process.env.AWS_S3_ENDPOINT + object + `/` + imageUrl;
   }
 }
