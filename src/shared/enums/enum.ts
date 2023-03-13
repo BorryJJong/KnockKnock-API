@@ -42,3 +42,12 @@ export enum BANNER_TYPE {
   MAIN = 'MAIN',
   BAR = 'BAR',
 }
+
+export enum S3_OBJECT {
+  SHOP = 'SHOP',
+  BANNER = 'BANNER',
+  CHALLENGE = 'CHALLENGE',
+  USER = 'USER',
+  FEED = 'FEED',
+  EVENT = 'EVENT',
+}

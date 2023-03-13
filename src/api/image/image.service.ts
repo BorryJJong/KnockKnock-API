@@ -1,5 +1,6 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
+import {S3_OBJECT} from '@shared/enums/enum';
 import * as AWS from 'aws-sdk';
 import 'dotenv/config';
 import sharp from 'sharp';
@@ -116,5 +117,19 @@ export class ImageService {
     }
 
     return `${newFileName}.${extension}`;
+  }
+
+  public getFileFullUrl(s3Object: S3_OBJECT, imageUrl: string): string {
+    let object = '';
+    switch (s3Object) {
+      case S3_OBJECT.SHOP:
+        object = S3_OBJECT.SHOP.toLowerCase();
+        break;
+      case S3_OBJECT.EVENT:
+        object = S3_OBJECT.EVENT.toLowerCase();
+        break;
+    }
+
+    return process.env.AWS_S3_ENDPOINT + object + `/` + imageUrl;
   }
 }
