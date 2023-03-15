@@ -1,4 +1,4 @@
-import { BANNER_TYPE } from '@shared/enums/enum';
+import { BANNER_TARGET_SCREEN, BANNER_TYPE } from '@shared/enums/enum';
 export interface IBannerRepository {
     selectBanners(type: BANNER_TYPE): Promise<IBanner[]>;
 }
@@ -9,4 +9,5 @@ export interface IBanner {
     regDate: Date;
     exposeDate: Date;
     expireDate?: Date;
+    targetScreen?: BANNER_TARGET_SCREEN;
 }

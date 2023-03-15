@@ -35,6 +35,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImageService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
+const enum_1 = require("../../shared/enums/enum");
 const AWS = __importStar(require("aws-sdk"));
 require("dotenv/config");
 const sharp_1 = __importDefault(require("sharp"));
@@ -120,6 +121,18 @@ let ImageService = ImageService_1 = class ImageService {
                 break;
         }
         return `${newFileName}.${extension}`;
+    }
+    getFileFullUrl(s3Object, imageUrl) {
+        let object = '';
+        switch (s3Object) {
+            case enum_1.S3_OBJECT.SHOP:
+                object = enum_1.S3_OBJECT.SHOP.toLowerCase();
+                break;
+            case enum_1.S3_OBJECT.EVENT:
+                object = enum_1.S3_OBJECT.EVENT.toLowerCase();
+                break;
+        }
+        return process.env.AWS_S3_ENDPOINT + object + `/` + imageUrl;
     }
 };
 ImageService = ImageService_1 = __decorate([

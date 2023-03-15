@@ -1,5 +1,6 @@
 /// <reference types="multer" />
 import { ConfigService } from '@nestjs/config';
+import { S3_OBJECT } from '@shared/enums/enum';
 import * as AWS from 'aws-sdk';
 import 'dotenv/config';
 export interface IUploadS3Response {
@@ -23,4 +24,5 @@ export declare class ImageService {
         ok: boolean;
     } | undefined>;
     rename(name: string, mimeType: string): string;
+    getFileFullUrl(s3Object: S3_OBJECT, imageUrl: string): string;
 }

@@ -3,6 +3,7 @@ import { GetHomeListEventResDTO, GetHomeListVerifiredShopResDTO, GetListBannerRe
 import { IBannerRepository } from 'src/api/home/interface/banner.interface';
 import { IEventRepository } from 'src/api/home/interface/event.interface';
 import { IShopRepository } from 'src/api/home/interface/shop.interface';
+import { ImageService } from 'src/api/image/image.service';
 import { IPromotionsRepository } from 'src/api/promotions/promotions.interface';
 export declare class HomeService {
     private readonly blogPostRepository;
@@ -10,7 +11,8 @@ export declare class HomeService {
     private readonly bannerRepository;
     private readonly shopRepository;
     private readonly promotionsRepository;
-    constructor(blogPostRepository: BlogPostRepository, eventRepository: IEventRepository, bannerRepository: IBannerRepository, shopRepository: IShopRepository, promotionsRepository: IPromotionsRepository);
+    private readonly imageService;
+    constructor(blogPostRepository: BlogPostRepository, eventRepository: IEventRepository, bannerRepository: IBannerRepository, shopRepository: IShopRepository, promotionsRepository: IPromotionsRepository, imageService: ImageService);
     getListHotFeed(challengeId: number): Promise<GetListHotFeedResDTO[]>;
     getHomeListEvent(): Promise<GetHomeListEventResDTO[]>;
     private getIsNewBadge;
@@ -19,5 +21,4 @@ export declare class HomeService {
     getListBanner(query: GetListBannerReqQueryDTO): Promise<GetListBannerResDTO[]>;
     getHomeListVerifiedShop(): Promise<GetHomeListVerifiredShopResDTO[]>;
     getListVerifiedShop(): Promise<GetListVerifiredShopResDTO[]>;
-    private makeImageUrl;
 }
