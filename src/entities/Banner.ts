@@ -1,4 +1,4 @@
-import {BANNER_TYPE} from '@shared/enums/enum';
+import {BANNER_TARGET_SCREEN, BANNER_TYPE} from '@shared/enums/enum';
 import {IBanner} from 'src/api/home/interface/banner.interface';
 import {
   Column,
@@ -9,8 +9,7 @@ import {
 
 @Entity('banner', {schema: 'knockknock'})
 export class Banner implements IBanner {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn() id: number;
 
   @Column({
     name: 'type',
@@ -55,4 +54,13 @@ export class Banner implements IBanner {
     type: 'timestamp',
   })
   expireDate?: Date;
+
+  @Column({
+    name: 'target_screen',
+    nullable: true,
+    type: 'enum',
+    enum: BANNER_TARGET_SCREEN,
+    comment: '이동 화면',
+  })
+  targetScreen?: BANNER_TARGET_SCREEN;
 }
