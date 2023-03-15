@@ -35,3 +35,17 @@ export declare enum BANNER_TYPE {
     MAIN = "MAIN",
     BAR = "BAR"
 }
+export declare enum S3_OBJECT {
+    SHOP = "SHOP",
+    BANNER = "BANNER",
+    CHALLENGE = "CHALLENGE",
+    USER = "USER",
+    FEED = "FEED",
+    EVENT = "EVENT"
+}
+export declare enum BANNER_TARGET_SCREEN {
+    CHALLENGE_GOGO = "CHALLENGE_GOGO",
+    CHALLENGE_UPCYCLING = "CHALLENGE_UPCYCLING",
+    CHALLENGE_BRAVE = "CHALLENGE_BRAVE",
+    FEED_WRITE = "FEED_WRITE"
+}

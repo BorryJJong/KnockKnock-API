@@ -67,6 +67,16 @@ __decorate([
     }),
     __metadata("design:type", Date)
 ], Banner.prototype, "expireDate", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        name: 'target_screen',
+        nullable: true,
+        type: 'enum',
+        enum: enum_1.BANNER_TARGET_SCREEN,
+        comment: '이동 화면',
+    }),
+    __metadata("design:type", String)
+], Banner.prototype, "targetScreen", void 0);
 Banner = __decorate([
     (0, typeorm_1.Entity)('banner', { schema: 'knockknock' })
 ], Banner);

@@ -24,13 +24,9 @@ exports.zeroFill = zeroFill;
 const dateFormat = (date) => {
     const month = date.getMonth() + 1;
     const day = date.getDate();
-    const hour = date.getHours();
-    const minute = date.getMinutes();
     const monthStr = (0, exports.zeroFill)(month, 2);
     const dayStr = (0, exports.zeroFill)(day, 2);
-    const hourStr = (0, exports.zeroFill)(hour, 2);
-    const minuteStr = (0, exports.zeroFill)(minute, 2);
-    return `${date.getFullYear()}.${monthStr}.${dayStr} ${hourStr}:${minuteStr}`;
+    return `${date.getFullYear()}.${monthStr}.${dayStr}`;
 };
 exports.dateFormat = dateFormat;
 const convertTime = (utc) => {

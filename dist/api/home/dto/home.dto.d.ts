@@ -1,4 +1,4 @@
-import { BANNER_TYPE, EVENT_TAP } from '@shared/enums/enum';
+import { BANNER_TARGET_SCREEN, BANNER_TYPE, EVENT_TAP } from '@shared/enums/enum';
 export declare class GetListHotFeedResDTO {
     private postId;
     private scale;
@@ -38,7 +38,8 @@ export declare class GetListBannerResDTO {
     private id;
     private image;
     private type;
-    constructor(id: number, image: string, type: BANNER_TYPE);
+    private targetScreen?;
+    constructor(id: number, image: string, type: BANNER_TYPE, targetScreen?: BANNER_TARGET_SCREEN);
 }
 export declare class GetHomeListVerifiredShopResDTO {
     private name;

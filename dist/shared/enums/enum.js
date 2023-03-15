@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BANNER_TYPE = exports.EVENT_TAP = exports.REPORT_TYPE = exports.API_RESPONSE_MEESAGE = exports.CHALLENGES_SORT = exports.ERRPR_CODE = exports.SOCIAL_TYPE = exports.FEED_SEARCH_TYPE = void 0;
+exports.BANNER_TARGET_SCREEN = exports.S3_OBJECT = exports.BANNER_TYPE = exports.EVENT_TAP = exports.REPORT_TYPE = exports.API_RESPONSE_MEESAGE = exports.CHALLENGES_SORT = exports.ERRPR_CODE = exports.SOCIAL_TYPE = exports.FEED_SEARCH_TYPE = void 0;
 var FEED_SEARCH_TYPE;
 (function (FEED_SEARCH_TYPE) {
     FEED_SEARCH_TYPE["POPULAR"] = "POPULAR";
@@ -46,4 +46,20 @@ var BANNER_TYPE;
     BANNER_TYPE["MAIN"] = "MAIN";
     BANNER_TYPE["BAR"] = "BAR";
 })(BANNER_TYPE = exports.BANNER_TYPE || (exports.BANNER_TYPE = {}));
+var S3_OBJECT;
+(function (S3_OBJECT) {
+    S3_OBJECT["SHOP"] = "SHOP";
+    S3_OBJECT["BANNER"] = "BANNER";
+    S3_OBJECT["CHALLENGE"] = "CHALLENGE";
+    S3_OBJECT["USER"] = "USER";
+    S3_OBJECT["FEED"] = "FEED";
+    S3_OBJECT["EVENT"] = "EVENT";
+})(S3_OBJECT = exports.S3_OBJECT || (exports.S3_OBJECT = {}));
+var BANNER_TARGET_SCREEN;
+(function (BANNER_TARGET_SCREEN) {
+    BANNER_TARGET_SCREEN["CHALLENGE_GOGO"] = "CHALLENGE_GOGO";
+    BANNER_TARGET_SCREEN["CHALLENGE_UPCYCLING"] = "CHALLENGE_UPCYCLING";
+    BANNER_TARGET_SCREEN["CHALLENGE_BRAVE"] = "CHALLENGE_BRAVE";
+    BANNER_TARGET_SCREEN["FEED_WRITE"] = "FEED_WRITE";
+})(BANNER_TARGET_SCREEN = exports.BANNER_TARGET_SCREEN || (exports.BANNER_TARGET_SCREEN = {}));
 //# sourceMappingURL=enum.js.map

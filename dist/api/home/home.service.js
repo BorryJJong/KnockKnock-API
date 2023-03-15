@@ -23,22 +23,24 @@ const home_dto_1 = require("./dto/home.dto");
 const Banner_Repository_1 = require("./repository/Banner.Repository");
 const Event_Repository_1 = require("./repository/Event.Repository");
 const Shop_Repository_1 = require("./repository/Shop.Repository");
+const image_service_1 = require("../image/image.service");
 const promotions_repository_1 = require("../promotions/promotions.repository");
 let HomeService = class HomeService {
-    constructor(blogPostRepository, eventRepository, bannerRepository, shopRepository, promotionsRepository) {
+    constructor(blogPostRepository, eventRepository, bannerRepository, shopRepository, promotionsRepository, imageService) {
         this.blogPostRepository = blogPostRepository;
         this.eventRepository = eventRepository;
         this.bannerRepository = bannerRepository;
         this.shopRepository = shopRepository;
         this.promotionsRepository = promotionsRepository;
+        this.imageService = imageService;
     }
     async getListHotFeed(challengeId) {
         return this.blogPostRepository.selectBlogPostByHotFeeds(challengeId);
     }
     async getHomeListEvent() {
         const events = await this.eventRepository.selectEvents(true);
-        return events.map(e => {
-            return new home_dto_1.GetHomeListEventResDTO(e.id, this.getIsNewBadge(e.regDate), e.title, this.makeEventPeriod(e.startDate, e.endDate), this.makeImageUrl('event', e.image));
+        return events.map(event => {
+            return new home_dto_1.GetHomeListEventResDTO(event.id, this.getIsNewBadge(event.regDate), event.title, this.makeEventPeriod(event.startDate, event.endDate), this.imageService.getFileFullUrl(enum_1.S3_OBJECT.EVENT, event.image));
         });
     }
     getIsNewBadge(regDate) {
@@ -50,33 +52,30 @@ let HomeService = class HomeService {
     async getListEvent(query) {
         const { eventTap } = query;
         const events = await this.eventRepository.selectEvents(false, eventTap);
-        return events.map(e => {
-            return new home_dto_1.GetListEventResDTO(e.id, this.getIsNewBadge(e.regDate), query.eventTap === enum_1.EVENT_TAP.END, e.title, this.makeEventPeriod(e.startDate, e.endDate), this.makeImageUrl('event', e.image), e.url);
+        return events.map(event => {
+            return new home_dto_1.GetListEventResDTO(event.id, this.getIsNewBadge(event.regDate), query.eventTap === enum_1.EVENT_TAP.END, event.title, this.makeEventPeriod(event.startDate, event.endDate), this.imageService.getFileFullUrl(enum_1.S3_OBJECT.EVENT, event.image), event.url);
         });
     }
     async getListBanner(query) {
         const { bannerType } = query;
         const banners = await this.bannerRepository.selectBanners(bannerType);
         return banners.map(b => {
-            return new home_dto_1.GetListBannerResDTO(b.id, b.image, b.type);
+            return new home_dto_1.GetListBannerResDTO(b.id, b.image, b.type, b.targetScreen);
         });
     }
     async getHomeListVerifiedShop() {
         const shops = await this.shopRepository.selectVerifiedShops(true);
-        return Promise.all(shops.map(async (s) => {
-            const shopPromotionNames = await this.promotionsRepository.selectPromotionNames(s.promotionIds);
-            return new home_dto_1.GetHomeListVerifiredShopResDTO(s.name, s.description, s.image, shopPromotionNames);
+        return Promise.all(shops.map(async (shop) => {
+            const shopPromotionNames = await this.promotionsRepository.selectPromotionNames(shop.promotionIds);
+            return new home_dto_1.GetHomeListVerifiredShopResDTO(shop.name, shop.description, this.imageService.getFileFullUrl(enum_1.S3_OBJECT.SHOP, shop.image), shopPromotionNames);
         }));
     }
     async getListVerifiedShop() {
         const shops = await this.shopRepository.selectVerifiedShops(false);
         return Promise.all(shops.map(async (shop) => {
             const shopPromotionNames = await this.promotionsRepository.selectPromotionNames(shop.promotionIds);
-            return new home_dto_1.GetListVerifiredShopResDTO(shop.id, shop.name, shop.description, this.makeImageUrl('shop', shop.image), shopPromotionNames, shop.url, shop.locationX, shop.locationY);
+            return new home_dto_1.GetListVerifiredShopResDTO(shop.id, shop.name, shop.description, this.imageService.getFileFullUrl(enum_1.S3_OBJECT.SHOP, shop.image), shopPromotionNames, shop.url, shop.locationX, shop.locationY);
         }));
-    }
-    makeImageUrl(object, imageUrl) {
-        return process.env.AWS_S3_ENDPOINT + object + `/` + imageUrl;
     }
 };
 HomeService = __decorate([
@@ -86,7 +85,7 @@ HomeService = __decorate([
     __param(2, (0, typeorm_1.InjectRepository)(Banner_Repository_1.BannerRepository)),
     __param(3, (0, typeorm_1.InjectRepository)(Shop_Repository_1.ShopRepository)),
     __param(4, (0, typeorm_1.InjectRepository)(promotions_repository_1.PromotionsRepository)),
-    __metadata("design:paramtypes", [blogPost_repository_1.BlogPostRepository, Object, Object, Object, Object])
+    __metadata("design:paramtypes", [blogPost_repository_1.BlogPostRepository, Object, Object, Object, Object, image_service_1.ImageService])
 ], HomeService);
 exports.HomeService = HomeService;
 //# sourceMappingURL=home.service.js.map

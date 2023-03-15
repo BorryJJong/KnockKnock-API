@@ -209,10 +209,11 @@ __decorate([
 ], GetListBannerReqQueryDTO.prototype, "bannerType", void 0);
 exports.GetListBannerReqQueryDTO = GetListBannerReqQueryDTO;
 class GetListBannerResDTO {
-    constructor(id, image, type) {
+    constructor(id, image, type, targetScreen) {
         this.id = id;
         this.image = image;
         this.type = type;
+        this.targetScreen = targetScreen;
     }
 }
 __decorate([
@@ -242,6 +243,16 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], GetListBannerResDTO.prototype, "type", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        required: false,
+        nullable: true,
+        enum: enum_1.BANNER_TARGET_SCREEN,
+        description: '배너 이동화면',
+        example: 'FEED_WRITE',
+    }),
+    __metadata("design:type", String)
+], GetListBannerResDTO.prototype, "targetScreen", void 0);
 exports.GetListBannerResDTO = GetListBannerResDTO;
 class GetHomeListVerifiredShopResDTO {
     constructor(name, description, image, shopPromotionNames) {
