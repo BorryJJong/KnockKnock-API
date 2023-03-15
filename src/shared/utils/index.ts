@@ -29,22 +29,23 @@ export const zeroFill = (n: number, num_length: number): string => {
 };
 
 /**
- * Format Date to String (YYYY.MM.DD HH:MM)
+ * Format Date to String (YYYY.MM.DD)
  * @param {Date} date
- * @returns {string} YYYY.MM.DD HH:MM
+ * @returns {string} YYYY.MM.DD
  */
 export const dateFormat = (date: Date): string => {
   const month = date.getMonth() + 1;
   const day = date.getDate();
-  const hour = date.getHours();
-  const minute = date.getMinutes();
+  // const hour = date.getHours();
+  // const minute = date.getMinutes();
 
   const monthStr = zeroFill(month, 2);
   const dayStr = zeroFill(day, 2);
-  const hourStr = zeroFill(hour, 2);
-  const minuteStr = zeroFill(minute, 2);
+  // const hourStr = zeroFill(hour, 2);
+  // const minuteStr = zeroFill(minute, 2);
 
-  return `${date.getFullYear()}.${monthStr}.${dayStr} ${hourStr}:${minuteStr}`;
+  // return `${date.getFullYear()}.${monthStr}.${dayStr} ${hourStr}:${minuteStr}`;
+  return `${date.getFullYear()}.${monthStr}.${dayStr}`;
 };
 
 /**
