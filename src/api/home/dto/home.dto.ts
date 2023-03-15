@@ -1,5 +1,5 @@
 import {ApiProperty} from '@nestjs/swagger';
-import {BANNER_TYPE, EVENT_TAP} from '@shared/enums/enum';
+import {BANNER_TARGET_SCREEN, BANNER_TYPE, EVENT_TAP} from '@shared/enums/enum';
 
 export class GetListHotFeedResDTO {
   @ApiProperty({description: '게시글 id', example: '1'})
@@ -220,10 +220,25 @@ export class GetListBannerResDTO {
   })
   private type: BANNER_TYPE;
 
-  constructor(id: number, image: string, type: BANNER_TYPE) {
+  @ApiProperty({
+    required: false,
+    nullable: true,
+    enum: BANNER_TARGET_SCREEN,
+    description: '배너 이동화면',
+    example: 'FEED_WRITE',
+  })
+  private targetScreen?: BANNER_TARGET_SCREEN;
+
+  constructor(
+    id: number,
+    image: string,
+    type: BANNER_TYPE,
+    targetScreen?: BANNER_TARGET_SCREEN,
+  ) {
     this.id = id;
     this.image = image;
     this.type = type;
+    this.targetScreen = targetScreen;
   }
 }
 

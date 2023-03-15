@@ -93,7 +93,7 @@ export class HomeService {
     const banners = await this.bannerRepository.selectBanners(bannerType);
 
     return banners.map(b => {
-      return new GetListBannerResDTO(b.id, b.image, b.type);
+      return new GetListBannerResDTO(b.id, b.image, b.type, b.targetScreen);
     });
   }
 
