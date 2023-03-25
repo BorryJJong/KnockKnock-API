@@ -37,7 +37,7 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
         }
     }
     async getBlogPosts(page, take, blogPostIds, excludeBlogPostIds) {
-        let queryBuilder = await this.createQueryBuilder('blogPost');
+        let queryBuilder = await this.createQueryBuilder('blogPost').innerJoin(User_1.User, 'u', 'blogPost.user_id = u.id');
         if (blogPostIds.length > 0) {
             queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
         }
@@ -62,7 +62,7 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
         };
     }
     async getListBlogPost(page, take, blogPostIds, excludeBlogPostId) {
-        let queryBuilder = await this.createQueryBuilder('blogPost');
+        let queryBuilder = await this.createQueryBuilder('blogPost').innerJoin(User_1.User, 'u', 'blogPost.user_id = u.id');
         if (excludeBlogPostId.length > 0) {
             queryBuilder = queryBuilder.where('blogPost.id NOT IN (:...id)', {
                 id: excludeBlogPostId,
@@ -87,6 +87,7 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
     }
     async getBlogPost(blogPostId) {
         return await this.createQueryBuilder('blogPost')
+            .innerJoin(User_1.User, 'u', 'blogPost.user_id = u.id')
             .where('blogPost.id = :id', { id: blogPostId })
             .getOneOrFail();
     }
