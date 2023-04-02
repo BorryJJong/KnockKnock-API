@@ -64,7 +64,8 @@ export declare class GetFeedMainResDTO {
     private id;
     private thumbnailUrl;
     private isImageMore;
-    constructor(id: number, thumbnailUrl: string, isImageMore: boolean);
+    userId: number;
+    constructor(id: number, thumbnailUrl: string, isImageMore: boolean, userId: number);
 }
 export declare class GetListFeedMainResDTO extends PagenationResDTO {
     feeds: GetFeedMainResDTO[];
@@ -95,7 +96,8 @@ export declare class GetFeedResDTO {
     private isLike;
     private blogCommentCount;
     private isWriter;
-    constructor(id: number, userName: string, userImage: string, content: string, regDateToString: string, scale: string, blogLikeCount: string, isLike: boolean, blogCommentCount: string, blogImages: IGetBlogImagesByBlogPost[], isWriter: boolean);
+    private userId;
+    constructor(id: number, userName: string, userImage: string, content: string, regDateToString: string, scale: string, blogLikeCount: string, isLike: boolean, blogCommentCount: string, blogImages: IGetBlogImagesByBlogPost[], isWriter: boolean, userId: number);
 }
 export declare class GetListFeedResDTO extends PagenationResDTO {
     feeds: GetFeedResDTO[];

@@ -5,6 +5,7 @@ const Banner_1 = require("../entities/Banner");
 const Event_1 = require("../entities/Event");
 const Shop_1 = require("../entities/Shop");
 const UserReportBlogPost_1 = require("../entities/UserReportBlogPost");
+const UserToBlockUser_1 = require("../entities/UserToBlockUser");
 const UserToBlogPostHide_1 = require("../entities/UserToBlogPostHide");
 require("dotenv/config");
 const BlogChallenges_1 = require("../entities/BlogChallenges");
@@ -40,6 +41,7 @@ exports.ormConfig = {
         Event_1.Event,
         Banner_1.Banner,
         Shop_1.Shop,
+        UserToBlockUser_1.UserToBlockUser,
     ],
     synchronize: false,
     logging: false,

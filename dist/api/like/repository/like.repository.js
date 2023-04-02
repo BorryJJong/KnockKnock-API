@@ -23,8 +23,8 @@ let BlogLikeRepository = class BlogLikeRepository extends typeorm_1.Repository {
         await this.manager.delete(BlogLike_1.BlogLike, { postId: id, userId });
         return true;
     }
-    async getListFeedLike(postId) {
-        const post = await (0, typeorm_1.getManager)()
+    async getListFeedLike(postId, excludeUserIds) {
+        let queryBuilder = await (0, typeorm_1.getManager)()
             .createQueryBuilder()
             .select('bl.id', 'id')
             .addSelect('bl.user_id', 'userId')
@@ -32,9 +32,13 @@ let BlogLikeRepository = class BlogLikeRepository extends typeorm_1.Repository {
             .addSelect('u.image', 'userImage')
             .from(BlogLike_1.BlogLike, 'bl')
             .innerJoin(User_1.User, 'u', 'bl.user_id = u.id')
-            .where('bl.post_id = :postId', { postId: postId })
-            .getRawMany();
-        return post;
+            .where('bl.post_id = :postId', { postId: postId });
+        if (excludeUserIds.length > 0) {
+            queryBuilder = queryBuilder.where('bl.user_id NOT IN (:...excludeUserIds)', {
+                excludeUserIds,
+            });
+        }
+        return queryBuilder.getRawMany();
     }
     async selectFeedListByUserLikes(postIds, userId) {
         return await this.manager.find(BlogLike_1.BlogLike, {
@@ -44,12 +48,15 @@ let BlogLikeRepository = class BlogLikeRepository extends typeorm_1.Repository {
             },
         });
     }
-    async selectFeedsByLikeCount(postIds) {
+    async selectFeedsByLikeCount(postIds, excludeUserIds) {
         return await this.createQueryBuilder('blogLike')
             .select('blogLike.postId', 'postId')
             .addSelect('count(*)', 'likeCount')
             .where('blogLike.postId IN (:...postIds)', {
             postIds,
+        })
+            .andWhere('blogLike.userId NOT IN (:...excludeUserIds)', {
+            excludeUserIds,
         })
             .groupBy('blogLike.postId')
             .getRawMany();

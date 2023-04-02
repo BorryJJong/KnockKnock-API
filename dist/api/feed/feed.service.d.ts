@@ -12,6 +12,7 @@ import { BlogLikeRepository } from 'src/api/like/repository/like.repository';
 import { UserRepository } from 'src/api/users/users.repository';
 import { UserToBlogPostHideRepository } from 'src/api/feed/repository/UserToBlogPostHide.repository';
 import { UserReportBlogPostRepository } from 'src/api/feed/repository/UserReportBlogPost.repository';
+import { UsersService } from 'src/api/users/users.service';
 export declare class FeedService {
     private readonly imageService;
     private connection;
@@ -24,9 +25,10 @@ export declare class FeedService {
     private userRepository;
     private userToBlogPostHideRepository;
     private userReportBlogPostRepository;
+    private userService;
     private readonly logger;
     private readonly s3Endpoint;
-    constructor(imageService: ImageService, connection: Connection, blogPostRepository: IBlogPostRepository, blogChallengesRepository: BlogChallengesRepository, blogPromotionRepository: BlogPromotionRepository, blogImageRepository: BlogImageRepository, blogCommentRepository: BlogCommentRepository, blogLikeRepository: BlogLikeRepository, userRepository: UserRepository, userToBlogPostHideRepository: UserToBlogPostHideRepository, userReportBlogPostRepository: UserReportBlogPostRepository);
+    constructor(imageService: ImageService, connection: Connection, blogPostRepository: IBlogPostRepository, blogChallengesRepository: BlogChallengesRepository, blogPromotionRepository: BlogPromotionRepository, blogImageRepository: BlogImageRepository, blogCommentRepository: BlogCommentRepository, blogLikeRepository: BlogLikeRepository, userRepository: UserRepository, userToBlogPostHideRepository: UserToBlogPostHideRepository, userReportBlogPostRepository: UserReportBlogPostRepository, userService: UsersService);
     create(files: Express.Multer.File[], createFeedDTO: CreateFeedDTOV2, userId: number): Promise<CreateFeedResDTO>;
     savePost(queryRunner: QueryRunner, createBlogPostDTO: CreateBlogPostDTO, userId: number): Promise<BlogPost>;
     saveChallenges(queryRunner: QueryRunner, postId: number, challenges: string): Promise<void>;

@@ -23,6 +23,7 @@ const response_dto_1 = require("../../shared/dto/response.dto");
 const enum_1 = require("../../shared/enums/enum");
 const like_validator_1 = require("./like.validator");
 const swagger_decorator_1 = require("../../shared/decorator/swagger.decorator");
+const jwtNoneRequired_guard_1 = require("../../auth/jwt/jwtNoneRequired.guard");
 let LikeController = class LikeController {
     constructor(likeService, likeValidator) {
         this.likeService = likeService;
@@ -48,9 +49,9 @@ let LikeController = class LikeController {
             return new response_dto_1.ApiResponseDTO(error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR, error.message);
         }
     }
-    async getListFeedLike(id) {
+    async getListFeedLike(user, id) {
         try {
-            const likes = await this.likeService.getListFeedLike(id);
+            const likes = await this.likeService.getListFeedLike(id, user.id);
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, likes);
         }
         catch (error) {
@@ -91,12 +92,15 @@ __decorate([
 __decorate([
     (0, common_1.Get)('/feed/:id'),
     (0, swagger_1.ApiOperation)({ summary: '피드 좋아요 목록' }),
+    (0, common_1.UseGuards)(jwtNoneRequired_guard_1.JwtOptionalGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_decorator_1.OkApiResponseListDataDTO)(feed_dto_1.GetListFeedLikeResDTO),
     (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
     (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, user_decorator_1.UserDeco)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], LikeController.prototype, "getListFeedLike", null);
 LikeController = __decorate([

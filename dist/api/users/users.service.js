@@ -19,15 +19,17 @@ const blogPost_repository_1 = require("../feed/repository/blogPost.repository");
 const UserReportBlogPost_repository_1 = require("../feed/repository/UserReportBlogPost.repository");
 const UserToBlogPostHide_repository_1 = require("../feed/repository/UserToBlogPostHide.repository");
 const image_service_1 = require("../image/image.service");
+const UserToBlockUser_repository_1 = require("./repository/UserToBlockUser.repository");
 const kakao_service_1 = require("../../auth/kakao.service");
 const typeorm_2 = require("typeorm");
 const users_repository_1 = require("./users.repository");
 let UsersService = class UsersService {
-    constructor(userRepository, blogPostRepository, userToBlogPostHideRepository, userReportBlogPostRepository, kakaoService, imageService, connection) {
+    constructor(userRepository, blogPostRepository, userToBlogPostHideRepository, userReportBlogPostRepository, userToBlockUserRepository, kakaoService, imageService, connection) {
         this.userRepository = userRepository;
         this.blogPostRepository = blogPostRepository;
         this.userToBlogPostHideRepository = userToBlogPostHideRepository;
         this.userReportBlogPostRepository = userReportBlogPostRepository;
+        this.userToBlockUserRepository = userToBlockUserRepository;
         this.kakaoService = kakaoService;
         this.imageService = imageService;
         this.connection = connection;
@@ -135,6 +137,20 @@ let UsersService = class UsersService {
     async reportBlogPost(userId, postId, reportType) {
         await this.userReportBlogPostRepository.insertUserReportBlogPost(userId, postId, reportType);
     }
+    async blockUser(userId, blockUserId) {
+        await this.userToBlockUserRepository.insertUserToBlockUser(userId, blockUserId);
+    }
+    async getExcludeBockUsers(userIds) {
+        try {
+            return await this.userToBlockUserRepository.selectBlockUserByUser(userIds);
+        }
+        catch (error) {
+            throw new common_1.HttpException({
+                error: error.message,
+                message: error.message,
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 };
 UsersService = __decorate([
     (0, common_1.Injectable)(),
@@ -142,9 +158,9 @@ UsersService = __decorate([
     __param(1, (0, typeorm_1.InjectRepository)(blogPost_repository_1.BlogPostRepository)),
     __param(2, (0, typeorm_1.InjectRepository)(UserToBlogPostHide_repository_1.UserToBlogPostHideRepository)),
     __param(3, (0, typeorm_1.InjectRepository)(UserReportBlogPost_repository_1.UserReportBlogPostRepository)),
+    __param(4, (0, typeorm_1.InjectRepository)(UserToBlockUser_repository_1.UserToBlockUserRepository)),
     __metadata("design:paramtypes", [users_repository_1.UserRepository, Object, UserToBlogPostHide_repository_1.UserToBlogPostHideRepository,
-        UserReportBlogPost_repository_1.UserReportBlogPostRepository,
-        kakao_service_1.KakaoService,
+        UserReportBlogPost_repository_1.UserReportBlogPostRepository, Object, kakao_service_1.KakaoService,
         image_service_1.ImageService,
         typeorm_2.Connection])
 ], UsersService);

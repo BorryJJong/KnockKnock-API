@@ -23,12 +23,14 @@ const users_repository_1 = require("../users/users.repository");
 const feed_validator_1 = require("./feed.validator");
 const UserToBlogPostHide_repository_1 = require("./repository/UserToBlogPostHide.repository");
 const UserReportBlogPost_repository_1 = require("./repository/UserReportBlogPost.repository");
+const users_module_1 = require("../users/users.module");
 let FeedModule = class FeedModule {
 };
 FeedModule = __decorate([
     (0, common_1.Module)({
         imports: [
             image_module_1.ImageModule,
+            users_module_1.UsersModule,
             typeorm_1.TypeOrmModule.forFeature([
                 blogChallenges_repository_1.BlogChallengesRepository,
                 blogImage_repository_1.BlogImageRepository,

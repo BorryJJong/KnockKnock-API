@@ -16,11 +16,13 @@ exports.LikeService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const class_transformer_1 = require("class-transformer");
+const users_service_1 = require("../users/users.service");
 const feed_dto_1 = require("../feed/dto/feed.dto");
 const like_repository_1 = require("./repository/like.repository");
 let LikeService = class LikeService {
-    constructor(blogLikeRepository) {
+    constructor(blogLikeRepository, userService) {
         this.blogLikeRepository = blogLikeRepository;
+        this.userService = userService;
     }
     async feedLike(id, userId) {
         await this.blogLikeRepository.insertFeedLike(id, userId);
@@ -29,9 +31,13 @@ let LikeService = class LikeService {
         await this.blogLikeRepository.deleteFeedLike(id, userId);
         return true;
     }
-    async getListFeedLike(id) {
+    async getListFeedLike(id, userId) {
         try {
-            const likes = await this.blogLikeRepository.getListFeedLike(id);
+            const likes = await this.blogLikeRepository.getListFeedLike(id, userId
+                ? await this.userService
+                    .getExcludeBockUsers([userId])
+                    .then(blockUser => blockUser.map(user => user.blockUserId))
+                : []);
             const result = {
                 postId: id,
                 likes: (0, class_transformer_1.plainToInstance)(feed_dto_1.GetFeedLikeDTO, likes),
@@ -49,7 +55,8 @@ let LikeService = class LikeService {
 LikeService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(like_repository_1.BlogLikeRepository)),
-    __metadata("design:paramtypes", [like_repository_1.BlogLikeRepository])
+    __metadata("design:paramtypes", [like_repository_1.BlogLikeRepository,
+        users_service_1.UsersService])
 ], LikeService);
 exports.LikeService = LikeService;
 //# sourceMappingURL=like.service.js.map

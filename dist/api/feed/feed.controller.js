@@ -150,8 +150,6 @@ __decorate([
         },
         deprecated: false,
     }),
-    (0, common_1.UseGuards)(jwtNoneRequired_guard_1.JwtOptionalGuard),
-    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_decorator_1.OkApiResponseDTO)(feed_dto_1.GetListFeedResDTO),
     (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
     (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
