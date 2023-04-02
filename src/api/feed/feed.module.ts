@@ -14,10 +14,12 @@ import {UserRepository} from 'src/api/users/users.repository';
 import {FeedValidator} from 'src/api/feed/feed.validator';
 import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
+import {UsersModule} from 'src/api/users/users.module';
 
 @Module({
   imports: [
     ImageModule,
+    UsersModule,
     TypeOrmModule.forFeature([
       BlogChallengesRepository,
       BlogImageRepository,

@@ -25,12 +25,14 @@ export interface IBlogPostRepository {
     take: number,
     blogPostIds: number[],
     excludeBlogPostIds: number[],
+    excludeUserIds: number[],
   ): Promise<IGetBlogPostItems>;
   getListBlogPost(
     page: number,
     take: number,
     blogPostIds: number[],
     excludeBlogPostId: number[],
+    excludeUserIds: number[],
   ): Promise<IGetBlogPostItems>;
   getBlogPost(blogPostId: number): Promise<BlogPost>;
   getBlogPostById(

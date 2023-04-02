@@ -23,6 +23,7 @@ import {
   OkApiResponseListDataDTO,
   OkApiResponseNoneDataDTO,
 } from '@shared/decorator/swagger.decorator';
+import {JwtOptionalGuard} from 'src/auth/jwt/jwtNoneRequired.guard';
 
 @ApiTags('like')
 @Controller('like')
@@ -89,15 +90,18 @@ export class LikeController {
 
   @Get('/feed/:id')
   @ApiOperation({summary: '피드 좋아요 목록'})
+  @UseGuards(JwtOptionalGuard)
+  @ApiBearerAuth()
   @OkApiResponseListDataDTO(GetListFeedLikeResDTO)
   @DefaultErrorApiResponseDTO()
   @InternalServerApiResponseDTO()
   async getListFeedLike(
+    @UserDeco() user: IUser,
     @Param('id') id: number,
   ): Promise<ApiResponseDTO<GetListFeedLikeResDTO | ErrorDTO>> {
     try {
       const likes: GetListFeedLikeResDTO =
-        await this.likeService.getListFeedLike(id);
+        await this.likeService.getListFeedLike(id, user.id);
 
       return new ApiResponseDTO<GetListFeedLikeResDTO>(
         HttpStatus.OK,

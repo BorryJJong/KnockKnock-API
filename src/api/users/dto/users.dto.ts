@@ -93,3 +93,8 @@ export class GetUserResDTO {
     this.regDate = regDate;
   }
 }
+
+export class BlockUserParamDTO {
+  @ApiProperty({description: '유저 id', example: '1'})
+  id: number;
+}

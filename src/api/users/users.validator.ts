@@ -3,6 +3,8 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {SOCIAL_TYPE} from '@shared/enums/enum';
 import {IUserReportBlogPostRepository} from 'src/api/feed/interface/userReportBlogPost.interface';
 import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
+import {IUserToBlockUserRepository} from 'src/api/users/interface/userToBlockUser.interface';
+import {UserToBlockUserRepository} from 'src/api/users/repository/UserToBlockUser.repository';
 import {IUserRepository} from 'src/api/users/users.interface';
 import {UserRepository} from 'src/api/users/users.repository';
 
@@ -13,6 +15,8 @@ export class UserValidator {
     private userRepository: IUserRepository,
     @InjectRepository(UserReportBlogPostRepository)
     private userReportBlogPostRepository: IUserReportBlogPostRepository,
+    @InjectRepository(UserToBlockUserRepository)
+    private userToBlockUserRepository: IUserToBlockUserRepository,
   ) {}
 
   public async checkExistSocialUser(
@@ -61,6 +65,25 @@ export class UserValidator {
       throw new HttpException(
         {
           message: '이미 신고된 게시글입니다',
+        },
+        HttpStatus.CONFLICT,
+      );
+    }
+  }
+
+  public async alreadyBlockUser(
+    userId: number,
+    blockUserid: number,
+  ): Promise<void> {
+    const blockId = await this.userToBlockUserRepository.selectBlockUser(
+      userId,
+      blockUserid,
+    );
+
+    if (blockId) {
+      throw new HttpException(
+        {
+          message: '이미 차단된 유저입니다.',
         },
         HttpStatus.CONFLICT,
       );

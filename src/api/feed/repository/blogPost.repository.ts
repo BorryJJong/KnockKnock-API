@@ -64,6 +64,7 @@ export class BlogPostRepository
     take: number,
     blogPostIds: number[],
     excludeBlogPostIds: number[],
+    excludeUserIds: number[],
   ): Promise<IGetBlogPostItems> {
     let queryBuilder = await this.createQueryBuilder('blogPost').innerJoin(
       User,
@@ -80,6 +81,15 @@ export class BlogPostRepository
         'blogPost.id NOT IN (:...excludeBlogPostIds)',
         {
           excludeBlogPostIds,
+        },
+      );
+    }
+
+    if (excludeUserIds.length > 0) {
+      queryBuilder = queryBuilder.where(
+        'blogPost.userId NOT IN (:...excludeUserIds)',
+        {
+          excludeUserIds,
         },
       );
     }
@@ -106,6 +116,7 @@ export class BlogPostRepository
     take: number,
     blogPostIds: number[],
     excludeBlogPostId: number[],
+    excludeUserIds: number[],
   ): Promise<IGetBlogPostItems> {
     let queryBuilder = await this.createQueryBuilder('blogPost').innerJoin(
       User,
@@ -117,6 +128,15 @@ export class BlogPostRepository
       queryBuilder = queryBuilder.where('blogPost.id NOT IN (:...id)', {
         id: excludeBlogPostId,
       });
+    }
+
+    if (excludeUserIds.length > 0) {
+      queryBuilder = queryBuilder.where(
+        'blogPost.userId NOT IN (:...excludeUserIds)',
+        {
+          excludeUserIds,
+        },
+      );
     }
 
     if (blogPostIds.length > 0) {

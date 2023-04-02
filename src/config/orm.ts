@@ -2,6 +2,7 @@ import {Banner} from '@entities/Banner';
 import {Event} from '@entities/Event';
 import {Shop} from '@entities/Shop';
 import {UserReportBlogPost} from '@entities/UserReportBlogPost';
+import {UserToBlockUser} from '@entities/UserToBlockUser';
 import {UserToBlogPostHide} from '@entities/UserToBlogPostHide';
 import 'dotenv/config';
 import {ConnectionOptions} from 'typeorm';
@@ -39,6 +40,7 @@ export const ormConfig: ConnectionOptions = {
     Event,
     Banner,
     Shop,
+    UserToBlockUser,
   ],
   synchronize: false,
   logging: false,

@@ -50,6 +50,7 @@ import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPo
 import {IBlogChallenge} from 'src/api/feed/interface/blogChallenges.interface';
 import {IBlogPromotion} from 'src/api/feed/interface/blogPromotion.interface';
 import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
+import {UsersService} from 'src/api/users/users.service';
 
 @Injectable()
 export class FeedService {
@@ -77,6 +78,7 @@ export class FeedService {
     private userToBlogPostHideRepository: UserToBlogPostHideRepository,
     @InjectRepository(UserReportBlogPostRepository)
     private userReportBlogPostRepository: UserReportBlogPostRepository,
+    private userService: UsersService,
   ) {}
 
   async create(
@@ -452,6 +454,11 @@ export class FeedService {
       query.take,
       blogPostIds,
       await this.getExcludeBlogPostIds(userId),
+      userId
+        ? await this.userService
+            .getExcludeBockUsers([userId])
+            .then(blockUser => blockUser.map(user => user.blockUserId))
+        : [],
     );
 
     const blogImages: IGetBlogImagesByBlogPost[] =
@@ -467,7 +474,12 @@ export class FeedService {
         const isImageMore = filterBlogImages.length > 1 ? true : false;
         const thumbnailUrl = filterBlogImages[0].fileUrl;
 
-        return new GetFeedMainResDTO(blogPost.id, thumbnailUrl, isImageMore);
+        return new GetFeedMainResDTO(
+          blogPost.id,
+          thumbnailUrl,
+          isImageMore,
+          blogPost.userId,
+        );
       }),
 
       isNext: isPageNext(
@@ -523,12 +535,19 @@ export class FeedService {
     }
 
     excludeBlogPostIds.push(...(await this.getExcludeBlogPostIds(userId)));
+    const excludeUserIds = userId
+      ? await this.userService
+          .getExcludeBockUsers([userId])
+          .then(blockUser => blockUser.map(user => user.blockUserId))
+      : [];
+    console.log('excludeUserIds', excludeUserIds);
 
     const blogPosts = await this.blogPostRepository.getListBlogPost(
       skip,
       this.getFeedListTake(skip, take),
       blogPostIds,
       excludeBlogPostIds,
+      excludeUserIds,
     );
 
     if (+skip === 1) {
@@ -544,11 +563,17 @@ export class FeedService {
     }
 
     const feedsCommentCount =
-      await this.blogCommentRepository.selectFeedsByCommentCount(blogPostIds);
+      await this.blogCommentRepository.selectFeedsByCommentCount(
+        blogPostIds,
+        excludeUserIds,
+      );
 
     const feedsLikeCount = await this.blogLikeRepository.selectFeedsByLikeCount(
       blogPostIds,
+      excludeUserIds,
     );
+    console.log('feedsCommentCount', feedsCommentCount);
+    console.log('feedsLikeCount ', feedsLikeCount);
 
     // 비회원의 경우 false, 회원인 경우 좋아요 여부 확인
     const likes: BlogLike[] = userId
@@ -589,6 +614,7 @@ export class FeedService {
           commafy(commentCount),
           images,
           isWriter,
+          blogPost.userId,
         );
       }),
       // SELECT절의 random()이 아니기 때문에, total과 상관없이 무한 스크롤 가능하게 수정
@@ -632,9 +658,18 @@ export class FeedService {
     userId: number,
   ): Promise<GetListFeedCommentResDTO[]> {
     try {
+      const excludeUserIds = userId
+        ? await this.userService
+            .getExcludeBockUsers([userId])
+            .then(blockUser => blockUser.map(user => user.blockUserId))
+        : [];
+
       const comments = plainToInstance(
         GetListFeedCommentResDTO,
-        await this.blogCommentRepository.getBlogCommentByPostId(id),
+        await this.blogCommentRepository.getBlogCommentByPostId(
+          id,
+          excludeUserIds,
+        ),
       );
 
       return Promise.all(
@@ -643,6 +678,7 @@ export class FeedService {
             const reply: GetBlogCommentDTO[] =
               await this.blogCommentRepository.getBlogCommentByCommentId(
                 comment.id,
+                excludeUserIds,
               );
             reply.map(
               (r, index) =>
