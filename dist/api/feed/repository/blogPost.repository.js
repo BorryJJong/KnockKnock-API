@@ -36,7 +36,7 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             return await queryRunner.manager.update(BlogPost_1.BlogPost, postId, blogPost);
         }
     }
-    async getBlogPosts(page, take, blogPostIds, excludeBlogPostIds) {
+    async getBlogPosts(page, take, blogPostIds, excludeBlogPostIds, excludeUserIds) {
         let queryBuilder = await this.createQueryBuilder('blogPost').innerJoin(User_1.User, 'u', 'blogPost.user_id = u.id');
         if (blogPostIds.length > 0) {
             queryBuilder = queryBuilder.andWhereInIds(blogPostIds);
@@ -44,6 +44,11 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
         if (excludeBlogPostIds.length > 0) {
             queryBuilder = queryBuilder.andWhere('blogPost.id NOT IN (:...excludeBlogPostIds)', {
                 excludeBlogPostIds,
+            });
+        }
+        if (excludeUserIds.length > 0) {
+            queryBuilder = queryBuilder.where('blogPost.userId NOT IN (:...excludeUserIds)', {
+                excludeUserIds,
             });
         }
         const [blogPosts, total] = await queryBuilder
@@ -61,11 +66,16 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             },
         };
     }
-    async getListBlogPost(page, take, blogPostIds, excludeBlogPostId) {
+    async getListBlogPost(page, take, blogPostIds, excludeBlogPostId, excludeUserIds) {
         let queryBuilder = await this.createQueryBuilder('blogPost').innerJoin(User_1.User, 'u', 'blogPost.user_id = u.id');
         if (excludeBlogPostId.length > 0) {
             queryBuilder = queryBuilder.where('blogPost.id NOT IN (:...id)', {
                 id: excludeBlogPostId,
+            });
+        }
+        if (excludeUserIds.length > 0) {
+            queryBuilder = queryBuilder.where('blogPost.userId NOT IN (:...excludeUserIds)', {
+                excludeUserIds,
             });
         }
         if (blogPostIds.length > 0) {

@@ -16,11 +16,13 @@ exports.UserValidator = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const UserReportBlogPost_repository_1 = require("../feed/repository/UserReportBlogPost.repository");
+const UserToBlockUser_repository_1 = require("./repository/UserToBlockUser.repository");
 const users_repository_1 = require("./users.repository");
 let UserValidator = class UserValidator {
-    constructor(userRepository, userReportBlogPostRepository) {
+    constructor(userRepository, userReportBlogPostRepository, userToBlockUserRepository) {
         this.userRepository = userRepository;
         this.userReportBlogPostRepository = userReportBlogPostRepository;
+        this.userToBlockUserRepository = userToBlockUserRepository;
     }
     async checkExistSocialUser(socialUuid, socialType) {
         const user = await this.userRepository.isExistSocialUser(socialUuid, socialType);
@@ -46,12 +48,21 @@ let UserValidator = class UserValidator {
             }, common_1.HttpStatus.CONFLICT);
         }
     }
+    async alreadyBlockUser(userId, blockUserid) {
+        const blockId = await this.userToBlockUserRepository.selectBlockUser(userId, blockUserid);
+        if (blockId) {
+            throw new common_1.HttpException({
+                message: '이미 차단된 유저입니다.',
+            }, common_1.HttpStatus.CONFLICT);
+        }
+    }
 };
 UserValidator = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(users_repository_1.UserRepository)),
     __param(1, (0, typeorm_1.InjectRepository)(UserReportBlogPost_repository_1.UserReportBlogPostRepository)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, typeorm_1.InjectRepository)(UserToBlockUser_repository_1.UserToBlockUserRepository)),
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], UserValidator);
 exports.UserValidator = UserValidator;
 //# sourceMappingURL=users.validator.js.map

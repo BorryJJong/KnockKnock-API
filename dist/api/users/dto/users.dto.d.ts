@@ -23,3 +23,6 @@ export declare class GetUserResDTO {
     private regDate;
     constructor(nickname: string, socialType: SOCIAL_TYPE, image: string, regDate: Date);
 }
+export declare class BlockUserParamDTO {
+    id: number;
+}

@@ -5,8 +5,8 @@ import { BlogLike } from '../../../entities/BlogLike';
 export declare class BlogLikeRepository extends Repository<BlogLike> {
     insertFeedLike(id: number, userId: number): Promise<boolean>;
     deleteFeedLike(id: number, userId: number): Promise<boolean>;
-    getListFeedLike(postId: number): Promise<GetFeedLikeDTO[]>;
+    getListFeedLike(postId: number, excludeUserIds: number[]): Promise<GetFeedLikeDTO[]>;
     selectFeedListByUserLikes(postIds: number[], userId: number): Promise<BlogLike[]>;
-    selectFeedsByLikeCount(postIds: number[]): Promise<IGetFeedsByLikeCountResponse[]>;
+    selectFeedsByLikeCount(postIds: number[], excludeUserIds: number[]): Promise<IGetFeedsByLikeCountResponse[]>;
     selectFeedByUser(postId: number, userId: number): Promise<number>;
 }

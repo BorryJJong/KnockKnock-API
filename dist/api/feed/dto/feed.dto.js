@@ -255,10 +255,11 @@ __decorate([
 ], GetListFeedMainReqDTO.prototype, "challengeId", void 0);
 exports.GetListFeedMainReqDTO = GetListFeedMainReqDTO;
 class GetFeedMainResDTO {
-    constructor(id, thumbnailUrl, isImageMore) {
+    constructor(id, thumbnailUrl, isImageMore, userId) {
         this.id = id;
         this.thumbnailUrl = thumbnailUrl;
         this.isImageMore = isImageMore;
+        this.userId = userId;
     }
 }
 __decorate([
@@ -276,6 +277,13 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '이미지가 2장 이상일 경우 true', example: 'true' }),
     __metadata("design:type", Boolean)
 ], GetFeedMainResDTO.prototype, "isImageMore", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '작성자ID',
+        example: '1',
+    }),
+    __metadata("design:type", Number)
+], GetFeedMainResDTO.prototype, "userId", void 0);
 exports.GetFeedMainResDTO = GetFeedMainResDTO;
 class GetListFeedMainResDTO extends pagenation_dto_1.PagenationResDTO {
 }
@@ -336,7 +344,7 @@ __decorate([
 ], GetFeedImageResDTO.prototype, "fileUrl", void 0);
 exports.GetFeedImageResDTO = GetFeedImageResDTO;
 class GetFeedResDTO {
-    constructor(id, userName, userImage, content, regDateToString, scale, blogLikeCount, isLike, blogCommentCount, blogImages, isWriter) {
+    constructor(id, userName, userImage, content, regDateToString, scale, blogLikeCount, isLike, blogCommentCount, blogImages, isWriter, userId) {
         this.id = id;
         this.userName = userName;
         this.userImage = userImage;
@@ -348,6 +356,7 @@ class GetFeedResDTO {
         this.blogCommentCount = blogCommentCount;
         this.blogImages = blogImages.map(blogImage => new GetFeedImageResDTO(blogImage.id, blogImage.fileUrl));
         this.isWriter = isWriter;
+        this.userId = userId;
     }
 }
 __decorate([
@@ -404,6 +413,13 @@ __decorate([
     (0, swagger_1.ApiProperty)({ description: '피드 작성 여부', example: 'true' }),
     __metadata("design:type", Boolean)
 ], GetFeedResDTO.prototype, "isWriter", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: '작성자ID',
+        example: '1',
+    }),
+    __metadata("design:type", Number)
+], GetFeedResDTO.prototype, "userId", void 0);
 exports.GetFeedResDTO = GetFeedResDTO;
 class GetListFeedResDTO extends pagenation_dto_1.PagenationResDTO {
 }

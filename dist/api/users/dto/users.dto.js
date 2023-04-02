@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetUserResDTO = exports.GetCheckDuplicateUserNicknameReqDTO = exports.UpdateUserReqDTO = exports.UserInfoResDTO = void 0;
+exports.BlockUserParamDTO = exports.GetUserResDTO = exports.GetCheckDuplicateUserNicknameReqDTO = exports.UpdateUserReqDTO = exports.UserInfoResDTO = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const enum_1 = require("../../../shared/enums/enum");
 class UserInfoResDTO {
@@ -108,4 +108,11 @@ __decorate([
     __metadata("design:type", Date)
 ], GetUserResDTO.prototype, "regDate", void 0);
 exports.GetUserResDTO = GetUserResDTO;
+class BlockUserParamDTO {
+}
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: '유저 id', example: '1' }),
+    __metadata("design:type", Number)
+], BlockUserParamDTO.prototype, "id", void 0);
+exports.BlockUserParamDTO = BlockUserParamDTO;
 //# sourceMappingURL=users.dto.js.map

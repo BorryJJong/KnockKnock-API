@@ -29,7 +29,7 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             return await queryRunner.manager.save(BlogComment);
         }
     }
-    async getBlogCommentByPostId(id) {
+    async getBlogCommentByPostId(id, excludeUserIds) {
         const cntQb = (0, typeorm_1.getManager)()
             .createQueryBuilder()
             .select('comment_id', 'reply_id')
@@ -37,6 +37,9 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             .from(BlogComment_1.BlogComment, 'b')
             .innerJoin(User_1.User, 'u', 'b.user_id = u.id')
             .where('b.comment_id IS NOT NULL')
+            .andWhere('b.user_id NOT IN (:...excludeUserIds)', {
+            excludeUserIds,
+        })
             .groupBy('b.comment_id');
         const comment = await (0, typeorm_1.getManager)()
             .createQueryBuilder()
@@ -54,11 +57,14 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             .where('(bcnt.cnt != 0 OR del_date IS NULL)')
             .andWhere('bc.comment_id IS NULL')
             .andWhere('bc.post_id = :id', { id: id })
+            .andWhere('bc.user_id NOT IN (:...excludeUserIds)', {
+            excludeUserIds,
+        })
             .orderBy('bc.id', 'ASC')
             .getRawMany();
         return comment;
     }
-    async getBlogCommentByCommentId(id) {
+    async getBlogCommentByCommentId(id, excludeUserIds) {
         const comment = await (0, typeorm_1.getManager)()
             .createQueryBuilder()
             .select('bc.id', 'id')
@@ -71,6 +77,9 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             .from(BlogComment_1.BlogComment, 'bc')
             .innerJoin(User_1.User, 'u', 'bc.user_id = u.id')
             .where('bc.comment_id = :id', { id: id })
+            .andWhere('bc.user_id NOT IN (:...excludeUserIds)', {
+            excludeUserIds,
+        })
             .orderBy('bc.id', 'ASC')
             .getRawMany();
         return comment;
@@ -85,13 +94,16 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             },
         });
     }
-    async selectFeedsByCommentCount(postIds) {
+    async selectFeedsByCommentCount(postIds, excludeUserIds) {
         return await this.createQueryBuilder('blogComment')
             .select('blogComment.postId', 'postId')
             .addSelect('count(*)', 'commentCount')
             .innerJoin(User_1.User, 'u', 'blogComment.user_id = u.id')
             .where('blogComment.postId IN (:...postIds)', {
             postIds: postIds.length === 0 ? [] : postIds,
+        })
+            .andWhere('blogComment.userId NOT IN (:...excludeUserIds)', {
+            excludeUserIds,
         })
             .groupBy('blogComment.postId')
             .getRawMany();
