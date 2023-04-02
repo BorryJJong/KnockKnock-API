@@ -108,8 +108,6 @@ export class FeedController {
     },
     deprecated: false,
   })
-  @UseGuards(JwtOptionalGuard)
-  @ApiBearerAuth()
   @OkApiResponseDTO(GetListFeedResDTO)
   @InternalServerApiResponseDTO()
   @DefaultErrorApiResponseDTO()

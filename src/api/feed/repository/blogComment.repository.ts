@@ -45,6 +45,7 @@ export class BlogCommentRepository extends Repository<BlogComment> {
    */
   async getBlogCommentByPostId(
     id: number,
+    excludeUserIds: number[],
   ): Promise<GetListFeedCommentResDTO[]> {
     const cntQb = getManager()
       .createQueryBuilder()
@@ -53,6 +54,9 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       .from(BlogComment, 'b')
       .innerJoin(User, 'u', 'b.user_id = u.id')
       .where('b.comment_id IS NOT NULL')
+      .andWhere('b.user_id NOT IN (:...excludeUserIds)', {
+        excludeUserIds,
+      })
       .groupBy('b.comment_id');
 
     const comment: GetListFeedCommentResDTO[] = await getManager()
@@ -78,6 +82,9 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       .where('(bcnt.cnt != 0 OR del_date IS NULL)')
       .andWhere('bc.comment_id IS NULL')
       .andWhere('bc.post_id = :id', {id: id})
+      .andWhere('bc.user_id NOT IN (:...excludeUserIds)', {
+        excludeUserIds,
+      })
       .orderBy('bc.id', 'ASC')
       .getRawMany();
 
@@ -89,7 +96,7 @@ export class BlogCommentRepository extends Repository<BlogComment> {
    * @param id 부모 댓글 id
    * @returns GetBlogCommentDTO
    */
-  async getBlogCommentByCommentId(id: number) {
+  async getBlogCommentByCommentId(id: number, excludeUserIds: number[]) {
     const comment: GetBlogCommentDTO[] = await getManager()
       .createQueryBuilder()
       .select('bc.id', 'id')
@@ -102,6 +109,9 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       .from(BlogComment, 'bc')
       .innerJoin(User, 'u', 'bc.user_id = u.id')
       .where('bc.comment_id = :id', {id: id})
+      .andWhere('bc.user_id NOT IN (:...excludeUserIds)', {
+        excludeUserIds,
+      })
       .orderBy('bc.id', 'ASC')
       .getRawMany();
 
@@ -122,6 +132,7 @@ export class BlogCommentRepository extends Repository<BlogComment> {
 
   async selectFeedsByCommentCount(
     postIds: number[],
+    excludeUserIds: number[],
   ): Promise<IGetFeedsByCommentCountResponse[]> {
     return await this.createQueryBuilder('blogComment')
       .select('blogComment.postId', 'postId')
@@ -129,6 +140,9 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       .innerJoin(User, 'u', 'blogComment.user_id = u.id')
       .where('blogComment.postId IN (:...postIds)', {
         postIds: postIds.length === 0 ? [] : postIds,
+      })
+      .andWhere('blogComment.userId NOT IN (:...excludeUserIds)', {
+        excludeUserIds,
       })
       .groupBy('blogComment.postId')
       .getRawMany<IGetFeedsByCommentCountResponse>();

@@ -23,8 +23,11 @@ export class BlogLikeRepository extends Repository<BlogLike> {
     return true;
   }
 
-  async getListFeedLike(postId: number): Promise<GetFeedLikeDTO[]> {
-    const post: GetFeedLikeDTO[] = await getManager()
+  async getListFeedLike(
+    postId: number,
+    excludeUserIds: number[],
+  ): Promise<GetFeedLikeDTO[]> {
+    let queryBuilder = await getManager()
       .createQueryBuilder()
       .select('bl.id', 'id')
       .addSelect('bl.user_id', 'userId')
@@ -32,10 +35,18 @@ export class BlogLikeRepository extends Repository<BlogLike> {
       .addSelect('u.image', 'userImage')
       .from(BlogLike, 'bl')
       .innerJoin(User, 'u', 'bl.user_id = u.id')
-      .where('bl.post_id = :postId', {postId: postId})
-      .getRawMany();
+      .where('bl.post_id = :postId', {postId: postId});
 
-    return post;
+    if (excludeUserIds.length > 0) {
+      queryBuilder = queryBuilder.where(
+        'bl.user_id NOT IN (:...excludeUserIds)',
+        {
+          excludeUserIds,
+        },
+      );
+    }
+
+    return queryBuilder.getRawMany();
   }
 
   async selectFeedListByUserLikes(
@@ -52,12 +63,17 @@ export class BlogLikeRepository extends Repository<BlogLike> {
 
   async selectFeedsByLikeCount(
     postIds: number[],
+    excludeUserIds: number[],
   ): Promise<IGetFeedsByLikeCountResponse[]> {
     return await this.createQueryBuilder('blogLike')
       .select('blogLike.postId', 'postId')
       .addSelect('count(*)', 'likeCount')
       .where('blogLike.postId IN (:...postIds)', {
         postIds,
+      })
+
+      .andWhere('blogLike.userId NOT IN (:...excludeUserIds)', {
+        excludeUserIds,
       })
       .groupBy('blogLike.postId')
       .getRawMany<IGetFeedsByLikeCountResponse>();

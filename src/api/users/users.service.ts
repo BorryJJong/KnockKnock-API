@@ -1,4 +1,5 @@
 import {User} from '@entities/User';
+import {UserToBlockUser} from '@entities/UserToBlockUser';
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {REPORT_TYPE} from '@shared/enums/enum';
@@ -7,6 +8,8 @@ import {BlogPostRepository} from 'src/api/feed/repository/blogPost.repository';
 import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
 import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 import {ImageService, IUploadS3Response} from 'src/api/image/image.service';
+import {IUserToBlockUserRepository} from 'src/api/users/interface/userToBlockUser.interface';
+import {UserToBlockUserRepository} from 'src/api/users/repository/UserToBlockUser.repository';
 import {ICreateUser} from 'src/api/users/users.interface';
 import {SocialLoginRequestDTO} from 'src/auth/dto/auth.dto';
 import {KakaoService} from 'src/auth/kakao.service';
@@ -29,6 +32,8 @@ export class UsersService {
     private readonly userToBlogPostHideRepository: UserToBlogPostHideRepository,
     @InjectRepository(UserReportBlogPostRepository)
     private readonly userReportBlogPostRepository: UserReportBlogPostRepository,
+    @InjectRepository(UserToBlockUserRepository)
+    private readonly userToBlockUserRepository: IUserToBlockUserRepository,
     private readonly kakaoService: KakaoService,
     private readonly imageService: ImageService,
     private connection: Connection,
@@ -199,5 +204,30 @@ export class UsersService {
       postId,
       reportType,
     );
+  }
+
+  public async blockUser(userId: number, blockUserId: number): Promise<void> {
+    await this.userToBlockUserRepository.insertUserToBlockUser(
+      userId,
+      blockUserId,
+    );
+  }
+
+  public async getExcludeBockUsers(
+    userIds: number[],
+  ): Promise<UserToBlockUser[]> {
+    try {
+      return await this.userToBlockUserRepository.selectBlockUserByUser(
+        userIds,
+      );
+    } catch (error) {
+      throw new HttpException(
+        {
+          error: error.message,
+          message: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

@@ -233,10 +233,22 @@ export class GetFeedMainResDTO {
   @ApiProperty({description: '이미지가 2장 이상일 경우 true', example: 'true'})
   private isImageMore: boolean;
 
-  constructor(id: number, thumbnailUrl: string, isImageMore: boolean) {
+  @ApiProperty({
+    description: '작성자ID',
+    example: '1',
+  })
+  userId: number;
+
+  constructor(
+    id: number,
+    thumbnailUrl: string,
+    isImageMore: boolean,
+    userId: number,
+  ) {
     this.id = id;
     this.thumbnailUrl = thumbnailUrl;
     this.isImageMore = isImageMore;
+    this.userId = userId;
   }
 }
 
@@ -333,6 +345,12 @@ export class GetFeedResDTO {
   @ApiProperty({description: '피드 작성 여부', example: 'true'})
   private isWriter: boolean;
 
+  @ApiProperty({
+    description: '작성자ID',
+    example: '1',
+  })
+  private userId: number;
+
   constructor(
     id: number,
     userName: string,
@@ -345,6 +363,7 @@ export class GetFeedResDTO {
     blogCommentCount: string,
     blogImages: IGetBlogImagesByBlogPost[],
     isWriter: boolean,
+    userId: number,
   ) {
     this.id = id;
     this.userName = userName;
@@ -359,6 +378,7 @@ export class GetFeedResDTO {
       blogImage => new GetFeedImageResDTO(blogImage.id, blogImage.fileUrl),
     );
     this.isWriter = isWriter;
+    this.userId = userId;
   }
 }
 

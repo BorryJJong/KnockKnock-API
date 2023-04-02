@@ -35,6 +35,7 @@ import {
   ReportBlogPostReqParamDTO,
 } from 'src/api/feed/dto/feed.dto';
 import {
+  BlockUserParamDTO,
   GetCheckDuplicateUserNicknameReqDTO,
   GetUserResDTO,
   UpdateUserReqDTO,
@@ -399,6 +400,35 @@ export class UsersController {
       const {reportType} = body;
       await this.userValidator.alreadyReportBlogPost(user.id, postId);
       await this.userService.reportBlogPost(user.id, postId, reportType);
+
+      return new ApiResponseDTO<void>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+      );
+    } catch (error) {
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        error.message,
+      );
+    }
+  }
+
+  @Post('/block-user/:id')
+  @ApiOperation({summary: '작성자 차단하기'})
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  @OkApiResponseNoneDataDTO()
+  @ConflictApiResponseDTO()
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
+  async blockUser(
+    @UserDeco() user: IUser,
+    @Param() param: BlockUserParamDTO,
+  ): Promise<ApiResponseDTO<void | ErrorDTO>> {
+    try {
+      const blockUserId = param.id;
+      await this.userValidator.alreadyBlockUser(user.id, blockUserId);
+      await this.userService.blockUser(user.id, blockUserId);
 
       return new ApiResponseDTO<void>(
         HttpStatus.OK,

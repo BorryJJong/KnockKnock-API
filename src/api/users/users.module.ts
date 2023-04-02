@@ -12,6 +12,7 @@ import {ConfigService} from '@nestjs/config';
 import {BlogPostRepository} from 'src/api/feed/repository/blogPost.repository';
 import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
+import {UserToBlockUserRepository} from 'src/api/users/repository/UserToBlockUser.repository';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBl
       BlogPostRepository,
       UserToBlogPostHideRepository,
       UserReportBlogPostRepository,
+      UserToBlockUserRepository,
     ]),
     forwardRef(() => AuthModule),
   ],
@@ -32,6 +34,6 @@ import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBl
     ImageService,
     ConfigService,
   ],
-  exports: [UsersService],
+  exports: [UsersService, TypeOrmModule],
 })
 export class UsersModule {}
