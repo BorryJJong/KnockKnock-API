@@ -535,12 +535,12 @@ export class FeedService {
     }
 
     excludeBlogPostIds.push(...(await this.getExcludeBlogPostIds(userId)));
+
     const excludeUserIds = userId
       ? await this.userService
           .getExcludeBockUsers([userId])
           .then(blockUser => blockUser.map(user => user.blockUserId))
       : [];
-    console.log('excludeUserIds', excludeUserIds);
 
     const blogPosts = await this.blogPostRepository.getListBlogPost(
       skip,
@@ -572,8 +572,6 @@ export class FeedService {
       blogPostIds,
       excludeUserIds,
     );
-    console.log('feedsCommentCount', feedsCommentCount);
-    console.log('feedsLikeCount ', feedsLikeCount);
 
     // 비회원의 경우 false, 회원인 경우 좋아요 여부 확인
     const likes: BlogLike[] = userId

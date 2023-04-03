@@ -47,19 +47,24 @@ export class BlogCommentRepository extends Repository<BlogComment> {
     id: number,
     excludeUserIds: number[],
   ): Promise<GetListFeedCommentResDTO[]> {
-    const cntQb = getManager()
+    let commentCountQueryBuilder = getManager()
       .createQueryBuilder()
       .select('comment_id', 'reply_id')
       .addSelect('COUNT(*)', 'cnt')
       .from(BlogComment, 'b')
       .innerJoin(User, 'u', 'b.user_id = u.id')
-      .where('b.comment_id IS NOT NULL')
-      .andWhere('b.user_id NOT IN (:...excludeUserIds)', {
-        excludeUserIds,
-      })
-      .groupBy('b.comment_id');
+      .where('b.comment_id IS NOT NULL');
 
-    const comment: GetListFeedCommentResDTO[] = await getManager()
+    if (excludeUserIds.length > 0) {
+      commentCountQueryBuilder = commentCountQueryBuilder.andWhere(
+        'b.user_id NOT IN (:...excludeUserIds)',
+        {
+          excludeUserIds,
+        },
+      );
+    }
+
+    let commentQuerybuilder = await getManager()
       .createQueryBuilder()
       .select('bc.id', 'id')
       .addSelect('bc.user_id', 'userId')
@@ -75,20 +80,25 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       .from(BlogComment, 'bc')
       .innerJoin(User, 'u', 'bc.user_id = u.id')
       .leftJoinAndSelect(
-        '(' + cntQb.getQuery() + ')',
+        '(' + commentCountQueryBuilder.groupBy('b.comment_id').getQuery() + ')',
         'bcnt',
         'bc.id = bcnt.reply_id',
       )
       .where('(bcnt.cnt != 0 OR del_date IS NULL)')
       .andWhere('bc.comment_id IS NULL')
       .andWhere('bc.post_id = :id', {id: id})
-      .andWhere('bc.user_id NOT IN (:...excludeUserIds)', {
-        excludeUserIds,
-      })
-      .orderBy('bc.id', 'ASC')
-      .getRawMany();
+      .orderBy('bc.id', 'ASC');
 
-    return comment;
+    if (excludeUserIds.length > 0) {
+      commentQuerybuilder = commentQuerybuilder.andWhere(
+        'bc.user_id NOT IN (:...excludeUserIds)',
+        {
+          excludeUserIds,
+        },
+      );
+    }
+
+    return commentQuerybuilder.getRawMany<GetListFeedCommentResDTO>();
   }
 
   /**
@@ -97,7 +107,7 @@ export class BlogCommentRepository extends Repository<BlogComment> {
    * @returns GetBlogCommentDTO
    */
   async getBlogCommentByCommentId(id: number, excludeUserIds: number[]) {
-    const comment: GetBlogCommentDTO[] = await getManager()
+    let queryBuilder = await getManager()
       .createQueryBuilder()
       .select('bc.id', 'id')
       .addSelect('bc.user_id', 'userId')
@@ -109,13 +119,18 @@ export class BlogCommentRepository extends Repository<BlogComment> {
       .from(BlogComment, 'bc')
       .innerJoin(User, 'u', 'bc.user_id = u.id')
       .where('bc.comment_id = :id', {id: id})
-      .andWhere('bc.user_id NOT IN (:...excludeUserIds)', {
-        excludeUserIds,
-      })
-      .orderBy('bc.id', 'ASC')
-      .getRawMany();
+      .orderBy('bc.id', 'ASC');
 
-    return comment;
+    if (excludeUserIds.length > 0) {
+      queryBuilder = queryBuilder.andWhere(
+        'bc.user_id NOT IN (:...excludeUserIds)',
+        {
+          excludeUserIds,
+        },
+      );
+    }
+
+    return queryBuilder.getRawMany<GetBlogCommentDTO>();
   }
 
   async getBlogComment(id: number): Promise<IBlogComment> {
@@ -134,16 +149,24 @@ export class BlogCommentRepository extends Repository<BlogComment> {
     postIds: number[],
     excludeUserIds: number[],
   ): Promise<IGetFeedsByCommentCountResponse[]> {
-    return await this.createQueryBuilder('blogComment')
+    let queryBuilder = await this.createQueryBuilder('blogComment')
       .select('blogComment.postId', 'postId')
       .addSelect('count(*)', 'commentCount')
       .innerJoin(User, 'u', 'blogComment.user_id = u.id')
       .where('blogComment.postId IN (:...postIds)', {
         postIds: postIds.length === 0 ? [] : postIds,
-      })
-      .andWhere('blogComment.userId NOT IN (:...excludeUserIds)', {
-        excludeUserIds,
-      })
+      });
+
+    if (excludeUserIds.length < 0) {
+      queryBuilder = queryBuilder.andWhere(
+        'blogComment.userId NOT IN (:...excludeUserIds)',
+        {
+          excludeUserIds,
+        },
+      );
+    }
+
+    return queryBuilder
       .groupBy('blogComment.postId')
       .getRawMany<IGetFeedsByCommentCountResponse>();
   }
