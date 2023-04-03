@@ -65,16 +65,23 @@ export class BlogLikeRepository extends Repository<BlogLike> {
     postIds: number[],
     excludeUserIds: number[],
   ): Promise<IGetFeedsByLikeCountResponse[]> {
-    return await this.createQueryBuilder('blogLike')
+    let queryBuilder = await this.createQueryBuilder('blogLike')
       .select('blogLike.postId', 'postId')
       .addSelect('count(*)', 'likeCount')
       .where('blogLike.postId IN (:...postIds)', {
         postIds,
-      })
+      });
 
-      .andWhere('blogLike.userId NOT IN (:...excludeUserIds)', {
-        excludeUserIds,
-      })
+    if (excludeUserIds.length < 0) {
+      queryBuilder = queryBuilder.andWhere(
+        'blogLike.userId NOT IN (:...excludeUserIds)',
+        {
+          excludeUserIds,
+        },
+      );
+    }
+
+    return queryBuilder
       .groupBy('blogLike.postId')
       .getRawMany<IGetFeedsByLikeCountResponse>();
   }
