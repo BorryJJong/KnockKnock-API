@@ -18,4 +18,10 @@ export interface IUserToBlockUserRepository {
     userIds: number[],
     queryRunner?: QueryRunner,
   ): Promise<UserToBlockUser[]>;
+
+  deleteUserToBlockUser(
+    userId: number,
+    blockUserId: number,
+    queryRunner?: QueryRunner,
+  ): Promise<void>;
 }

@@ -47,7 +47,7 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             });
         }
         if (excludeUserIds.length > 0) {
-            queryBuilder = queryBuilder.where('blogPost.userId NOT IN (:...excludeUserIds)', {
+            queryBuilder = queryBuilder.andWhere('blogPost.userId NOT IN (:...excludeUserIds)', {
                 excludeUserIds,
             });
         }
@@ -69,12 +69,12 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
     async getListBlogPost(page, take, blogPostIds, excludeBlogPostId, excludeUserIds) {
         let queryBuilder = await this.createQueryBuilder('blogPost').innerJoin(User_1.User, 'u', 'blogPost.user_id = u.id');
         if (excludeBlogPostId.length > 0) {
-            queryBuilder = queryBuilder.where('blogPost.id NOT IN (:...id)', {
+            queryBuilder = queryBuilder.andWhere('blogPost.id NOT IN (:...id)', {
                 id: excludeBlogPostId,
             });
         }
         if (excludeUserIds.length > 0) {
-            queryBuilder = queryBuilder.where('blogPost.userId NOT IN (:...excludeUserIds)', {
+            queryBuilder = queryBuilder.andWhere('blogPost.user_id NOT IN (:...excludeUserIds)', {
                 excludeUserIds,
             });
         }

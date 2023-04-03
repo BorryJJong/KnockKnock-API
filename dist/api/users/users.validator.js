@@ -56,6 +56,14 @@ let UserValidator = class UserValidator {
             }, common_1.HttpStatus.CONFLICT);
         }
     }
+    async alreadyUnblockUser(userId, blockUserid) {
+        const blockId = await this.userToBlockUserRepository.selectBlockUser(userId, blockUserid);
+        if (blockId) {
+            throw new common_1.HttpException({
+                message: '이미 차단이 해제된 유저입니다.',
+            }, common_1.HttpStatus.CONFLICT);
+        }
+    }
 };
 UserValidator = __decorate([
     (0, common_1.Injectable)(),

@@ -38,5 +38,6 @@ export declare class UsersService {
     hideBlogPost(userId: number, postId: number): Promise<void>;
     reportBlogPost(userId: number, postId: number, reportType: REPORT_TYPE): Promise<void>;
     blockUser(userId: number, blockUserId: number): Promise<void>;
+    unblockUser(userId: number, blockUserId: number): Promise<void>;
     getExcludeBockUsers(userIds: number[]): Promise<UserToBlockUser[]>;
 }

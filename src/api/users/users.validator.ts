@@ -89,4 +89,23 @@ export class UserValidator {
       );
     }
   }
+
+  public async alreadyUnblockUser(
+    userId: number,
+    blockUserid: number,
+  ): Promise<void> {
+    const blockId = await this.userToBlockUserRepository.selectBlockUser(
+      userId,
+      blockUserid,
+    );
+
+    if (blockId) {
+      throw new HttpException(
+        {
+          message: '이미 차단이 해제된 유저입니다.',
+        },
+        HttpStatus.CONFLICT,
+      );
+    }
+  }
 }

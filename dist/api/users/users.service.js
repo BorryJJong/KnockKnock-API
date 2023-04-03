@@ -140,6 +140,9 @@ let UsersService = class UsersService {
     async blockUser(userId, blockUserId) {
         await this.userToBlockUserRepository.insertUserToBlockUser(userId, blockUserId);
     }
+    async unblockUser(userId, blockUserId) {
+        await this.userToBlockUserRepository.deleteUserToBlockUser(userId, blockUserId);
+    }
     async getExcludeBockUsers(userIds) {
         try {
             return await this.userToBlockUserRepository.selectBlockUserByUser(userIds);

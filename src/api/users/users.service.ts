@@ -213,6 +213,13 @@ export class UsersService {
     );
   }
 
+  public async unblockUser(userId: number, blockUserId: number): Promise<void> {
+    await this.userToBlockUserRepository.deleteUserToBlockUser(
+      userId,
+      blockUserId,
+    );
+  }
+
   public async getExcludeBockUsers(
     userIds: number[],
   ): Promise<UserToBlockUser[]> {
