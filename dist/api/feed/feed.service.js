@@ -31,8 +31,9 @@ const like_repository_1 = require("../like/repository/like.repository");
 const users_repository_1 = require("../users/users.repository");
 const UserToBlogPostHide_repository_1 = require("./repository/UserToBlogPostHide.repository");
 const UserReportBlogPost_repository_1 = require("./repository/UserReportBlogPost.repository");
+const users_service_1 = require("../users/users.service");
 let FeedService = FeedService_1 = class FeedService {
-    constructor(imageService, connection, blogPostRepository, blogChallengesRepository, blogPromotionRepository, blogImageRepository, blogCommentRepository, blogLikeRepository, userRepository, userToBlogPostHideRepository, userReportBlogPostRepository) {
+    constructor(imageService, connection, blogPostRepository, blogChallengesRepository, blogPromotionRepository, blogImageRepository, blogCommentRepository, blogLikeRepository, userRepository, userToBlogPostHideRepository, userReportBlogPostRepository, userService) {
         this.imageService = imageService;
         this.connection = connection;
         this.blogPostRepository = blogPostRepository;
@@ -44,6 +45,7 @@ let FeedService = FeedService_1 = class FeedService {
         this.userRepository = userRepository;
         this.userToBlogPostHideRepository = userToBlogPostHideRepository;
         this.userReportBlogPostRepository = userReportBlogPostRepository;
+        this.userService = userService;
         this.logger = new common_1.Logger(FeedService_1.name);
         this.s3Endpoint = process.env.AWS_S3_ENDPOINT;
     }
@@ -241,14 +243,18 @@ let FeedService = FeedService_1 = class FeedService {
         if (blogChallenges.length > 0) {
             blogPostIds = blogChallenges.map(bc => bc.postId);
         }
-        const blogPosts = await this.blogPostRepository.getBlogPosts(query.page, query.take, blogPostIds, await this.getExcludeBlogPostIds(userId));
+        const blogPosts = await this.blogPostRepository.getBlogPosts(query.page, query.take, blogPostIds, await this.getExcludeBlogPostIds(userId), userId
+            ? await this.userService
+                .getExcludeBockUsers([userId])
+                .then(blockUser => blockUser.map(user => user.blockUserId))
+            : []);
         const blogImages = await this.blogImageRepository.getBlogImagesByBlogPost(blogPosts.items.map(post => post.id));
         return {
             feeds: blogPosts.items.map(blogPost => {
                 const filterBlogImages = blogImages.filter(blogImage => blogImage.postId === blogPost.id);
                 const isImageMore = filterBlogImages.length > 1 ? true : false;
                 const thumbnailUrl = filterBlogImages[0].fileUrl;
-                return new feed_dto_1.GetFeedMainResDTO(blogPost.id, thumbnailUrl, isImageMore);
+                return new feed_dto_1.GetFeedMainResDTO(blogPost.id, thumbnailUrl, isImageMore, blogPost.userId);
             }),
             isNext: (0, utils_1.isPageNext)(blogPosts.pagination.page, blogPosts.pagination.take, blogPosts.pagination.total),
             total: blogPosts.pagination.total,
@@ -282,7 +288,13 @@ let FeedService = FeedService_1 = class FeedService {
             blogPostIds = blogChallenges.map(bc => bc.postId);
         }
         excludeBlogPostIds.push(...(await this.getExcludeBlogPostIds(userId)));
-        const blogPosts = await this.blogPostRepository.getListBlogPost(skip, this.getFeedListTake(skip, take), blogPostIds, excludeBlogPostIds);
+        const excludeUserIds = userId
+            ? await this.userService
+                .getExcludeBockUsers([userId])
+                .then(blockUser => blockUser.map(user => user.blockUserId))
+            : [];
+        console.log('excludeUserIds', excludeUserIds);
+        const blogPosts = await this.blogPostRepository.getListBlogPost(skip, this.getFeedListTake(skip, take), blogPostIds, excludeBlogPostIds, excludeUserIds);
         if (+skip === 1) {
             blogPosts.items.unshift(selectBlogPost);
         }
@@ -291,8 +303,10 @@ let FeedService = FeedService_1 = class FeedService {
         if (blogPostIds.length > 0) {
             blogImages = await this.blogImageRepository.getBlogImagesByBlogPost(blogPostIds);
         }
-        const feedsCommentCount = await this.blogCommentRepository.selectFeedsByCommentCount(blogPostIds);
-        const feedsLikeCount = await this.blogLikeRepository.selectFeedsByLikeCount(blogPostIds);
+        const feedsCommentCount = await this.blogCommentRepository.selectFeedsByCommentCount(blogPostIds, excludeUserIds);
+        const feedsLikeCount = await this.blogLikeRepository.selectFeedsByLikeCount(blogPostIds, excludeUserIds);
+        console.log('feedsCommentCount', feedsCommentCount);
+        console.log('feedsLikeCount ', feedsLikeCount);
         const likes = userId
             ? await this.getFeedListByUserLikes(blogPostIds, userId)
             : [];
@@ -310,7 +324,7 @@ let FeedService = FeedService_1 = class FeedService {
                     : false;
                 const images = blogImages.filter(bi => bi.postId === blogPost.id);
                 const isWriter = userId === blogPost.userId;
-                return new feed_dto_1.GetFeedResDTO(blogPost.id, writer.nickname, writer.image, blogPost.content, (0, utils_1.convertTimeToStr)(blogPost.regDate), defaultImageRatio, (0, utils_1.commafy)(likeCount), isLike, (0, utils_1.commafy)(commentCount), images, isWriter);
+                return new feed_dto_1.GetFeedResDTO(blogPost.id, writer.nickname, writer.image, blogPost.content, (0, utils_1.convertTimeToStr)(blogPost.regDate), defaultImageRatio, (0, utils_1.commafy)(likeCount), isLike, (0, utils_1.commafy)(commentCount), images, isWriter, blogPost.userId);
             }),
             isNext: true,
             total: blogPosts.pagination.total,
@@ -335,10 +349,15 @@ let FeedService = FeedService_1 = class FeedService {
     }
     async getListFeedComment({ id }, userId) {
         try {
-            const comments = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetListFeedCommentResDTO, await this.blogCommentRepository.getBlogCommentByPostId(id));
+            const excludeUserIds = userId
+                ? await this.userService
+                    .getExcludeBockUsers([userId])
+                    .then(blockUser => blockUser.map(user => user.blockUserId))
+                : [];
+            const comments = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetListFeedCommentResDTO, await this.blogCommentRepository.getBlogCommentByPostId(id, excludeUserIds));
             return Promise.all(comments.map(async (comment) => {
                 if (comment.replyCnt != 0) {
-                    const reply = await this.blogCommentRepository.getBlogCommentByCommentId(comment.id);
+                    const reply = await this.blogCommentRepository.getBlogCommentByCommentId(comment.id, excludeUserIds);
                     reply.map((r, index) => (reply[index].isWriter = this.isFeedCommentWriter(r.userId, userId)));
                     comment.reply = (0, class_transformer_1.plainToInstance)(feed_dto_1.GetBlogCommentDTO, reply);
                 }
@@ -401,7 +420,8 @@ FeedService = FeedService_1 = __decorate([
         like_repository_1.BlogLikeRepository,
         users_repository_1.UserRepository,
         UserToBlogPostHide_repository_1.UserToBlogPostHideRepository,
-        UserReportBlogPost_repository_1.UserReportBlogPostRepository])
+        UserReportBlogPost_repository_1.UserReportBlogPostRepository,
+        users_service_1.UsersService])
 ], FeedService);
 exports.FeedService = FeedService;
 //# sourceMappingURL=feed.service.js.map

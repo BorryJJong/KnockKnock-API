@@ -5,11 +5,11 @@ import { IGetFeedsByCommentCountResponse } from 'src/api/feed/interface/blogComm
 export declare class BlogCommentRepository extends Repository<BlogComment> {
     createBlogComment(insBlogCommentDTO: InsBlogCommentDTO, userId: number): BlogComment;
     saveBlogComment(queryRunner: QueryRunner | null, BlogComment: BlogComment): Promise<BlogComment>;
-    getBlogCommentByPostId(id: number): Promise<GetListFeedCommentResDTO[]>;
-    getBlogCommentByCommentId(id: number): Promise<GetBlogCommentDTO[]>;
+    getBlogCommentByPostId(id: number, excludeUserIds: number[]): Promise<GetListFeedCommentResDTO[]>;
+    getBlogCommentByCommentId(id: number, excludeUserIds: number[]): Promise<GetBlogCommentDTO[]>;
     getBlogComment(id: number): Promise<IBlogComment>;
     getReplyBlogComments(id: number): Promise<IBlogComment[]>;
-    selectFeedsByCommentCount(postIds: number[]): Promise<IGetFeedsByCommentCountResponse[]>;
+    selectFeedsByCommentCount(postIds: number[], excludeUserIds: number[]): Promise<IGetFeedsByCommentCountResponse[]>;
     selectBlogPostCommentByUser(id: number, userId: number): Promise<BlogComment | undefined>;
     deleteBlogComment(ids: number[]): Promise<void>;
 }

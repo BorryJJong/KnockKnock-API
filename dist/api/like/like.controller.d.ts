@@ -9,5 +9,5 @@ export declare class LikeController {
     constructor(likeService: LikeService, likeValidator: LikeValidator);
     feedLike(id: number, user: IUser): Promise<ApiResponseDTO<void | ErrorDTO>>;
     feedUnLike(id: number, user: IUser): Promise<ApiResponseDTO<void | ErrorDTO>>;
-    getListFeedLike(id: number): Promise<ApiResponseDTO<GetListFeedLikeResDTO | ErrorDTO>>;
+    getListFeedLike(user: IUser, id: number): Promise<ApiResponseDTO<GetListFeedLikeResDTO | ErrorDTO>>;
 }

@@ -22,15 +22,19 @@ const config_1 = require("@nestjs/config");
 const blogPost_repository_1 = require("../feed/repository/blogPost.repository");
 const UserToBlogPostHide_repository_1 = require("../feed/repository/UserToBlogPostHide.repository");
 const UserReportBlogPost_repository_1 = require("../feed/repository/UserReportBlogPost.repository");
+const UserToBlockUser_repository_1 = require("../users/repository/UserToBlockUser.repository");
+const users_module_1 = require("../users/users.module");
 let LikeModule = class LikeModule {
 };
 LikeModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            users_module_1.UsersModule,
             typeorm_1.TypeOrmModule.forFeature([
                 like_repository_1.BlogLikeRepository,
                 users_repository_1.UserRepository,
                 blogPost_repository_1.BlogPostRepository,
+                UserToBlockUser_repository_1.UserToBlockUserRepository,
                 UserToBlogPostHide_repository_1.UserToBlogPostHideRepository,
                 UserReportBlogPost_repository_1.UserReportBlogPostRepository,
             ]),
