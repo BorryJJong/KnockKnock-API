@@ -293,7 +293,6 @@ let FeedService = FeedService_1 = class FeedService {
                 .getExcludeBockUsers([userId])
                 .then(blockUser => blockUser.map(user => user.blockUserId))
             : [];
-        console.log('excludeUserIds', excludeUserIds);
         const blogPosts = await this.blogPostRepository.getListBlogPost(skip, this.getFeedListTake(skip, take), blogPostIds, excludeBlogPostIds, excludeUserIds);
         if (+skip === 1) {
             blogPosts.items.unshift(selectBlogPost);
@@ -305,8 +304,6 @@ let FeedService = FeedService_1 = class FeedService {
         }
         const feedsCommentCount = await this.blogCommentRepository.selectFeedsByCommentCount(blogPostIds, excludeUserIds);
         const feedsLikeCount = await this.blogLikeRepository.selectFeedsByLikeCount(blogPostIds, excludeUserIds);
-        console.log('feedsCommentCount', feedsCommentCount);
-        console.log('feedsLikeCount ', feedsLikeCount);
         const likes = userId
             ? await this.getFeedListByUserLikes(blogPostIds, userId)
             : [];

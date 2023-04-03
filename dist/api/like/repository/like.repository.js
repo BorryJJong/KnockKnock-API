@@ -49,15 +49,18 @@ let BlogLikeRepository = class BlogLikeRepository extends typeorm_1.Repository {
         });
     }
     async selectFeedsByLikeCount(postIds, excludeUserIds) {
-        return await this.createQueryBuilder('blogLike')
+        let queryBuilder = await this.createQueryBuilder('blogLike')
             .select('blogLike.postId', 'postId')
             .addSelect('count(*)', 'likeCount')
             .where('blogLike.postId IN (:...postIds)', {
             postIds,
-        })
-            .andWhere('blogLike.userId NOT IN (:...excludeUserIds)', {
-            excludeUserIds,
-        })
+        });
+        if (excludeUserIds.length < 0) {
+            queryBuilder = queryBuilder.andWhere('blogLike.userId NOT IN (:...excludeUserIds)', {
+                excludeUserIds,
+            });
+        }
+        return queryBuilder
             .groupBy('blogLike.postId')
             .getRawMany();
     }
