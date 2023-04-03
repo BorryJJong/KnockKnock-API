@@ -11,4 +11,5 @@ export declare class UserValidator {
     checkDuplicateNickname(nickname: string): Promise<void>;
     alreadyReportBlogPost(userId: number, postId: number): Promise<void>;
     alreadyBlockUser(userId: number, blockUserid: number): Promise<void>;
+    alreadyUnblockUser(userId: number, blockUserid: number): Promise<void>;
 }

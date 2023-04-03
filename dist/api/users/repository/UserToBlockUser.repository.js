@@ -41,6 +41,17 @@ let UserToBlockUserRepository = class UserToBlockUserRepository extends typeorm_
         })
             .getMany();
     }
+    async deleteUserToBlockUser(userId, blockUserId, queryRunner) {
+        await this.createQueryBuilder('userToBlockUser', queryRunner)
+            .delete()
+            .where('userId = :userId', {
+            userId,
+        })
+            .andWhere('blockUserId = :blockUserId', {
+            blockUserId,
+        })
+            .execute();
+    }
 };
 UserToBlockUserRepository = __decorate([
     (0, common_1.Injectable)(),

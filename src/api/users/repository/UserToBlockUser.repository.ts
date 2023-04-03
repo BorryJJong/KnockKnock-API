@@ -53,4 +53,20 @@ export class UserToBlockUserRepository
       })
       .getMany();
   }
+
+  async deleteUserToBlockUser(
+    userId: number,
+    blockUserId: number,
+    queryRunner?: QueryRunner,
+  ): Promise<void> {
+    await this.createQueryBuilder('userToBlockUser', queryRunner)
+      .delete()
+      .where('userId = :userId', {
+        userId,
+      })
+      .andWhere('blockUserId = :blockUserId', {
+        blockUserId,
+      })
+      .execute();
+  }
 }

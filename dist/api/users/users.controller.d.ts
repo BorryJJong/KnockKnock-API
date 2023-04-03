@@ -27,4 +27,5 @@ export declare class UsersController {
     getUser(user: IUser): Promise<ApiResponseDTO<GetUserResDTO | ErrorDTO>>;
     reportBlogPost(user: IUser, param: ReportBlogPostReqParamDTO, body: ReportBlogPostReqBodyDTO): Promise<ApiResponseDTO<void | ErrorDTO>>;
     blockUser(user: IUser, param: BlockUserParamDTO): Promise<ApiResponseDTO<void | ErrorDTO>>;
+    unblockUser(user: IUser, param: BlockUserParamDTO): Promise<ApiResponseDTO<void | ErrorDTO>>;
 }

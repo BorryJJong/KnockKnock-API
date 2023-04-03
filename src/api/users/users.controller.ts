@@ -441,4 +441,33 @@ export class UsersController {
       );
     }
   }
+
+  @Delete('/block-user/:id')
+  @ApiOperation({summary: '작성자 차단 해제하기'})
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  @OkApiResponseNoneDataDTO()
+  @ConflictApiResponseDTO()
+  @DefaultErrorApiResponseDTO()
+  @InternalServerApiResponseDTO()
+  async unblockUser(
+    @UserDeco() user: IUser,
+    @Param() param: BlockUserParamDTO,
+  ): Promise<ApiResponseDTO<void | ErrorDTO>> {
+    try {
+      const blockUserId = param.id;
+      await this.userValidator.alreadyBlockUser(user.id, blockUserId);
+      await this.userService.unblockUser(user.id, blockUserId);
+
+      return new ApiResponseDTO<void>(
+        HttpStatus.OK,
+        API_RESPONSE_MEESAGE.SUCCESS,
+      );
+    } catch (error) {
+      return new ApiResponseDTO<ErrorDTO>(
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        error.message,
+      );
+    }
+  }
 }

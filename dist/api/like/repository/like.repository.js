@@ -34,7 +34,7 @@ let BlogLikeRepository = class BlogLikeRepository extends typeorm_1.Repository {
             .innerJoin(User_1.User, 'u', 'bl.user_id = u.id')
             .where('bl.post_id = :postId', { postId: postId });
         if (excludeUserIds.length > 0) {
-            queryBuilder = queryBuilder.where('bl.user_id NOT IN (:...excludeUserIds)', {
+            queryBuilder = queryBuilder.andWhere('bl.user_id NOT IN (:...excludeUserIds)', {
                 excludeUserIds,
             });
         }

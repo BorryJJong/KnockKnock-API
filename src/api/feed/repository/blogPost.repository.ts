@@ -86,7 +86,7 @@ export class BlogPostRepository
     }
 
     if (excludeUserIds.length > 0) {
-      queryBuilder = queryBuilder.where(
+      queryBuilder = queryBuilder.andWhere(
         'blogPost.userId NOT IN (:...excludeUserIds)',
         {
           excludeUserIds,
@@ -125,14 +125,14 @@ export class BlogPostRepository
     );
 
     if (excludeBlogPostId.length > 0) {
-      queryBuilder = queryBuilder.where('blogPost.id NOT IN (:...id)', {
+      queryBuilder = queryBuilder.andWhere('blogPost.id NOT IN (:...id)', {
         id: excludeBlogPostId,
       });
     }
 
     if (excludeUserIds.length > 0) {
-      queryBuilder = queryBuilder.where(
-        'blogPost.userId NOT IN (:...excludeUserIds)',
+      queryBuilder = queryBuilder.andWhere(
+        'blogPost.user_id NOT IN (:...excludeUserIds)',
         {
           excludeUserIds,
         },
