@@ -35,7 +35,7 @@ let LikeService = class LikeService {
         try {
             const likes = await this.blogLikeRepository.getListFeedLike(id, userId
                 ? await this.userService
-                    .getExcludeBockUsers([userId])
+                    .getExcludeBlockUsers([userId])
                     .then(blockUser => blockUser.map(user => user.blockUserId))
                 : []);
             const result = {

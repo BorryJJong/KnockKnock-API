@@ -220,7 +220,7 @@ export class UsersService {
     );
   }
 
-  public async getExcludeBockUsers(
+  public async getExcludeBlockUsers(
     userIds: number[],
   ): Promise<UserToBlockUser[]> {
     try {

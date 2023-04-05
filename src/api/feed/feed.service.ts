@@ -51,6 +51,9 @@ import {IBlogChallenge} from 'src/api/feed/interface/blogChallenges.interface';
 import {IBlogPromotion} from 'src/api/feed/interface/blogPromotion.interface';
 import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
 import {UsersService} from 'src/api/users/users.service';
+import {isEmpty} from 'ramda';
+import {IUserToBlockUserRepository} from 'src/api/users/interface/userToBlockUser.interface';
+import {UserToBlockUserRepository} from 'src/api/users/repository/UserToBlockUser.repository';
 
 @Injectable()
 export class FeedService {
@@ -78,6 +81,8 @@ export class FeedService {
     private userToBlogPostHideRepository: UserToBlogPostHideRepository,
     @InjectRepository(UserReportBlogPostRepository)
     private userReportBlogPostRepository: UserReportBlogPostRepository,
+    @InjectRepository(UserToBlockUserRepository)
+    private userToBlockUserRepository: IUserToBlockUserRepository,
     private userService: UsersService,
   ) {}
 
@@ -456,7 +461,7 @@ export class FeedService {
       await this.getExcludeBlogPostIds(userId),
       userId
         ? await this.userService
-            .getExcludeBockUsers([userId])
+            .getExcludeBlockUsers([userId])
             .then(blockUser => blockUser.map(user => user.blockUserId))
         : [],
     );
@@ -523,6 +528,18 @@ export class FeedService {
       excludeBlogPostIds.push(selectBlogPost.id);
     }
 
+    // 데이터 조회시 선택한 피드ID가 차단된 유저의 데이터일 경우 목록에서 제외
+    let isBlockUserFeed = false;
+    if (userId) {
+      isBlockUserFeed = await this.userToBlockUserRepository
+        .selectBlockUser(userId, selectBlogPost.userId)
+        .then(data => data !== undefined);
+
+      if (isBlockUserFeed) {
+        excludeBlogPostIds.push(selectBlogPost.id);
+      }
+    }
+
     // 챌린지ID가 있다면, 챌린지ID에 맞는 데이터를 랜덤으로 노출
     let blogPostIds: number[] = [];
 
@@ -535,10 +552,11 @@ export class FeedService {
     }
 
     excludeBlogPostIds.push(...(await this.getExcludeBlogPostIds(userId)));
+    const setExcludeBlogPostIds = [...new Set(excludeBlogPostIds)];
 
     const excludeUserIds = userId
       ? await this.userService
-          .getExcludeBockUsers([userId])
+          .getExcludeBlockUsers([userId])
           .then(blockUser => blockUser.map(user => user.blockUserId))
       : [];
 
@@ -546,11 +564,11 @@ export class FeedService {
       skip,
       this.getFeedListTake(skip, take),
       blogPostIds,
-      excludeBlogPostIds,
+      setExcludeBlogPostIds,
       excludeUserIds,
     );
 
-    if (+skip === 1) {
+    if (+skip === 1 && isBlockUserFeed === false) {
       blogPosts.items.unshift(selectBlogPost);
     }
 
@@ -658,7 +676,7 @@ export class FeedService {
     try {
       const excludeUserIds = userId
         ? await this.userService
-            .getExcludeBockUsers([userId])
+            .getExcludeBlockUsers([userId])
             .then(blockUser => blockUser.map(user => user.blockUserId))
         : [];
 
