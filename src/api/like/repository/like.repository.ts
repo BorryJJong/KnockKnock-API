@@ -72,7 +72,7 @@ export class BlogLikeRepository extends Repository<BlogLike> {
         postIds,
       });
 
-    if (excludeUserIds.length < 0) {
+    if (excludeUserIds.length > 0) {
       queryBuilder = queryBuilder.andWhere(
         'blogLike.userId NOT IN (:...excludeUserIds)',
         {

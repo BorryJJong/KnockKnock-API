@@ -1,5 +1,11 @@
 import {Injectable} from '@nestjs/common';
-import {EntityRepository, getManager, QueryRunner, Repository} from 'typeorm';
+import {
+  Brackets,
+  EntityRepository,
+  getManager,
+  QueryRunner,
+  Repository,
+} from 'typeorm';
 import {BlogComment, IBlogComment} from 'src/entities/BlogComment';
 import {
   GetBlogCommentDTO,
@@ -157,13 +163,38 @@ export class BlogCommentRepository extends Repository<BlogComment> {
         postIds: postIds.length === 0 ? [] : postIds,
       });
 
-    if (excludeUserIds.length < 0) {
+    if (excludeUserIds.length > 0) {
       queryBuilder = queryBuilder.andWhere(
         'blogComment.userId NOT IN (:...excludeUserIds)',
         {
           excludeUserIds,
         },
       );
+
+      // 부모 댓글이 차단된 사용자일 경우, 답글을 전부 카운트에서 제외한다
+      const commentByBlockUser = await this.createQueryBuilder('blogComment')
+        .where('blogComment.userId IN (:...excludeUserIds)', {
+          excludeUserIds,
+        })
+        .andWhere('blogComment.commentId IS NULL')
+        .getMany();
+
+      if (commentByBlockUser.length > 0) {
+        const excludeBlogCommentIds = commentByBlockUser.map(
+          comment => comment.id,
+        );
+
+        queryBuilder = queryBuilder.andWhere(
+          new Brackets(qb => {
+            qb.where(
+              'blogComment.commentId NOT IN (:...excludeBlogCommentIds)',
+              {
+                excludeBlogCommentIds,
+              },
+            ).orWhere('blogComment.commentId IS NULL');
+          }),
+        );
+      }
     }
 
     return queryBuilder

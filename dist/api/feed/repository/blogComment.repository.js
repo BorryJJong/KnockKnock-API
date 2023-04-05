@@ -105,10 +105,24 @@ let BlogCommentRepository = class BlogCommentRepository extends typeorm_1.Reposi
             .where('blogComment.postId IN (:...postIds)', {
             postIds: postIds.length === 0 ? [] : postIds,
         });
-        if (excludeUserIds.length < 0) {
+        if (excludeUserIds.length > 0) {
             queryBuilder = queryBuilder.andWhere('blogComment.userId NOT IN (:...excludeUserIds)', {
                 excludeUserIds,
             });
+            const commentByBlockUser = await this.createQueryBuilder('blogComment')
+                .where('blogComment.userId IN (:...excludeUserIds)', {
+                excludeUserIds,
+            })
+                .andWhere('blogComment.commentId IS NULL')
+                .getMany();
+            if (commentByBlockUser.length > 0) {
+                const excludeBlogCommentIds = commentByBlockUser.map(comment => comment.id);
+                queryBuilder = queryBuilder.andWhere(new typeorm_1.Brackets(qb => {
+                    qb.where('blogComment.commentId NOT IN (:...excludeBlogCommentIds)', {
+                        excludeBlogCommentIds,
+                    }).orWhere('blogComment.commentId IS NULL');
+                }));
+            }
         }
         return queryBuilder
             .groupBy('blogComment.postId')

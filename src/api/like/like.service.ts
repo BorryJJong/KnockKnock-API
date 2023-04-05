@@ -31,7 +31,7 @@ export class LikeService {
         id,
         userId
           ? await this.userService
-              .getExcludeBockUsers([userId])
+              .getExcludeBlockUsers([userId])
               .then(blockUser => blockUser.map(user => user.blockUserId))
           : [],
       );
