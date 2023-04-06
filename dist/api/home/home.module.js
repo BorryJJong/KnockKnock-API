@@ -18,12 +18,14 @@ const Event_Repository_1 = require("./repository/Event.Repository");
 const Shop_Repository_1 = require("./repository/Shop.Repository");
 const image_module_1 = require("../image/image.module");
 const promotions_repository_1 = require("../promotions/promotions.repository");
+const users_module_1 = require("../users/users.module");
 let HomeModule = class HomeModule {
 };
 HomeModule = __decorate([
     (0, common_1.Module)({
         imports: [
             image_module_1.ImageModule,
+            users_module_1.UsersModule,
             typeorm_1.TypeOrmModule.forFeature([
                 blogPost_repository_1.BlogPostRepository,
                 Event_Repository_1.EventRepository,

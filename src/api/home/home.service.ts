@@ -23,6 +23,7 @@ import {ShopRepository} from 'src/api/home/repository/Shop.Repository';
 import {ImageService} from 'src/api/image/image.service';
 import {IPromotionsRepository} from 'src/api/promotions/promotions.interface';
 import {PromotionsRepository} from 'src/api/promotions/promotions.repository';
+import {UsersService} from 'src/api/users/users.service';
 
 @Injectable()
 export class HomeService {
@@ -37,11 +38,23 @@ export class HomeService {
     private readonly shopRepository: IShopRepository,
     @InjectRepository(PromotionsRepository)
     private readonly promotionsRepository: IPromotionsRepository,
+    private readonly userService: UsersService,
     private readonly imageService: ImageService,
   ) {}
 
-  async getListHotFeed(challengeId: number): Promise<GetListHotFeedResDTO[]> {
-    return this.blogPostRepository.selectBlogPostByHotFeeds(challengeId);
+  async getListHotFeed(
+    challengeId: number,
+    userId?: number,
+  ): Promise<GetListHotFeedResDTO[]> {
+    const excludeUserIds = userId
+      ? await this.userService
+          .getExcludeBlockUsers([userId])
+          .then(blockUser => blockUser.map(user => user.blockUserId))
+      : [];
+    return this.blogPostRepository.selectBlogPostByHotFeeds(
+      challengeId,
+      excludeUserIds,
+    );
   }
 
   async getHomeListEvent(): Promise<GetHomeListEventResDTO[]> {

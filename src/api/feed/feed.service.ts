@@ -51,7 +51,6 @@ import {IBlogChallenge} from 'src/api/feed/interface/blogChallenges.interface';
 import {IBlogPromotion} from 'src/api/feed/interface/blogPromotion.interface';
 import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
 import {UsersService} from 'src/api/users/users.service';
-import {isEmpty} from 'ramda';
 import {IUserToBlockUserRepository} from 'src/api/users/interface/userToBlockUser.interface';
 import {UserToBlockUserRepository} from 'src/api/users/repository/UserToBlockUser.repository';
 

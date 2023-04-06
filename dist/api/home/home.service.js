@@ -25,17 +25,24 @@ const Event_Repository_1 = require("./repository/Event.Repository");
 const Shop_Repository_1 = require("./repository/Shop.Repository");
 const image_service_1 = require("../image/image.service");
 const promotions_repository_1 = require("../promotions/promotions.repository");
+const users_service_1 = require("../users/users.service");
 let HomeService = class HomeService {
-    constructor(blogPostRepository, eventRepository, bannerRepository, shopRepository, promotionsRepository, imageService) {
+    constructor(blogPostRepository, eventRepository, bannerRepository, shopRepository, promotionsRepository, userService, imageService) {
         this.blogPostRepository = blogPostRepository;
         this.eventRepository = eventRepository;
         this.bannerRepository = bannerRepository;
         this.shopRepository = shopRepository;
         this.promotionsRepository = promotionsRepository;
+        this.userService = userService;
         this.imageService = imageService;
     }
-    async getListHotFeed(challengeId) {
-        return this.blogPostRepository.selectBlogPostByHotFeeds(challengeId);
+    async getListHotFeed(challengeId, userId) {
+        const excludeUserIds = userId
+            ? await this.userService
+                .getExcludeBlockUsers([userId])
+                .then(blockUser => blockUser.map(user => user.blockUserId))
+            : [];
+        return this.blogPostRepository.selectBlogPostByHotFeeds(challengeId, excludeUserIds);
     }
     async getHomeListEvent() {
         const events = await this.eventRepository.selectEvents(true);
@@ -85,7 +92,8 @@ HomeService = __decorate([
     __param(2, (0, typeorm_1.InjectRepository)(Banner_Repository_1.BannerRepository)),
     __param(3, (0, typeorm_1.InjectRepository)(Shop_Repository_1.ShopRepository)),
     __param(4, (0, typeorm_1.InjectRepository)(promotions_repository_1.PromotionsRepository)),
-    __metadata("design:paramtypes", [blogPost_repository_1.BlogPostRepository, Object, Object, Object, Object, image_service_1.ImageService])
+    __metadata("design:paramtypes", [blogPost_repository_1.BlogPostRepository, Object, Object, Object, Object, users_service_1.UsersService,
+        image_service_1.ImageService])
 ], HomeService);
 exports.HomeService = HomeService;
 //# sourceMappingURL=home.service.js.map

@@ -161,7 +161,7 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
             .andWhere('blogPost.userId = :userId', { userId })
             .getOne();
     }
-    async selectBlogPostByHotFeeds(challengeId) {
+    async selectBlogPostByHotFeeds(challengeId, excludeUserIds) {
         let queryBuilder = this.createQueryBuilder('blogPost')
             .select('blogPost.id', 'postId')
             .addSelect('blogPost.scale', 'scale')
@@ -188,6 +188,11 @@ let BlogPostRepository = class BlogPostRepository extends typeorm_1.Repository {
                 .innerJoin(BlogChallenges_1.BlogChallenges, 'bc', 'bc.post_id = blogPost.id')
                 .andWhere('bc.challengeId = :challengeId', {
                 challengeId,
+            });
+        }
+        if (excludeUserIds.length > 0) {
+            queryBuilder = queryBuilder.andWhere('blogPost.userId NOT IN (:...excludeUserIds)', {
+                excludeUserIds,
             });
         }
         const hotFeeds = await queryBuilder.limit(6).getRawMany();

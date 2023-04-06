@@ -244,6 +244,7 @@ export class BlogPostRepository
   // TODO: 데이터가 확장될 경우, 날짜를 Today로 제한
   async selectBlogPostByHotFeeds(
     challengeId: number,
+    excludeUserIds: number[],
   ): Promise<GetListHotFeedResDTO[]> {
     let queryBuilder = this.createQueryBuilder('blogPost')
       .select('blogPost.id', 'postId')
@@ -274,6 +275,15 @@ export class BlogPostRepository
         .andWhere('bc.challengeId = :challengeId', {
           challengeId,
         });
+    }
+
+    if (excludeUserIds.length > 0) {
+      queryBuilder = queryBuilder.andWhere(
+        'blogPost.userId NOT IN (:...excludeUserIds)',
+        {
+          excludeUserIds,
+        },
+      );
     }
 
     const hotFeeds = await queryBuilder.limit(6).getRawMany<test>();
