@@ -1,4 +1,6 @@
 import { BlogPostRepository } from 'src/api/feed/repository/blogPost.repository';
+import { UserReportBlogPostRepository } from 'src/api/feed/repository/UserReportBlogPost.repository';
+import { UserToBlogPostHideRepository } from 'src/api/feed/repository/UserToBlogPostHide.repository';
 import { GetHomeListEventResDTO, GetHomeListVerifiredShopResDTO, GetListBannerReqQueryDTO, GetListBannerResDTO, GetListEventReqQueryDTO, GetListEventResDTO, GetListHotFeedResDTO, GetListVerifiredShopResDTO } from 'src/api/home/dto/home.dto';
 import { IBannerRepository } from 'src/api/home/interface/banner.interface';
 import { IEventRepository } from 'src/api/home/interface/event.interface';
@@ -12,9 +14,11 @@ export declare class HomeService {
     private readonly bannerRepository;
     private readonly shopRepository;
     private readonly promotionsRepository;
+    private userReportBlogPostRepository;
+    private userToBlogPostHideRepository;
     private readonly userService;
     private readonly imageService;
-    constructor(blogPostRepository: BlogPostRepository, eventRepository: IEventRepository, bannerRepository: IBannerRepository, shopRepository: IShopRepository, promotionsRepository: IPromotionsRepository, userService: UsersService, imageService: ImageService);
+    constructor(blogPostRepository: BlogPostRepository, eventRepository: IEventRepository, bannerRepository: IBannerRepository, shopRepository: IShopRepository, promotionsRepository: IPromotionsRepository, userReportBlogPostRepository: UserReportBlogPostRepository, userToBlogPostHideRepository: UserToBlogPostHideRepository, userService: UsersService, imageService: ImageService);
     getListHotFeed(challengeId: number, userId?: number): Promise<GetListHotFeedResDTO[]>;
     getHomeListEvent(): Promise<GetHomeListEventResDTO[]>;
     private getIsNewBadge;

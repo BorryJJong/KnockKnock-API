@@ -4,6 +4,8 @@ import {EVENT_TAP, S3_OBJECT} from '@shared/enums/enum';
 import {dateFormatV2} from '@shared/utils';
 import {isAfter, subDays} from 'date-fns';
 import {BlogPostRepository} from 'src/api/feed/repository/blogPost.repository';
+import {UserReportBlogPostRepository} from 'src/api/feed/repository/UserReportBlogPost.repository';
+import {UserToBlogPostHideRepository} from 'src/api/feed/repository/UserToBlogPostHide.repository';
 import {
   GetHomeListEventResDTO,
   GetHomeListVerifiredShopResDTO,
@@ -38,6 +40,10 @@ export class HomeService {
     private readonly shopRepository: IShopRepository,
     @InjectRepository(PromotionsRepository)
     private readonly promotionsRepository: IPromotionsRepository,
+    @InjectRepository(UserReportBlogPostRepository)
+    private userReportBlogPostRepository: UserReportBlogPostRepository,
+    @InjectRepository(UserToBlogPostHideRepository)
+    private userToBlogPostHideRepository: UserToBlogPostHideRepository,
     private readonly userService: UsersService,
     private readonly imageService: ImageService,
   ) {}
@@ -51,9 +57,25 @@ export class HomeService {
           .getExcludeBlockUsers([userId])
           .then(blockUser => blockUser.map(user => user.blockUserId))
       : [];
+
+    const excludeBlogPostIds: number[] = [];
+    if (userId) {
+      const reportBlogPostIds = await this.userReportBlogPostRepository
+        .selectUserReportBlogPost()
+        .then(data => data.map(report => report.postId));
+      excludeBlogPostIds.push(...reportBlogPostIds);
+
+      const hideBlogPostIds = await this.userToBlogPostHideRepository
+        .selectBlogPostHideByUser(userId)
+        .then(data => data.map(hide => hide.postId));
+
+      excludeBlogPostIds.push(...hideBlogPostIds);
+    }
+
     return this.blogPostRepository.selectBlogPostByHotFeeds(
       challengeId,
       excludeUserIds,
+      [...new Set(excludeBlogPostIds)],
     );
   }
 

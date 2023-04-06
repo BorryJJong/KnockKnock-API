@@ -245,7 +245,9 @@ export class BlogPostRepository
   async selectBlogPostByHotFeeds(
     challengeId: number,
     excludeUserIds: number[],
+    excludePostIds: number[],
   ): Promise<GetListHotFeedResDTO[]> {
+    console.log('excludePostIds', excludePostIds);
     let queryBuilder = this.createQueryBuilder('blogPost')
       .select('blogPost.id', 'postId')
       .addSelect('blogPost.scale', 'scale')
@@ -282,6 +284,15 @@ export class BlogPostRepository
         'blogPost.userId NOT IN (:...excludeUserIds)',
         {
           excludeUserIds,
+        },
+      );
+    }
+
+    if (excludePostIds.length > 0) {
+      queryBuilder = queryBuilder.andWhere(
+        'blogPost.id NOT IN (:...excludePostIds)',
+        {
+          excludePostIds,
         },
       );
     }
