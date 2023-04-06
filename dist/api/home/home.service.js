@@ -19,6 +19,8 @@ const enum_1 = require("../../shared/enums/enum");
 const utils_1 = require("../../shared/utils");
 const date_fns_1 = require("date-fns");
 const blogPost_repository_1 = require("../feed/repository/blogPost.repository");
+const UserReportBlogPost_repository_1 = require("../feed/repository/UserReportBlogPost.repository");
+const UserToBlogPostHide_repository_1 = require("../feed/repository/UserToBlogPostHide.repository");
 const home_dto_1 = require("./dto/home.dto");
 const Banner_Repository_1 = require("./repository/Banner.Repository");
 const Event_Repository_1 = require("./repository/Event.Repository");
@@ -27,12 +29,14 @@ const image_service_1 = require("../image/image.service");
 const promotions_repository_1 = require("../promotions/promotions.repository");
 const users_service_1 = require("../users/users.service");
 let HomeService = class HomeService {
-    constructor(blogPostRepository, eventRepository, bannerRepository, shopRepository, promotionsRepository, userService, imageService) {
+    constructor(blogPostRepository, eventRepository, bannerRepository, shopRepository, promotionsRepository, userReportBlogPostRepository, userToBlogPostHideRepository, userService, imageService) {
         this.blogPostRepository = blogPostRepository;
         this.eventRepository = eventRepository;
         this.bannerRepository = bannerRepository;
         this.shopRepository = shopRepository;
         this.promotionsRepository = promotionsRepository;
+        this.userReportBlogPostRepository = userReportBlogPostRepository;
+        this.userToBlogPostHideRepository = userToBlogPostHideRepository;
         this.userService = userService;
         this.imageService = imageService;
     }
@@ -42,7 +46,18 @@ let HomeService = class HomeService {
                 .getExcludeBlockUsers([userId])
                 .then(blockUser => blockUser.map(user => user.blockUserId))
             : [];
-        return this.blogPostRepository.selectBlogPostByHotFeeds(challengeId, excludeUserIds);
+        const excludeBlogPostIds = [];
+        if (userId) {
+            const reportBlogPostIds = await this.userReportBlogPostRepository
+                .selectUserReportBlogPost()
+                .then(data => data.map(report => report.postId));
+            excludeBlogPostIds.push(...reportBlogPostIds);
+            const hideBlogPostIds = await this.userToBlogPostHideRepository
+                .selectBlogPostHideByUser(userId)
+                .then(data => data.map(hide => hide.postId));
+            excludeBlogPostIds.push(...hideBlogPostIds);
+        }
+        return this.blogPostRepository.selectBlogPostByHotFeeds(challengeId, excludeUserIds, [...new Set(excludeBlogPostIds)]);
     }
     async getHomeListEvent() {
         const events = await this.eventRepository.selectEvents(true);
@@ -92,7 +107,11 @@ HomeService = __decorate([
     __param(2, (0, typeorm_1.InjectRepository)(Banner_Repository_1.BannerRepository)),
     __param(3, (0, typeorm_1.InjectRepository)(Shop_Repository_1.ShopRepository)),
     __param(4, (0, typeorm_1.InjectRepository)(promotions_repository_1.PromotionsRepository)),
-    __metadata("design:paramtypes", [blogPost_repository_1.BlogPostRepository, Object, Object, Object, Object, users_service_1.UsersService,
+    __param(5, (0, typeorm_1.InjectRepository)(UserReportBlogPost_repository_1.UserReportBlogPostRepository)),
+    __param(6, (0, typeorm_1.InjectRepository)(UserToBlogPostHide_repository_1.UserToBlogPostHideRepository)),
+    __metadata("design:paramtypes", [blogPost_repository_1.BlogPostRepository, Object, Object, Object, Object, UserReportBlogPost_repository_1.UserReportBlogPostRepository,
+        UserToBlogPostHide_repository_1.UserToBlogPostHideRepository,
+        users_service_1.UsersService,
         image_service_1.ImageService])
 ], HomeService);
 exports.HomeService = HomeService;

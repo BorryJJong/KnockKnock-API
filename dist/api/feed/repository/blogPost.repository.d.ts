@@ -20,6 +20,6 @@ export declare class BlogPostRepository extends Repository<BlogPost> implements 
     updateBlogPostHits(id: number): Promise<void>;
     deleteBlogPost(id: number, queryRunner?: QueryRunner): Promise<void>;
     selectBlogPostByUser(id: number, userId: number): Promise<BlogPost | undefined>;
-    selectBlogPostByHotFeeds(challengeId: number, excludeUserIds: number[]): Promise<GetListHotFeedResDTO[]>;
+    selectBlogPostByHotFeeds(challengeId: number, excludeUserIds: number[], excludePostIds: number[]): Promise<GetListHotFeedResDTO[]>;
     updateBlogPostHideCount(id: number, queryRunner?: QueryRunner): Promise<void>;
 }
