@@ -68,6 +68,7 @@ export class BlogLikeRepository extends Repository<BlogLike> {
     let queryBuilder = await this.createQueryBuilder('blogLike')
       .select('blogLike.postId', 'postId')
       .addSelect('count(*)', 'likeCount')
+      .innerJoin(User, 'u', 'blogLike.user_id = u.id')
       .where('blogLike.postId IN (:...postIds)', {
         postIds,
       });
