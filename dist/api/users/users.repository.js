@@ -59,11 +59,12 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
         });
     }
     async updateUserDeletedAt(userId, queryRunner) {
-        await this.createQueryBuilder('users', queryRunner)
-            .where('users.id = :id', {
-            id: userId,
+        await this.createQueryBuilder('user', queryRunner)
+            .where('id = :userId', {
+            userId,
         })
-            .softDelete();
+            .softDelete()
+            .execute();
     }
     async deleteUserInfo(userId, queryRunner) {
         await this.createQueryBuilder('users', queryRunner)
