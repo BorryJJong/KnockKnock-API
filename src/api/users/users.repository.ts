@@ -87,11 +87,12 @@ export class UserRepository
     userId: number,
     queryRunner?: QueryRunner,
   ): Promise<void> {
-    await this.createQueryBuilder('users', queryRunner)
-      .where('users.id = :id', {
-        id: userId,
+    await this.createQueryBuilder('user', queryRunner)
+      .where('id = :userId', {
+        userId,
       })
-      .softDelete();
+      .softDelete()
+      .execute();
   }
 
   public async deleteUserInfo(
