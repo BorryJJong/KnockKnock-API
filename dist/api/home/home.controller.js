@@ -16,18 +16,20 @@ exports.HomeController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const swagger_decorator_1 = require("../../shared/decorator/swagger.decorator");
+const user_decorator_1 = require("../../shared/decorator/user.decorator");
 const response_dto_1 = require("../../shared/dto/response.dto");
 const enum_1 = require("../../shared/enums/enum");
 const home_dto_1 = require("./dto/home.dto");
 const home_service_1 = require("./home.service");
+const jwtNoneRequired_guard_1 = require("../../auth/jwt/jwtNoneRequired.guard");
 let HomeController = class HomeController {
     constructor(homeService) {
         this.homeService = homeService;
     }
-    async getListHotFeed(query) {
+    async getListHotFeed(user, query) {
         try {
             const { challengeId } = query;
-            const hotFeeds = await this.homeService.getListHotFeed(challengeId);
+            const hotFeeds = await this.homeService.getListHotFeed(challengeId, user.id);
             return new response_dto_1.ApiResponseDTO(common_1.HttpStatus.OK, enum_1.API_RESPONSE_MEESAGE.SUCCESS, hotFeeds);
         }
         catch (error) {
@@ -84,12 +86,15 @@ __decorate([
     (0, swagger_1.ApiTags)('home'),
     (0, common_1.Get)('/hot-post'),
     (0, swagger_1.ApiOperation)({ summary: '오늘의 인기 게시글' }),
+    (0, common_1.UseGuards)(jwtNoneRequired_guard_1.JwtOptionalGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_decorator_1.OkApiResponseListDataDTO)(home_dto_1.GetListHotFeedResDTO),
     (0, swagger_decorator_1.DefaultErrorApiResponseDTO)(),
     (0, swagger_decorator_1.InternalServerApiResponseDTO)(),
-    __param(0, (0, common_1.Query)()),
+    __param(0, (0, user_decorator_1.UserDeco)()),
+    __param(1, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [home_dto_1.GetListHotFeedReqDTO]),
+    __metadata("design:paramtypes", [Object, home_dto_1.GetListHotFeedReqDTO]),
     __metadata("design:returntype", Promise)
 ], HomeController.prototype, "getListHotFeed", null);
 __decorate([

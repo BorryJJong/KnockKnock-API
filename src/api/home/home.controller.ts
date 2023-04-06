@@ -1,10 +1,11 @@
-import {Controller, Get, HttpStatus, Query} from '@nestjs/common';
-import {ApiOperation, ApiTags} from '@nestjs/swagger';
+import {Controller, Get, HttpStatus, Query, UseGuards} from '@nestjs/common';
+import {ApiBearerAuth, ApiOperation, ApiTags} from '@nestjs/swagger';
 import {
   DefaultErrorApiResponseDTO,
   InternalServerApiResponseDTO,
   OkApiResponseListDataDTO,
 } from '@shared/decorator/swagger.decorator';
+import {UserDeco} from '@shared/decorator/user.decorator';
 import {ApiResponseDTO, ErrorDTO} from '@shared/dto/response.dto';
 import {API_RESPONSE_MEESAGE} from '@shared/enums/enum';
 import {
@@ -19,6 +20,8 @@ import {
   GetListVerifiredShopResDTO,
 } from 'src/api/home/dto/home.dto';
 import {HomeService} from 'src/api/home/home.service';
+import {IUser} from 'src/api/users/users.interface';
+import {JwtOptionalGuard} from 'src/auth/jwt/jwtNoneRequired.guard';
 
 @Controller()
 export class HomeController {
@@ -27,15 +30,21 @@ export class HomeController {
   @ApiTags('home')
   @Get('/hot-post')
   @ApiOperation({summary: '오늘의 인기 게시글'})
+  @UseGuards(JwtOptionalGuard)
+  @ApiBearerAuth()
   @OkApiResponseListDataDTO(GetListHotFeedResDTO)
   @DefaultErrorApiResponseDTO()
   @InternalServerApiResponseDTO()
   async getListHotFeed(
+    @UserDeco() user: IUser,
     @Query() query: GetListHotFeedReqDTO,
   ): Promise<ApiResponseDTO<GetListHotFeedResDTO[] | ErrorDTO>> {
     try {
       const {challengeId} = query;
-      const hotFeeds = await this.homeService.getListHotFeed(challengeId);
+      const hotFeeds = await this.homeService.getListHotFeed(
+        challengeId,
+        user.id,
+      );
 
       return new ApiResponseDTO<GetListHotFeedResDTO[]>(
         HttpStatus.OK,
